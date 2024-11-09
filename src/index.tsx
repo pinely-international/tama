@@ -1,9 +1,10 @@
 /* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { WebInflator } from "./Inflator"
 import JSX from "./JSX"
 import Proton from "./Proton"
 
-function ComponentGod(this: ProtonShell) {
+function ComponentGod(this: Proton.Shell) {
   return this
 }
 
@@ -30,3 +31,10 @@ console.log(jsxSampleEvaluated)
 const jsxPrimitiveEvaluator = new JSX.HTMLPrimitiveEvaluator
 const jsxPrimitiveEvaluated = jsxPrimitiveEvaluator.evaluate(123)
 console.log(jsxPrimitiveEvaluated)
+
+
+const webInflator = new WebInflator
+const jsxSampleInflated = webInflator.inflate(jsxSample)
+console.log(jsxSampleInflated)
+
+document.getElementById("root")!.appendChild(jsxSampleInflated)

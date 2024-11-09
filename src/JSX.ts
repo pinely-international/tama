@@ -3,13 +3,7 @@ import "./JSX.d"
 import { Primitive as TypeFestPrimitive } from "type-fest"
 
 namespace JSX {
-  export interface Element {
-    type: keyof never | Function
-    props: Record<keyof never, unknown> | null
-    children: Element | Element[] | null
-  }
-
-  export interface IntrinsicElement<Type extends keyof never> {
+  export interface IntrinsicElement<Type extends keyof never = keyof never> {
     type: Type
     props: Record<keyof never, unknown> | null
     children: Element | Element[] | null

@@ -6,10 +6,16 @@ declare global {
     key?: unknown
   }
   interface ProtonSVGElement { }
-  interface ProtonShell { }
 
   namespace JSX {
-    type ElementType = string | ProtonShell
+    interface Element {
+      type: never
+      props: never
+      children: []
+    }
+
+    interface CustomElement { }
+    type ElementType = string | CustomElement["ReturnType"]
 
     interface IntrinsicElements {
       // HTML
