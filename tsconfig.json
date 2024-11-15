@@ -29,8 +29,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "jsxFactory": "Proton.Element",
-    "jsxFragmentFactory": "Proton.Fragment",
+    "jsxFactory": "Proton.JSX.Element",
+    "jsxFragmentFactory": "Proton.JSX.Fragment",
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true

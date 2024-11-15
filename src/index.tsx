@@ -1,12 +1,40 @@
-/* eslint-disable unused-imports/no-unused-imports */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { WebInflator } from "./Inflator"
-import JSX from "./JSX"
 import Proton from "./Proton"
 
+
+const everySecondCallbacks = new Set<() => void>
+setInterval(() => {
+  for (const callback of everySecondCallbacks) queueMicrotask(callback)
+}, 1000)
+
+function everySecond(callback: () => void): () => void {
+  everySecondCallbacks.add(callback)
+
+  return () => {
+    everySecondCallbacks.delete(callback)
+  }
+}
+
+
 function ComponentGod(this: Proton.Shell) {
+  this.tree.set(<>Component Initiated</>)
+
+  let i = 0
+
+  setTimeout(() => {
+    this.tree.set(<>Scheduled update</>)
+
+    everySecond(() => {
+      i += Date.now()
+      this.tree.set(<>Scheduled update: {i}</>)
+    })
+  }, 1000)
+
   return this
 }
+
+
+
 
 const jsxSample = (
   <div>
@@ -16,25 +44,17 @@ const jsxSample = (
     <ComponentGod />
   </div>
 )
-console.log(jsxSample)
 
 
 
-const jsxIntrinsicEvaluator = new JSX.HTMLIntrinsicEvaluator(
-  function transformIntrinsic(input) { return input },
-  function transformElement(element) { return element }
-)
-const jsxSampleEvaluated = jsxIntrinsicEvaluator.evaluate(jsxSample)
-console.log(jsxSampleEvaluated)
+const inflator = new WebInflator
+const jsxSampleInflated = inflator.inflate(jsxSample)
+
+const rootElement = document.getElementById("root")!
+rootElement.appendChild(jsxSampleInflated)
 
 
-const jsxPrimitiveEvaluator = new JSX.HTMLPrimitiveEvaluator
-const jsxPrimitiveEvaluated = jsxPrimitiveEvaluator.evaluate(123)
-console.log(jsxPrimitiveEvaluated)
+const componentInflated = inflator.inflate(<ComponentGod />)
+setTimeout(() => jsxSampleInflated.appendChild(componentInflated), 1000)
 
-
-const webInflator = new WebInflator
-const jsxSampleInflated = webInflator.inflate(jsxSample)
-console.log(jsxSampleInflated)
-
-document.getElementById("root")!.appendChild(jsxSampleInflated)
+Array(1e3).fill(0).forEach(() => jsxSampleInflated.appendChild(inflator.inflate(<ComponentGod />)))

@@ -14,8 +14,10 @@ declare global {
       children: []
     }
 
-    interface CustomElement { }
-    type ElementType = string | CustomElement["ReturnType"]
+
+    interface ElementTypeConstructor { }
+
+    type ElementType = string | ElementTypeConstructor
 
     interface IntrinsicElements {
       // HTML
