@@ -57,4 +57,4 @@ rootElement.appendChild(jsxSampleInflated)
 const componentInflated = inflator.inflate(<ComponentGod />)
 setTimeout(() => jsxSampleInflated.appendChild(componentInflated), 1000)
 
-Array(1e3).fill(0).forEach(() => jsxSampleInflated.appendChild(inflator.inflate(<ComponentGod />)))
+Array(1e2).fill(0).forEach(() => jsxSampleInflated.appendChild(inflator.inflate(<ComponentGod />)))

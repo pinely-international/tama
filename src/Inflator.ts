@@ -25,10 +25,10 @@ export abstract class Inflator {
   protected abstract inflatePrimitive(primitive: Primitive): unknown
   protected abstract inflateFragment(): unknown
 
-  protected inflateComponent(componentConstructor: <T extends Proton.Shell>(this: T) => T) {
+  protected inflateComponent(constructor: <T extends Proton.Shell>(this: T) => T) {
     const shell = new Proton.Shell(this)
 
-    const component = componentConstructor.call(shell)
+    const component = constructor.call(shell)
     if (component !== shell) throw new TypeError("Proton Component must return `this`.")
 
     return shell
@@ -87,57 +87,52 @@ export class WebInflator extends Inflator {
 
   protected inflateJSXComponent(component: ProtonJSX.Component) {
     const shell = this.inflateComponent(component.type as never)
-    const shellInternal = shell[Proton.ShellInternal]
 
-    if (shellInternal.view instanceof DocumentFragment) {
-      shellInternal.anchor = shellInternal.view
-      shellInternal.anchors = [...shellInternal.view.childNodes]
-    } else if (shellInternal.view instanceof Node) {
-      shellInternal.anchor = shellInternal.view
-      shellInternal.anchors = Null.ARRAY
+    let anchor: Node
+    let anchorChildren: Node[] = Null.ARRAY
+
+    if (shell.view instanceof DocumentFragment) {
+      anchor = shell.view
+      anchorChildren = [...shell.view.childNodes]
+    } else if (shell.view instanceof Node) {
+      anchor = shell.view
     } else {
       const comment = document.createComment(component.type.name)
-      shellInternal.anchor = comment
-      shellInternal.anchors = [comment]
+      anchor = comment
     }
 
-    shell.lastAnimationFrame = -1
+    let lastAnimationFrame = -1
 
     shell.onViewChange(view => {
       if (view instanceof Node === false) return
 
       // Assume that the anchor node was already connected.
       const schedule = () => {
-        if (shellInternal.anchor instanceof Node === false) return
+        if (anchor instanceof Node === false) return
 
-        const anchors = shellInternal.anchors ?? Null.ARRAY
-
-        const anchor = anchors.shift()
-        if (anchor == null) {
-          shellInternal.anchor.replaceWith(shellInternal.view)
-          shellInternal.anchor = view
+        const anchorFirstChild = anchorChildren.shift()
+        if (anchorFirstChild == null) {
+          anchor.replaceWith(view)
+          anchor = view
 
           return
         }
 
-        const parent = anchor instanceof Node && anchor.parentElement
-        if (!parent) return
+        const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
+        if (!anchorFirstChildParent) return
 
-        anchors.forEach(rest => parent.removeChild(rest as never))
+        anchorChildren.forEach(rest => anchorFirstChildParent.removeChild(rest as never))
 
-        shellInternal.anchor = view
-        shellInternal.anchors = [...view.childNodes]
+        anchor = view
+        anchorChildren = [...view.childNodes]
 
-        parent.replaceChild(view, anchor)
+        anchorFirstChildParent.replaceChild(view, anchorFirstChild)
       }
 
-
-
-
-      cancelAnimationFrame(shell.lastAnimationFrame)
-      shell.lastAnimationFrame = requestAnimationFrame(schedule)
+      cancelAnimationFrame(lastAnimationFrame)
+      lastAnimationFrame = requestAnimationFrame(schedule)
     })
 
-    return shellInternal.anchor as never
+    return anchor as never
   }
 }

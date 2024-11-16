@@ -16,18 +16,10 @@ namespace Proton {
   export const JSX = ProtonJSX
   export function Componentus(this: Shell) { return this }
 
-  export const ShellInternal = Symbol.for("Proton.Shell.Internal")
   export class Shell {
-
     public readonly tree: ProtonTreeAPI
-    private view: unknown = null
+    public view: unknown = null
     private viewCallbacks = new Set<() => void>()
-
-    public [ShellInternal]: {
-      view?: unknown
-      anchor?: unknown
-      anchors?: unknown[]
-    } = {}
 
     constructor(private readonly inflator: Inflator) {
       this.tree = {
@@ -36,8 +28,6 @@ namespace Proton {
 
           this.view = object
           this.viewCallbacks.forEach(callback => callback())
-
-          this[ShellInternal].view = this.view
         }
       }
     }
