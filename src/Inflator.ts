@@ -1,5 +1,6 @@
 import { Primitive } from "type-fest"
 
+import ActBindings from "./ActBinding"
 import Null from "./Null"
 import Proton from "./Proton"
 import ProtonJSX from "./ProtonJSX"
@@ -82,7 +83,42 @@ export class WebInflator extends Inflator {
   }
 
   protected inflateJSXIntrinsic(intrinsic: ProtonJSX.Intrinsic): HTMLElement | DocumentFragment {
-    return this.jsxIntrinsicEvaluator.evaluate(intrinsic as never)
+    const intrinsicInflated = this.jsxIntrinsicEvaluator.evaluate(intrinsic as never)
+    if (intrinsic.props == null) return intrinsicInflated
+
+    if ("style" in intrinsic.props) {
+      const asd = new ActBindings(intrinsicInflated.style)
+
+      for (const property in intrinsic.props.style) {
+        const value = intrinsic.props.style[property]
+        if (value[Symbol.subscribe] != null) {
+          asd.set(intrinsic.props.style, property)
+
+          continue
+        }
+
+        intrinsicInflated.style[property] = value
+      }
+    }
+
+    console.log(intrinsic)
+
+    // if (intrinsic) {
+    //   const asd = new ActBindings(intrinsicInflated.style)
+
+    //   for (const property in intrinsic.props.style) {
+    //     const value = intrinsic.props.style[property]
+    //     if (value[Symbol.subscribe] != null) {
+    //       asd.set(intrinsic.props.style, property)
+
+    //       continue
+    //     }
+
+    //     intrinsicInflated.style[property] = value
+    //   }
+    // }
+
+    return intrinsicInflated
   }
 
   protected inflateJSXComponent(component: ProtonJSX.Component) {

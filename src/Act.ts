@@ -8,6 +8,14 @@ namespace Act {
 
     return () => subs.forEach(sub => sub())
   }
+
+  export function compute<A extends Act>(callback: () => void, act: A) {
+    return {
+      [Symbol.subscribe](next) {
+        return act[Symbol.subscribe](value => next(callback(value)))
+      }
+    }
+  }
 }
 
 export default Act

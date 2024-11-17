@@ -1,6 +1,14 @@
+// @ts-expect-error it's ok.
+Symbol.subscribe = Symbol.for("subscribe")
+
+import Act from "./Act"
 import ActBindings from "./ActBinding"
+import Events from "./Events"
 import { WebInflator } from "./Inflator"
 import Proton from "./Proton"
+
+
+
 
 
 const everySecondCallbacks = new Set<() => void>
@@ -35,6 +43,23 @@ function ComponentGod(this: Proton.Shell) {
 }
 
 
+function BlueCircle(this: Proton.Shell) {
+  const counter = new Events.State(0)
+  const left = Act.compute(value => (value / 8) + "px", counter)
+
+  Object.defineProperty(this, "counter", counter[Symbol.for("descriptor")]())
+
+  setInterval(() => this.counter++)
+
+  this.tree.set(
+    <div style={{ left, position: "absolute", padding: "2em", background: "skyblue", borderRadius: "50%" }}>
+      <span>{counter}</span>
+    </div>
+  )
+
+
+  return this
+}
 
 
 const jsxSample = (
@@ -43,6 +68,8 @@ const jsxSample = (
     {123}
     {new Promise(() => { })}
     <ComponentGod />
+
+    <BlueCircle />
   </div>
 )
 
@@ -67,7 +94,7 @@ Array(1e2).fill(0).forEach(() => jsxSampleInflated.appendChild(inflator.inflate(
 
 
 
-/* --- Act Binding --- */
+//#region Act Binding
 
 const element = document.createElement("div")
 element.style.position = "absolute"
@@ -93,3 +120,4 @@ const props = {
 const actBindings = new ActBindings(element.style)
 actBindings.set(props, "left")
 
+//#endregion Act Binding

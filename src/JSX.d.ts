@@ -1,9 +1,12 @@
+import Observable from "./Observable"
+
 export { }
 
 declare global {
   interface IntrinsicAttributes {
     on?: {}
     key?: unknown
+    style?: Record<string, string | CSSUnitValue | Observable>
   }
   interface ProtonSVGElement { }
 
