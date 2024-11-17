@@ -1,3 +1,4 @@
+import ActBindings from "./ActBinding"
 import { WebInflator } from "./Inflator"
 import Proton from "./Proton"
 
@@ -58,3 +59,32 @@ const componentInflated = inflator.inflate(<ComponentGod />)
 setTimeout(() => jsxSampleInflated.appendChild(componentInflated), 1000)
 
 Array(1e2).fill(0).forEach(() => jsxSampleInflated.appendChild(inflator.inflate(<ComponentGod />)))
+
+
+
+
+
+
+
+
+/* --- Act Binding --- */
+
+// @ts-expect-error it's ok.
+Symbol.subscribe = Symbol.for("subscribe")
+
+const element = document.createElement("div")
+document.body.appendChild(element)
+
+const props = {
+  test: {
+    i: 0,
+    [Symbol.subscribe](next: (value: string) => void) {
+      const interval = setInterval(() => next("meow " + this.i++), 1000)
+      return () => clearInterval(interval)
+    }
+  }
+}
+
+const actBindings = new ActBindings(element)
+actBindings.set(props, "test")
+
