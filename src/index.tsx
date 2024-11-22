@@ -8,7 +8,7 @@ import { WebInflator } from "./Inflator"
 import Proton from "./Proton"
 
 
-
+const inflator = new WebInflator
 
 
 const everySecondCallbacks = new Set<() => void>
@@ -38,28 +38,57 @@ function ComponentGod(this: Proton.Shell) {
       this.tree.set(<>Scheduled update: {i}</>)
     })
   }, 1000)
-
-  return this
 }
 
 
-function BlueCircle(this: Proton.Shell) {
-  const counter = new Events.State(0)
-  const left = Act.compute(value => (value / 8) + "px", counter)
+const counter = new Events.State(0)
+setTimeout(() => setInterval(() => counter.set(it => it + 1)), 1000)
 
-  Object.defineProperty(this, "counter", counter[Symbol.for("descriptor")]())
 
-  setInterval(() => this.counter++)
+async function Circle(this: Proton.Shell & { counter: number }, props: { offset?: string }) {
+  const left = Act.compute(counter => `calc(${(counter / 8)}px + ${props.offset})`, [counter])
+  alert(left.get())
+  // const left = Act.string`calc(${counter} / 8px + ${props.offset})`
 
-  this.tree.set(
-    <div style={{ left, position: "absolute", padding: "2em", background: "skyblue", borderRadius: "50%" }}>
-      <span>{counter}</span>
+  const tree = (
+    <div style={{ top: props.offset, left, position: "absolute", padding: "2em", background: "skyblue", borderRadius: "50%", display: "grid" }}>
+      Wow ?
+      <span> {counter}<span>2: {counter}</span></span>
+      <ComponentGod />
     </div>
   )
+  const treeInflated = inflator.inflate(tree) as HTMLElement
 
 
-  return this
+
+  const colorState = new Events.State(0)
+  const [color, setColor] = colorState as unknown as typeof colorState._Tuple
+
+  setInterval(() => setColor(f => f > 255 ? 0 : (f + 0.1)))
+
+  Act.on([color], () => treeInflated.style.backgroundColor = `hsl(${color()} 50% 50%)`)
+
+  // this.act.accessor("counter", counter)
+  // this.define("counter", counter)
+  // this.act.define({ counter })
+  // this.define({ counter })
+
+  // Object.defineProperty(this, "counter", counter[Symbol.for("descriptor")]())
+  // Act.define(this, { counter })
+
+  // setInterval(() => this.counter++)
+
+  this.tree.set(treeInflated)
 }
+
+
+// class ClassComponentShell extends Proton.Shell {
+//   constructor(inflator: Inflator) {
+//     super(inflator)
+
+//     this.tree.set(<div>ClassComponentShell</div>)
+//   }
+// }
 
 
 const jsxSample = (
@@ -69,13 +98,19 @@ const jsxSample = (
     {new Promise(() => { })}
     <ComponentGod />
 
-    <BlueCircle />
+    <Circle offset="0em" />
+    <Circle offset="5em" />
+    <Circle offset="10em" />
+    <Circle offset="15em" />
+    <Circle offset="20em" />
+    <Circle offset="25em" />
+    {/* <ClassComponentShell /> */}
   </div>
 )
 
 
 
-const inflator = new WebInflator
+
 const jsxSampleInflated = inflator.inflate(jsxSample)
 
 const rootElement = document.getElementById("root")!

@@ -1,3 +1,4 @@
+import Act from "./Act"
 import Observable from "./Observable"
 
 // @ts-expect-error it's ok.
@@ -78,38 +79,49 @@ namespace Events {
   export class Notifier extends Events.Messager<void> { }
   export class State<T> {
     private readonly callbacks = new Set<(value: T) => void>()
-    private value1: T
+    private value: T
 
-    constructor(initialValue: T) { this.value1 = initialValue }
+    constructor(initialValue: T) {
+      this.value = initialValue
+      this.boundGet[Symbol.subscribe] = this[Symbol.subscribe]
+    }
 
-    get(): T { return this.value1 }
-    set(value: T): void {
-      this.value1 = value
+    get(): T { return this.value }
+    set(newValue: T | ((current: T) => T)): void {
+      const value = newValue instanceof Function ? newValue(this.value) : newValue
+
+      this.value = value
       this.dispatch(value)
     }
+
+    private boundGet: ((() => T) & Observable<T>) = () => this.get()
+    private boundSet = (newValue: T | ((current: T) => T)) => this.set(newValue)
 
     private dispatch(value: T) {
       this.callbacks.forEach(callback => callback(value))
     }
 
-    [Symbol.reveal]() { return this.value1 }
-    [Symbol.for("descriptor")]() {
-      return { get: () => this.get(), set: v => this.set(v) }
+    [Symbol.reveal]() { return this.value }
+    [Act.descriptor](): PropertyDescriptor {
+      return { get: this.boundGet, set: this.boundSet }
     }
 
+    public readonly _Tuple!: readonly [typeof this.boundGet, typeof this.boundSet]
+
     *[Symbol.iterator]() {
-      yield () => this.get()
-      yield (value: T) => this.set(value)
+      yield this.boundGet
+      yield this.boundSet
     }
-    [Symbol.subscribe](next: (value: T) => void) {
+    [Symbol.subscribe] = (next: (value: T) => void) => {
       this.callbacks.add(next)
       return { unsubscribe: () => void this.callbacks.delete(next) }
     }
   }
 
-  export function batch(clause: () => void) { }
+  // export function batch(clause: () => void) { }
+  // export function unbatch(clause: () => void) { }
 }
 
 export default Events
 
-export function signal(): PropertyDecorator | ParameterDecorator { return (target: Object, propertyKey: string | symbol) => { } }
+// export function signal(): PropertyDecorator | ParameterDecorator { return (target: Object, propertyKey: string | symbol) => { } }
