@@ -18,6 +18,7 @@
     "types": [
       "vite/client"
     ],
+    "verbatimModuleSyntax": false,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,

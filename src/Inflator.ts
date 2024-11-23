@@ -116,6 +116,9 @@ export class WebInflator extends Inflator {
       }
     }
 
+    if (intrinsic.props.className)
+      intrinsicInflated.className = intrinsic.props.className
+
     return intrinsicInflated
   }
 

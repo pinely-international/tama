@@ -6,7 +6,7 @@ import ProtonTreeAPI from "./ProtonTreeAPI"
 declare global {
   namespace JSX {
     interface ElementTypeConstructor {
-      (this: never, props: {}): void | Promise<void>
+      (this: never, props: never): void | Promise<void>
     }
   }
 }

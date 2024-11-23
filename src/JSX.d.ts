@@ -7,6 +7,7 @@ declare global {
     on?: {}
     key?: unknown
     style?: Record<string, string | CSSUnitValue | Observable>
+    className?: string
   }
   interface ProtonSVGElement { }
 
