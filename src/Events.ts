@@ -7,15 +7,12 @@ Symbol.subscribe = Symbol.for("subscribe")
 
 // type EventActionFrom<EventMap extends Record<keyof never, unknown>> = { [Type in keyof EventMap]: { type: EventMap, payload: EventMap[Type] } }
 
-class Events<EventMap extends Record<EventName, unknown>, EventName extends keyof EventMap = keyof EventMap> {
-  private static readonly final = new FinalizationRegistry<WeakRef<() => void>>(unsubscribe => {
-    unsubscribe.deref()?.()
-    console.log("Events Map subscription was disposed.")
-  })
+const finalization = new FinalizationRegistry<() => void>(unsubscribe => unsubscribe())
 
+class Events<EventMap extends Record<EventName, unknown>, EventName extends keyof EventMap = keyof EventMap> {
   constructor() {
     const temp = { callbacks: this.callbacks }
-    Events.final.register(this, new WeakRef(() => temp.callbacks = {}))
+    finalization.register(this, () => temp.callbacks = {})
   }
   // public static Map = class Map
 
@@ -86,11 +83,6 @@ namespace Events {
    */
   export class Notifier extends Events.Messager<void> { }
   export class State<T> {
-    private static readonly final = new FinalizationRegistry<WeakRef<() => void>>(unsubscribe => {
-      unsubscribe.deref()?.()
-      console.log("State subscription was disposed.")
-    })
-
     static of<T>(items: (T | State<T>)[]): State<T>[] {
       return items.map(State.from)
     }
@@ -155,18 +147,13 @@ namespace Events {
       this.callbacks.add(next)
 
       const unsubscribe = () => void this.callbacks.delete(next)
-      State.final.register(this, new WeakRef(unsubscribe))
+      finalization.register(this, unsubscribe)
 
       return { unsubscribe }
     }
   }
 
   export class Index<T> {
-    private static readonly final = new FinalizationRegistry<WeakRef<() => void>>(unsubscribe => {
-      unsubscribe.deref()?.()
-      console.log("Index subscription was disposed.")
-    })
-
     private array: T[]
     private readonly events = new Events
 
@@ -181,8 +168,6 @@ namespace Events {
     }
 
     nullAt(index: number): void {
-      console.log(index)
-
       // @ts-expect-error Null is ok.
       this.array[index] = Null.OBJECT
       this.events.dispatch("null", index)
@@ -196,12 +181,10 @@ namespace Events {
     }
 
     map<U>(predicate: (value: T, index: number, array: T[]) => U) {
-      // this.array = this.nonNullableArray()
-
       const map = (items: never[]) => items.map((item, i) => predicate(item, i + index.array.length, items))
       const map2 = (items: never[]) => items.map((item, i) => predicate(item, i, items))
 
-      const index = new Index(this.array.map(predicate))
+      const index = new Index(this.array.map((item, i, arr) => item !== Null.OBJECT ? predicate(item, i, arr) : item))
       this.on("push").subscribe?.(items => index.push(...map(items)))
       this.on("replace").subscribe?.(items => index.replace(map2(items)))
       this.on("null").subscribe?.(i => index.nullAt(i))
@@ -224,12 +207,16 @@ namespace Events {
       this.events.dispatch("replace", items)
     }
 
+    rebase() {
+      this.replace(this.nonNullableArray())
+    }
+
     on(event: string) {
       const asd = this.events.observe(event)
       return {
         subscribe: next => {
           const sub = asd.subscribe!(next)
-          Index.final.register(this.array, new WeakRef(sub.unsubscribe))
+          finalization.register(this.array, sub.unsubscribe)
           return sub
         }
       }
@@ -237,14 +224,23 @@ namespace Events {
   }
 
   export class StateIndex<T> extends Index<State<T>> {
-    constructor(init: Iterable<T>) { super(State.of([...init])) }
+    constructor(init: Iterable<T> | Observable<Iterable<T>> | State<Iterable<T>>) {
+      if (init instanceof State) {
+        super(State.of([...init.get()]))
+
+        init[Symbol.subscribe](items => this.replace(items))
+      } else if (Symbol.iterator in init === false) {
+        super(Null.ARRAY)
+
+        init[Symbol.subscribe](items => this.replace(items))
+      } else {
+        super(State.of([...init]))
+      }
+    }
 
     override push(item: T | State<T>) { return super.push(State.from(item)) }
     override replace(items: (T | State<T>)[]) { return super.replace(State.of(items)) }
   }
-
-  // export function batch(clause: () => void) { }
-  // export function unbatch(clause: () => void) { }
 }
 
 export default Events

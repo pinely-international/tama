@@ -82,28 +82,24 @@ export class WebInflator extends Inflator {
 
   protected inflateIndexed(index: Events.Index<unknown>) {
     const comment = document.createComment(index.constructor.name)
-    const inflateItem = (item: unknown) => item !== Null.OBJECT ? this.inflate(item) : []
+    const inflateItem = (item: unknown) => item !== Null.OBJECT ? this.inflate(item) : item
 
-    let inflatedItems = index.array.flatMap(inflateItem)
+    let inflatedItems = index.array.map(inflateItem)
 
     requestAnimationFrame(() => {
       // Probably, something went wrong and the Element was not added or removed finally.
       if (comment.parentElement == null) return
 
-      comment.before(...inflatedItems)
+      comment.before(...inflatedItems.filter(item => item !== Null.OBJECT))
     })
 
     index.on("push").subscribe?.(newItems => {
-      const newInflatedItems = newItems.flatMap(inflateItem)
+      const newInflatedItems = newItems.map(inflateItem)
 
       inflatedItems.push(...newInflatedItems)
       comment.before(...newInflatedItems)
     })
     index.on("null").subscribe?.(i => {
-      console.log("null", i, inflatedItems)
-
-      // if (inflatedItems[i] === Null.OBJECT) return
-
       inflatedItems[i].remove()
       inflatedItems[i] = Null.OBJECT
     })
@@ -111,7 +107,7 @@ export class WebInflator extends Inflator {
       inflatedItems.forEach(item => item !== Null.OBJECT && item.remove())
       inflatedItems = []
 
-      const newInflatedItems = newItems.flatMap(inflateItem)
+      const newInflatedItems = newItems.map(inflateItem)
 
       inflatedItems.push(...newInflatedItems)
       comment.before(...newInflatedItems)
