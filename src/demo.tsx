@@ -3,7 +3,6 @@ Symbol.subscribe = Symbol.for("subscribe")
 
 import "./demo.scss"
 
-import Act from "./Act"
 import Events from "./Events"
 import { WebInflator } from "./Inflator"
 import Proton from "./Proton"
@@ -14,13 +13,17 @@ const inflator = new WebInflator
 
 
 function Row(this: Proton.Shell, props: { i: number, count: Events.State<number> }) {
-  const top = Act.compute(count => `${Math.sin(count / 10) * 10}px`, [props.count])
-  const left = Act.compute(count => `${Math.cos(count / 10) * 10}px`, [props.count])
-  const background = Act.compute(count => `rgb(0,0,${count % 255})`, [props.count])
+  // const top = Act.compute(count => `${Math.sin(count / 10) * 10}px`, [props.count])
+  // const left = Act.compute(count => `${Math.cos(count / 10) * 10}px`, [props.count])
+  // const background = Act.compute(count => `rgb(0,0,${count % 255})`, [props.count])
 
   // const top = (`${Math.sin(+props.count / 10) * 10}px`)
   // const left = (`${Math.cos(+props.count / 10) * 10}px`)
   // const background = (`rgb(0,0,${+props.count % 255})`)
+
+  const top = props.count.map(count => `${Math.sin(count / 10) * 10}px`)
+  const left = props.count.map(count => `${Math.cos(count / 10) * 10}px`)
+  const background = props.count.map(count => `rgb(0,0,${count % 255})`)
 
   this.tree.set(
     <div className="box-view">

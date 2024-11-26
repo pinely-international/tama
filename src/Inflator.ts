@@ -1,6 +1,7 @@
 import { Primitive } from "type-fest"
 
 import ActBindings from "./ActBinding"
+import Events from "./Events"
 import Null from "./Null"
 import Proton from "./Proton"
 import ProtonJSX from "./ProtonJSX"
@@ -46,6 +47,7 @@ export class WebInflator extends Inflator {
     if (subject instanceof Node) return subject as never
     if (subject instanceof ProtonJSX.Node) return this.inflateJSXDeeply(subject) as never
 
+    if (subject instanceof Events.Index) return this.inflateIndexed(subject) as never
     if (subject instanceof Object && (subject.get != null || subject[Symbol.subscribe] != null)) return this.inflateObservable(subject) as never
 
     return super.inflate(subject) as never
@@ -76,6 +78,46 @@ export class WebInflator extends Inflator {
     subscribe?.(value => textNode.textContent = get ? get() : value)
 
     return textNode
+  }
+
+  protected inflateIndexed(index: Events.Index<unknown>) {
+    const comment = document.createComment(index.constructor.name)
+    const inflateItem = (item: unknown) => item !== Null.OBJECT ? this.inflate(item) : []
+
+    let inflatedItems = index.array.flatMap(inflateItem)
+
+    requestAnimationFrame(() => {
+      // Probably, something went wrong and the Element was not added or removed finally.
+      if (comment.parentElement == null) return
+
+      comment.before(...inflatedItems)
+    })
+
+    index.on("push").subscribe?.(newItems => {
+      const newInflatedItems = newItems.flatMap(inflateItem)
+
+      inflatedItems.push(...newInflatedItems)
+      comment.before(...newInflatedItems)
+    })
+    index.on("null").subscribe?.(i => {
+      console.log("null", i, inflatedItems)
+
+      // if (inflatedItems[i] === Null.OBJECT) return
+
+      inflatedItems[i].remove()
+      inflatedItems[i] = Null.OBJECT
+    })
+    index.on("replace").subscribe?.(newItems => {
+      inflatedItems.forEach(item => item !== Null.OBJECT && item.remove())
+      inflatedItems = []
+
+      const newInflatedItems = newItems.flatMap(inflateItem)
+
+      inflatedItems.push(...newInflatedItems)
+      comment.before(...newInflatedItems)
+    })
+
+    return comment
   }
 
   private inflateJSXDeeply(value: ProtonJSX.Node | Primitive): HTMLElement | DocumentFragment | Node {
@@ -119,12 +161,97 @@ export class WebInflator extends Inflator {
     if (intrinsic.props.className)
       intrinsicInflated.className = intrinsic.props.className
 
+
+    if (intrinsic.type === "input") {
+      if (intrinsic.props.value instanceof Object) {
+        const get = intrinsic.props.value.get instanceof Function ? () => intrinsic.props.value.get() : null
+        const set = intrinsic.props.value.set instanceof Function ? v => intrinsic.props.value.set(v) : null
+        const subscribe = intrinsic.props.value[Symbol.subscribe] instanceof Function ? next => intrinsic.props.value[Symbol.subscribe](next) : null
+
+
+        if (get) HTMLInputNativeSet.call(intrinsicInflated, get())
+        if (set) {
+          Object.defineProperty(intrinsicInflated, "value", {
+            get: () => HTMLInputNativeGet.call(intrinsicInflated),
+            set: value => {
+              HTMLInputNativeSet.call(intrinsicInflated, value)
+              set(value)
+            }
+          })
+
+          intrinsicInflated.addEventListener("change", event => set(event.currentTarget.value))
+        }
+        if (subscribe) subscribe(value => HTMLInputNativeSet.call(intrinsicInflated, get ? get() : value))
+      }
+    }
+
+    if (intrinsic.type === "button") {
+      if (intrinsic.props.type != null) intrinsicInflated.type = intrinsic.props.type
+      if (intrinsic.props.on instanceof Object) {
+        for (const key in intrinsic.props.on) {
+          intrinsicInflated.addEventListener(key, intrinsic.props.on[key])
+        }
+      }
+    }
+
     return intrinsicInflated
   }
 
   protected inflateJSXComponent(component: ProtonJSX.Component) {
-    const shell = this.inflateComponent(component.type as never, component.props ?? Null.OBJECT)
-    return shell.asd()
+    const shell = this.inflateComponent(component.type as never, component.props)
+    const view = shell.getView()
+
+    let anchor: Node
+    let anchorChildren: Node[] = Null.ARRAY
+
+    if (view instanceof DocumentFragment) {
+      anchor = view
+      anchorChildren = [...view.childNodes]
+    } else if (view instanceof Node) {
+      anchor = view
+    } else {
+      const comment = document.createComment(this.constructor.name)
+      anchor = comment
+    }
+
+    let lastAnimationFrame = -1
+
+    // shell.on("detach").subscribe?.(() => )
+    shell.onViewChange(view => {
+      if (view instanceof Node === false) return
+
+      // Assume that the anchor node was already connected.
+      const schedule = () => {
+        if (anchor instanceof Node === false) return
+
+        const anchorFirstChild = anchorChildren.shift()
+        if (anchorFirstChild == null) {
+          anchor.replaceWith(view)
+          anchor = view
+
+          return
+        }
+
+        const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
+        if (!anchorFirstChildParent) return
+
+        anchorChildren.forEach(rest => anchorFirstChildParent.removeChild(rest as never))
+
+        anchor = view
+        anchorChildren = [...view.childNodes]
+
+        anchorFirstChildParent.replaceChild(view, anchorFirstChild)
+      }
+
+      cancelAnimationFrame(lastAnimationFrame)
+      lastAnimationFrame = requestAnimationFrame(schedule)
+    })
+
+    return anchor as never
   }
 }
 
+
+const HTMLInputNativeValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!
+const HTMLInputNativeSet = HTMLInputNativeValue.set!
+const HTMLInputNativeGet = HTMLInputNativeValue.get!

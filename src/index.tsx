@@ -31,13 +31,17 @@ function ComponentGod(this: Proton.Shell) {
   let i = 0
 
   setTimeout(() => {
-    this.tree.set(<>Scheduled update</>)
+    this.tree.set(<>Scheduled update </>)
 
     everySecond(() => {
       i += Date.now()
-      this.tree.set(<>Scheduled update: {i}</>)
+      this.tree.set(<>Scheduled update: {i} <DisposableState /></>)
     })
   }, 1000)
+}
+
+function DisposableState() {
+  new Events.State("")[Symbol.subscribe](() => { })
 }
 
 
@@ -47,7 +51,7 @@ setTimeout(() => setInterval(() => counter.set(it => it + 1)), 1000)
 
 async function Circle(this: Proton.Shell & { counter: number }, props: { offset?: string }) {
   const left = Act.compute(counter => `calc(${(counter / 8)}px + ${props.offset})`, [counter])
-  alert(left.get())
+  // alert(left.get())
   // const left = Act.string`calc(${counter} / 8px + ${props.offset})`
 
   const tree = (

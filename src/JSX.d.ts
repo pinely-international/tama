@@ -14,7 +14,7 @@ declare global {
   namespace JSX {
     interface Element {
       type: never
-      props: never
+      props: any
       children: []
     }
 
@@ -22,6 +22,16 @@ declare global {
     interface ElementTypeConstructor { }
 
     type ElementType = string | ElementTypeConstructor
+
+
+
+    interface InputElementAttributes extends IntrinsicAttributes {
+      value: string | Observable<string> | (Observable<string> & { set(value: string): void })
+    }
+
+    interface ButtonElementAttributes extends IntrinsicAttributes {
+      type?: "button" | "reset" | "submit"
+    }
 
     interface IntrinsicElements {
       // HTML
@@ -40,7 +50,7 @@ declare global {
       blockquote: IntrinsicAttributes
       body: IntrinsicAttributes
       br: IntrinsicAttributes
-      button: IntrinsicAttributes
+      button: ButtonElementAttributes
       canvas: IntrinsicAttributes
       caption: IntrinsicAttributes
       center: IntrinsicAttributes
@@ -79,7 +89,7 @@ declare global {
       i: IntrinsicAttributes
       iframe: IntrinsicAttributes
       img: IntrinsicAttributes
-      input: IntrinsicAttributes
+      input: InputElementAttributes
       ins: IntrinsicAttributes
       kbd: IntrinsicAttributes
       keygen: IntrinsicAttributes

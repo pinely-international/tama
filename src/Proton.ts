@@ -1,12 +1,12 @@
+import Events from "./Events"
 import { Inflator } from "./Inflator"
-import Null from "./Null"
 import ProtonJSX from "./ProtonJSX"
 import ProtonTreeAPI from "./ProtonTreeAPI"
 
 declare global {
   namespace JSX {
     interface ElementTypeConstructor {
-      (this: never, props: never): void | Promise<void>
+      (this: never, props: any): void | Promise<void>
     }
   }
 }
@@ -19,17 +19,20 @@ namespace Proton {
 
   export class Shell {
     public readonly tree: ProtonTreeAPI
-    public view: unknown = null
+    private readonly events = new Events
+
+    private view: unknown = null
     private viewCallbacks = new Set<() => void>()
 
-    constructor(private readonly inflator: Inflator) {
+    constructor(readonly inflator: Inflator) {
       this.tree = {
         set: subject => {
           const object = this.inflator.inflate(subject)
 
           this.view = object
           this.viewCallbacks.forEach(callback => callback())
-        }
+        },
+        detach: () => this.events.dispatch("detach")
       }
     }
 
@@ -40,54 +43,8 @@ namespace Proton {
       return () => void this.viewCallbacks.delete(viewCallback)
     }
 
-    asd() {
-      let anchor: Node
-      let anchorChildren: Node[] = Null.ARRAY
-
-      if (this.view instanceof DocumentFragment) {
-        anchor = this.view
-        anchorChildren = [...this.view.childNodes]
-      } else if (this.view instanceof Node) {
-        anchor = this.view
-      } else {
-        const comment = document.createComment(this.constructor.name)
-        anchor = comment
-      }
-
-      let lastAnimationFrame = -1
-
-      this.onViewChange(view => {
-        if (view instanceof Node === false) return
-
-        // Assume that the anchor node was already connected.
-        const schedule = () => {
-          if (anchor instanceof Node === false) return
-
-          const anchorFirstChild = anchorChildren.shift()
-          if (anchorFirstChild == null) {
-            anchor.replaceWith(view)
-            anchor = view
-
-            return
-          }
-
-          const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
-          if (!anchorFirstChildParent) return
-
-          anchorChildren.forEach(rest => anchorFirstChildParent.removeChild(rest as never))
-
-          anchor = view
-          anchorChildren = [...view.childNodes]
-
-          anchorFirstChildParent.replaceChild(view, anchorFirstChild)
-        }
-
-        cancelAnimationFrame(lastAnimationFrame)
-        lastAnimationFrame = requestAnimationFrame(schedule)
-      })
-
-      return anchor as never
-    }
+    getView() { return this.view }
+    on(event: string) { return this.events.observe(event) }
   }
 }
 

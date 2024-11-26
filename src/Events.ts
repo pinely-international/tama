@@ -1,4 +1,5 @@
 import Act from "./Act"
+import Null from "./Null"
 import Observable from "./Observable"
 
 // @ts-expect-error it's ok.
@@ -7,8 +8,15 @@ Symbol.subscribe = Symbol.for("subscribe")
 // type EventActionFrom<EventMap extends Record<keyof never, unknown>> = { [Type in keyof EventMap]: { type: EventMap, payload: EventMap[Type] } }
 
 class Events<EventMap extends Record<EventName, unknown>, EventName extends keyof EventMap = keyof EventMap> {
+  private static readonly final = new FinalizationRegistry<WeakRef<() => void>>(unsubscribe => {
+    unsubscribe.deref()?.()
+    console.log("Events Map subscription was disposed.")
+  })
 
-
+  constructor() {
+    const temp = { callbacks: this.callbacks }
+    Events.final.register(this, new WeakRef(() => temp.callbacks = {}))
+  }
   // public static Map = class Map
 
 
@@ -78,6 +86,21 @@ namespace Events {
    */
   export class Notifier extends Events.Messager<void> { }
   export class State<T> {
+    private static readonly final = new FinalizationRegistry<WeakRef<() => void>>(unsubscribe => {
+      unsubscribe.deref()?.()
+      console.log("State subscription was disposed.")
+    })
+
+    static of<T>(items: (T | State<T>)[]): State<T>[] {
+      return items.map(State.from)
+    }
+
+    static from<T>(item: T | State<T>): State<T> {
+      if (item instanceof State) return item
+
+      return new State(item)
+    }
+
     private readonly callbacks = new Set<(value: T) => void>()
     private value: T
 
@@ -92,6 +115,22 @@ namespace Events {
 
       this.value = value
       this.dispatch(value)
+    }
+
+    map<U>(predicate: (value: T) => U): State<U> {
+      const newState = new State(predicate(this.value))
+
+      this[Symbol.subscribe](value => newState.set(predicate(value)))
+
+      return newState
+    }
+
+    readonly(): StateReadonly<T> {
+      return Act.compute(value => value, [this])
+    }
+
+    writeonly(): StateWriteonly<T> {
+      return { set: v => this.set(v) }
     }
 
     private boundGet: ((() => T) & Observable<T>) = () => this.get()
@@ -114,8 +153,94 @@ namespace Events {
     }
     [Symbol.subscribe] = (next: (value: T) => void) => {
       this.callbacks.add(next)
-      return { unsubscribe: () => void this.callbacks.delete(next) }
+
+      const unsubscribe = () => void this.callbacks.delete(next)
+      State.final.register(this, new WeakRef(unsubscribe))
+
+      return { unsubscribe }
     }
+  }
+
+  export class Index<T> {
+    private static readonly final = new FinalizationRegistry<WeakRef<() => void>>(unsubscribe => {
+      unsubscribe.deref()?.()
+      console.log("Index subscription was disposed.")
+    })
+
+    private array: T[]
+    private readonly events = new Events
+
+    constructor(init: Iterable<T>) { this.array = [...init] }
+
+    get length() { return this.array.length }
+
+    private nonNullableArray() { return this.array.filter(item => item !== Null.OBJECT) }
+
+    at(index: number): T {
+      return this.array[index]
+    }
+
+    nullAt(index: number): void {
+      console.log(index)
+
+      // @ts-expect-error Null is ok.
+      this.array[index] = Null.OBJECT
+      this.events.dispatch("null", index)
+    }
+
+    push(...items: T[]): number {
+      this.array.push(...items)
+      this.events.dispatch("push", items)
+
+      return this.array.length
+    }
+
+    map<U>(predicate: (value: T, index: number, array: T[]) => U) {
+      // this.array = this.nonNullableArray()
+
+      const map = (items: never[]) => items.map((item, i) => predicate(item, i + index.array.length, items))
+      const map2 = (items: never[]) => items.map((item, i) => predicate(item, i, items))
+
+      const index = new Index(this.array.map(predicate))
+      this.on("push").subscribe?.(items => index.push(...map(items)))
+      this.on("replace").subscribe?.(items => index.replace(map2(items)))
+      this.on("null").subscribe?.(i => index.nullAt(i))
+      return index
+    }
+
+    indexOf(item: T): number { return this.array.indexOf(item) }
+    orderOf(item: T): Observable<number> {
+      const next = () => this.nonNullableArray().indexOf(item)
+
+      const indexState = new State(next())
+      this.on("null").subscribe?.(() => indexState.set(next))
+      this.on("replace").subscribe?.(() => indexState.set(next))
+      return indexState.readonly()
+    }
+
+    replace(items: T[]) {
+      this.array.length = 0
+      this.array.push(...items)
+      this.events.dispatch("replace", items)
+    }
+
+    on(event: string) {
+      const asd = this.events.observe(event)
+      return {
+        subscribe: next => {
+          const sub = asd.subscribe!(next)
+          Index.final.register(this.array, new WeakRef(sub.unsubscribe))
+          return sub
+        }
+      }
+    }
+  }
+
+  export class StateIndex<T> extends Index<State<T>> {
+    constructor(init: Iterable<T>) { super(State.of([...init])) }
+
+    override push(item: T | State<T>) { return super.push(State.from(item)) }
+    override replace(items: (T | State<T>)[]) { return super.replace(State.of(items)) }
   }
 
   // export function batch(clause: () => void) { }
@@ -125,3 +250,7 @@ namespace Events {
 export default Events
 
 // export function signal(): PropertyDecorator | ParameterDecorator { return (target: Object, propertyKey: string | symbol) => { } }
+
+
+type StateReadonly<T> = Observable<T> & { get(): T }
+type StateWriteonly<T> = { set(value: T | ((value: T) => T)): void }
