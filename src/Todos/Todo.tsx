@@ -13,6 +13,7 @@ function Todo(this: Proton.Shell, props = new TodoProps) {
     <div className="todo">
       <button type="button" on={{ click: props.onRemove }}>x</button>
       <input value={props.content} />
+      <textarea />
       <button type="button" on={{ click: () => props.content.set("") }}>-</button>
     </div>
   )

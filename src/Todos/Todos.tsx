@@ -13,14 +13,15 @@ function Todos(this: Proton.Shell) {
   const todosIndex = new Events.StateIndex(todos)
 
 
-  const onAdd = () => todosIndex.push((todosIndex.length + 1).toString())
-  const onReflow = () => this.tree.set(reflowed)
+  const onAdd = () => document.startViewTransition(() => todosIndex.push((todosIndex.length + 1).toString()))
+  const onReflow = () => this.tree.transit(newView)
   const onReplace = () => todosIndex.replace(["1", "2", "3"])
   const onStateSet = () => todos.set(["A new", "data", "has come"])
   const onRebase = () => todosIndex.rebase()
+  const onRestyle = () => document.startViewTransition(() => style.set("display: flex; gap: 0.5em"))
 
 
-  const reflowed = (
+  const newView = (
     <div className="todos">
       <ControlButtons />
       {todosIndex.map((todo, index) => (
@@ -53,7 +54,7 @@ function Todos(this: Proton.Shell) {
   this.tree.set(
     <div className="todos">
       <ControlButtons />
-      {todosIndex.map((todo, index) => <Todo content={todo} onRemove={() => todosIndex.nullAt(index)} />)}
+      {todosIndex.map((todo, index) => <Todo content={todo} onRemove={() => document.startViewTransition(() => todosIndex.nullAt(index))} />)}
     </div>
   )
 }
