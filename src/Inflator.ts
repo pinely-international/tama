@@ -116,6 +116,36 @@ export class WebInflator extends Inflator {
     return comment
   }
 
+  protected bindStyle(style: unknown, element: HTMLElement) {
+    if (typeof style === "string") {
+      element.style.cssText = style
+    }
+
+    if (typeof style !== "object") return
+
+    if (Symbol.subscribe in style) {
+      const subscribe = style[Symbol.subscribe]
+
+      element.style.cssText = style.get?.() ?? ""
+      subscribe(value => element.style.cssText = style.get?.() ?? value)
+
+      return
+    }
+
+    const reactions = new ActBindings(element.style)
+
+    for (const property in style) {
+      const value = style[property]
+      if (value[Symbol.subscribe] != null) {
+        reactions.set(style, property)
+
+        continue
+      }
+
+      element.style[property] = value
+    }
+  }
+
   private inflateJSXDeeply(value: ProtonJSX.Node | Primitive): HTMLElement | DocumentFragment | Node {
     const object = this.inflateJSX(value)
     if (value instanceof ProtonJSX.Node === false) return object as never
@@ -139,31 +169,7 @@ export class WebInflator extends Inflator {
 
     if (intrinsic.props == null) return intrinsicInflated
 
-    if ("style" in intrinsic.props) {
-      if (typeof intrinsic.props.style === "string") {
-        intrinsicInflated.style.cssText = intrinsic.props.style
-      }
-
-      if (typeof intrinsic.props.style === "object" && Symbol.subscribe in intrinsic.props.style) {
-        const subscribe = intrinsic.props.style[Symbol.subscribe]
-
-        intrinsicInflated.style.cssText = intrinsic.props.style.get?.() ?? ""
-        subscribe(value => intrinsicInflated.style.cssText = intrinsic.props.style.get?.() ?? value)
-      } else if (typeof intrinsic.props.style === "object") {
-        const reactions = new ActBindings(intrinsicInflated.style)
-
-        for (const property in intrinsic.props.style) {
-          const value = intrinsic.props.style[property]
-          if (value[Symbol.subscribe] != null) {
-            reactions.set(intrinsic.props.style, property)
-
-            continue
-          }
-
-          intrinsicInflated.style[property] = value
-        }
-      }
-    }
+    if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, intrinsicInflated)
 
     if (intrinsic.props.className)
       intrinsicInflated.className = intrinsic.props.className
