@@ -8,7 +8,9 @@ class TodoProps {
   onRemove?(): void
 }
 
-function Todo(this: Proton.Shell, props = new TodoProps) {
+async function Todo(this: Proton.Shell, props = new TodoProps) {
+  await new Promise(resolve => setTimeout(resolve, Math.random() * 2000))
+
   this.tree.set(
     <div className="todo">
       <button type="button" on={{ click: props.onRemove }}>x</button>
