@@ -7,6 +7,8 @@ import Todo from "./Todo"
 
 
 function Todos(this: Proton.Shell) {
+  const style = new Events.State("display: grid; gap: 0.5em")
+
   const todos = new Events.State(["Wake Up", "Shower", "Eat", "Sleep"])
   const todosIndex = new Events.StateIndex(todos)
 
@@ -23,7 +25,7 @@ function Todos(this: Proton.Shell) {
       <ControlButtons />
       {todosIndex.map((todo, index) => (
         <div style={{ display: "flex", gap: "0.5em" }}>
-          <div style={{ display: "grid", gap: "0.5em" }}>
+          <div style={style}>
             <span>Static index: {index}</span>
             <span>Static index: {todosIndex.indexOf(todo)}:</span>
             <span>Dynamic order: {todosIndex.orderOf(todo)}:</span>
@@ -43,6 +45,7 @@ function Todos(this: Proton.Shell) {
         <button type="button" on={{ click: onReplace }}>Replace</button>
         <button type="button" on={{ click: onStateSet }}>Set new Todos State</button>
         <button type="button" on={{ click: onRebase }}>Rebase</button>
+        <button type="button" on={{ click: onRestyle }}>Restyle</button>
       </div>
     )
   }

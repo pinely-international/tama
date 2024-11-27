@@ -32,7 +32,8 @@ namespace Proton {
           this.view = object
           this.viewCallbacks.forEach(callback => callback())
         },
-        detach: () => this.events.dispatch("detach")
+        detach: () => this.events.dispatch("detach"),
+        transit: subject => document.startViewTransition(() => this.tree.set(subject))
       }
     }
 

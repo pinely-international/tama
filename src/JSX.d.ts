@@ -6,7 +6,7 @@ declare global {
   interface IntrinsicAttributes {
     on?: {}
     key?: unknown
-    style?: Record<string, string | CSSUnitValue | Observable>
+    style?: Record<string, string | CSSUnitValue | Observable> | string | Observable<string>
     className?: string
   }
   interface ProtonSVGElement { }
@@ -14,7 +14,7 @@ declare global {
   namespace JSX {
     interface Element {
       type: never
-      props: any
+      props: never
       children: []
     }
 

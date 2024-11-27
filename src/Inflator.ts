@@ -140,17 +140,28 @@ export class WebInflator extends Inflator {
     if (intrinsic.props == null) return intrinsicInflated
 
     if ("style" in intrinsic.props) {
-      const reactions = new ActBindings(intrinsicInflated.style)
+      if (typeof intrinsic.props.style === "string") {
+        intrinsicInflated.style.cssText = intrinsic.props.style
+      }
 
-      for (const property in intrinsic.props.style) {
-        const value = intrinsic.props.style[property]
-        if (value[Symbol.subscribe] != null) {
-          reactions.set(intrinsic.props.style, property)
+      if (typeof intrinsic.props.style === "object" && Symbol.subscribe in intrinsic.props.style) {
+        const subscribe = intrinsic.props.style[Symbol.subscribe]
 
-          continue
+        intrinsicInflated.style.cssText = intrinsic.props.style.get?.() ?? ""
+        subscribe(value => intrinsicInflated.style.cssText = intrinsic.props.style.get?.() ?? value)
+      } else if (typeof intrinsic.props.style === "object") {
+        const reactions = new ActBindings(intrinsicInflated.style)
+
+        for (const property in intrinsic.props.style) {
+          const value = intrinsic.props.style[property]
+          if (value[Symbol.subscribe] != null) {
+            reactions.set(intrinsic.props.style, property)
+
+            continue
+          }
+
+          intrinsicInflated.style[property] = value
         }
-
-        intrinsicInflated.style[property] = value
       }
     }
 
