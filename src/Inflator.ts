@@ -12,6 +12,11 @@ export interface InflationResult {
 }
 
 
+interface InflatorComponent {
+
+}
+
+
 export abstract class Inflator {
   public inflate(subject: unknown): unknown {
     if (subject == null) return subject
@@ -37,10 +42,22 @@ export abstract class Inflator {
   protected inflateComponent(constructor: <T extends Proton.Shell>(this: T, props: {}) => T, props: {}) {
     const shell = new Proton.Shell(this, this.componentParent)
 
-    constructor.call(shell, props)
+    const asd = async () => {
+      try {
+        await constructor.call(shell, props)
+      } catch (thrown) {
+        if (this.catchCallback != null) return void this.catchCallback(thrown)
+
+        throw thrown
+      }
+    }
+
+    asd()
 
     return shell
   }
+
+  createComponent(): InflatorComponent { }
 }
 
 export class WebInflator extends Inflator {
@@ -206,12 +223,18 @@ export class WebInflator extends Inflator {
       }
     }
 
-    if (intrinsic.type === "button") {
-      if (intrinsic.props.type != null) intrinsicInflated.type = intrinsic.props.type
-      if (intrinsic.props.on instanceof Object) {
-        for (const key in intrinsic.props.on) {
-          intrinsicInflated.addEventListener(key, intrinsic.props.on[key])
-        }
+    if (intrinsic.props.type != null) intrinsicInflated.type = intrinsic.props.type
+    if (intrinsic.props.on instanceof Object) {
+      for (const key in intrinsic.props.on) {
+        intrinsicInflated.addEventListener(key, event => {
+          try {
+            intrinsic.props.on[key].call(event.currentTarget, event)
+          } catch (thrown) {
+            if (this.catchCallback != null) return void this.catchCallback(thrown)
+
+            throw thrown
+          }
+        })
       }
     }
 

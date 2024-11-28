@@ -34,14 +34,28 @@ namespace Proton {
       this.inflator = cloneInstance(inflator)
       this.inflator.componentParent = this
 
+      // this.inflator.createComponent()
+
       this.context = new TreeContextAPI(parent?.context)
+
+      let catchCb: ((thrown: unknown) => void) | null = null
 
       this.view = {
         set: subject => {
-          const object = this.inflator.inflate(subject)
+          try {
+            const object = this.inflator.inflate(subject)
 
-          this.viewElement = object
-          this.viewCallbacks.forEach(callback => callback())
+            this.viewElement = object
+            this.viewCallbacks.forEach(callback => callback())
+          } catch (thrown) {
+            if (catchCb != null) return void catchCb(thrown)
+
+            throw thrown
+          }
+        },
+        catch: (catchCallback: (thrown: unknown) => void) => {
+          catchCb = catchCallback
+          this.inflator.catchCallback = catchCallback
         },
         detach: () => this.events.dispatch("detach"),
         transit: subject => document.startViewTransition(() => this.view.set(subject)),

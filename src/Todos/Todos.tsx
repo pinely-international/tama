@@ -7,10 +7,22 @@ import Todo from "./Todo"
 import TodoContext from "./Todo.context"
 
 
-function Todos(this: Proton.Shell) {
+async function Todos(this: Proton.Shell) {
+  this.view.set(<div>Loading...</div>)
+  await new Promise(resolve => setTimeout(resolve, 1000))
+
+
   const todoContext = this.context.provide(new TodoContext("Test"))
   setInterval(() => todoContext.text.set(Date.now().toString()), 1000)
 
+
+
+  this.view.catch(error => this.view.set(
+    <div>
+      <span>Error: {error.message}</span>
+      <button type="button" on={{ click: () => this.view.set(defaultView) }}>Restore</button>
+    </div>
+  ))
 
 
   const style = new Events.State("display: grid; gap: 0.5em")
@@ -25,6 +37,7 @@ function Todos(this: Proton.Shell) {
   const onStateSet = () => todos.set(["A new", "data", "has come"])
   const onRebase = () => todosIndex.rebase()
   const onRestyle = () => document.startViewTransition(() => style.set("display: flex; gap: 0.5em"))
+  const onThrowError = () => { throw new Error("Event error") }
 
 
   const newView = (
@@ -53,16 +66,19 @@ function Todos(this: Proton.Shell) {
         <button type="button" on={{ click: onStateSet }}>Set new Todos State</button>
         <button type="button" on={{ click: onRebase }}>Rebase</button>
         <button type="button" on={{ click: onRestyle }}>Restyle</button>
+        <button type="button" on={{ click: onThrowError }}>Throw Error</button>
       </div>
     )
   }
 
-  this.view.set(
+  const defaultView = (
     <div className="todos">
       <ControlButtons />
       {todosIndex.map((todo, index) => <Todo content={todo} onRemove={() => document.startViewTransition(() => todosIndex.nullAt(index))} />)}
     </div>
   )
+
+  this.view.set(defaultView)
 }
 
 export default Todos
