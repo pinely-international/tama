@@ -17,7 +17,7 @@ async function Todos(this: Proton.Shell) {
 
 
 
-  this.view.catch(error => this.view.set(
+  this.catch((error: Error) => this.view.set(
     <div>
       <span>Error: {error.message}</span>
       <button type="button" on={{ click: () => this.view.set(defaultView) }}>Restore</button>

@@ -38,8 +38,6 @@ namespace Proton {
 
       this.context = new TreeContextAPI(parent?.context)
 
-      let catchCb: ((thrown: unknown) => void) | null = null
-
       this.view = {
         set: subject => {
           try {
@@ -48,19 +46,17 @@ namespace Proton {
             this.viewElement = object
             this.viewCallbacks.forEach(callback => callback())
           } catch (thrown) {
-            if (catchCb != null) return void catchCb(thrown)
+            if (this.inflator.catchCallback != null) return void this.inflator.catchCallback(thrown)
 
             throw thrown
           }
-        },
-        catch: (catchCallback: (thrown: unknown) => void) => {
-          catchCb = catchCallback
-          this.inflator.catchCallback = catchCallback
         },
         detach: () => this.events.dispatch("detach"),
         transit: subject => document.startViewTransition(() => this.view.set(subject)),
       }
     }
+
+    catch<T>(catchCallback: (thrown: T) => void) { this.inflator.catchCallback = catchCallback }
 
     onViewChange(callback: (view: unknown) => void) {
       const viewCallback = () => callback(this.viewElement)
