@@ -2,9 +2,17 @@ import Observable from "./Observable"
 
 export { }
 
+
+document.body.addEventListener("abort")
+
+
 declare global {
+  type IntrinsicElementEvents = {
+    [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
+  }
+
   interface IntrinsicAttributes {
-    on?: {}
+    on?: IntrinsicElementEvents
     key?: unknown
     style?: Record<string, string | CSSUnitValue | Observable> | string | Observable<string>
     className?: string

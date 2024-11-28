@@ -71,8 +71,14 @@ async function Todos(this: Proton.Shell) {
     )
   }
 
+
+  const mousePosition = new Events.State<[number, number]>([0, 0])
+
   const defaultView = (
-    <div className="todos">
+    <div className="todos" on={{ pointermove: event => mousePosition.set([event.x, event.y]) }}>
+      <span>{mousePosition}</span>
+      <span>{mousePosition.select(([x, y]) => `${x}px ${y}px`)}</span>
+
       <ControlButtons />
       {todosIndex.map((todo, index) => <Todo content={todo} onRemove={() => document.startViewTransition(() => todosIndex.nullAt(index))} />)}
     </div>

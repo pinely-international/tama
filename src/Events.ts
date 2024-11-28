@@ -109,7 +109,7 @@ namespace Events {
       this.dispatch(value)
     }
 
-    map<U>(predicate: (value: T) => U): State<U> {
+    select<U>(predicate: (value: T) => U): State<U> {
       const newState = new State(predicate(this.value))
 
       this[Symbol.subscribe](value => newState.set(predicate(value)))

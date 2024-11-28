@@ -22,6 +22,7 @@ async function Todo(this: Proton.Shell, props = new TodoProps) {
       <input value={props.content} />
       <textarea />
       <button type="button" on={{ click: () => props.content.set("") }}>-</button>
+      <button type="button" on={{ click: (event) => props.content.set(`${event.offsetX}px ${event.offsetY}px`) }}>Set Mouse Offset</button>
     </div>
   )
 }

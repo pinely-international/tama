@@ -225,17 +225,23 @@ export class WebInflator extends Inflator {
 
     if (intrinsic.props.type != null) intrinsicInflated.type = intrinsic.props.type
     if (intrinsic.props.on instanceof Object) {
-      for (const key in intrinsic.props.on) {
-        intrinsicInflated.addEventListener(key, event => {
-          try {
-            intrinsic.props.on[key].call(event.currentTarget, event)
-          } catch (thrown) {
-            if (this.catchCallback != null) return void this.catchCallback(thrown)
 
-            throw thrown
-          }
-        })
-      }
+      if (this.catchCallback == null)
+        for (const key in intrinsic.props.on) {
+          intrinsicInflated.addEventListener(key, intrinsic.props.on[key])
+        }
+      if (this.catchCallback != null)
+        for (const key in intrinsic.props.on) {
+          intrinsicInflated.addEventListener(key, event => {
+            try {
+              intrinsic.props.on[key].call(event.currentTarget, event)
+            } catch (thrown) {
+              if (this.catchCallback != null) return void this.catchCallback(thrown)
+
+              throw thrown
+            }
+          })
+        }
     }
 
     return intrinsicInflated
