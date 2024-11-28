@@ -25,7 +25,7 @@ function Row(this: Proton.Shell, props: { i: number, count: Events.State<number>
   const left = props.count.map(count => `${Math.cos(count / 10) * 10}px`)
   const background = props.count.map(count => `rgb(0,0,${count % 255})`)
 
-  this.tree.set(
+  this.view.set(
     <div className="box-view">
       <div className="box" style={{ top, left, background }}>{props.count}</div>
     </div>
@@ -63,7 +63,7 @@ function BoxesGrid(this: Proton.Shell) {
     .fill(0)
     .forEach((_, i) => grid.appendChild(inflator.inflate(<Row i={i} count={count} />)))
 
-  this.tree.set(
+  this.view.set(
     <div>
       {timing}
       {grid}

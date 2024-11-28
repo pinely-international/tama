@@ -26,16 +26,16 @@ function everySecond(callback: () => void): () => void {
 
 
 function ComponentGod(this: Proton.Shell) {
-  this.tree.set(<>Component Initiated</>)
+  this.view.set(<>Component Initiated</>)
 
   let i = 0
 
   setTimeout(() => {
-    this.tree.set(<>Scheduled update </>)
+    this.view.set(<>Scheduled update </>)
 
     everySecond(() => {
       i += Date.now()
-      this.tree.set(<>Scheduled update: {i} <DisposableState /></>)
+      this.view.set(<>Scheduled update: {i} <DisposableState /></>)
     })
   }, 1000)
 }
@@ -82,7 +82,7 @@ async function Circle(this: Proton.Shell & { counter: number }, props: { offset?
 
   // setInterval(() => this.counter++)
 
-  this.tree.set(treeInflated)
+  this.view.set(treeInflated)
 }
 
 

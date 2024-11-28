@@ -1,4 +1,4 @@
-interface ProtonTreeAPI {
+interface ProtonViewAPI {
   set(subject: unknown): void
   transit(subject: unknown): ViewTransition
   /**
@@ -7,4 +7,4 @@ interface ProtonTreeAPI {
   detach(): void
 }
 
-export default ProtonTreeAPI
+export default ProtonViewAPI

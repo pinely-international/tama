@@ -1,7 +1,8 @@
 import Events from "./Events"
 import { Inflator } from "./Inflator"
 import ProtonJSX from "./ProtonJSX"
-import ProtonTreeAPI from "./ProtonTreeAPI"
+import ProtonViewAPI from "./ProtonTreeAPI"
+import TreeContextAPI from "./TreeContextAPI"
 
 declare global {
   namespace JSX {
@@ -18,35 +19,49 @@ namespace Proton {
   export function Componentus(this: Shell) { return this }
 
   export class Shell {
-    public readonly tree: ProtonTreeAPI
+    public readonly view: ProtonViewAPI
+    public readonly inflator: Inflator
+    public readonly context: TreeContextAPI
+
     private readonly events = new Events
 
-    private view: unknown = null
+    private viewElement: unknown = null
     private viewCallbacks = new Set<() => void>()
 
-    constructor(readonly inflator: Inflator) {
-      this.tree = {
+
+
+    constructor(inflator: Inflator, parent?: Shell) {
+      this.inflator = cloneInstance(inflator)
+      this.inflator.componentParent = this
+
+      this.context = new TreeContextAPI(parent?.context)
+
+      this.view = {
         set: subject => {
           const object = this.inflator.inflate(subject)
 
-          this.view = object
+          this.viewElement = object
           this.viewCallbacks.forEach(callback => callback())
         },
         detach: () => this.events.dispatch("detach"),
-        transit: subject => document.startViewTransition(() => this.tree.set(subject))
+        transit: subject => document.startViewTransition(() => this.view.set(subject)),
       }
     }
 
     onViewChange(callback: (view: unknown) => void) {
-      const viewCallback = () => callback(this.view)
+      const viewCallback = () => callback(this.viewElement)
 
       this.viewCallbacks.add(viewCallback)
       return () => void this.viewCallbacks.delete(viewCallback)
     }
 
-    getView() { return this.view }
+    getView() { return this.viewElement }
     on(event: string) { return this.events.observe(event) }
   }
 }
 
 export default Proton
+
+function cloneInstance<T>(origin: T): T {
+  return Object.assign(Object.create(Object.getPrototypeOf(origin)), origin)
+}

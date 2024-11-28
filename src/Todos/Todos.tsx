@@ -4,17 +4,23 @@ import Events from "@/Events"
 import Proton from "@/Proton"
 
 import Todo from "./Todo"
+import TodoContext from "./Todo.context"
 
 
 function Todos(this: Proton.Shell) {
+  const todoContext = this.context.provide(new TodoContext("Test"))
+  setInterval(() => todoContext.text.set(Date.now().toString()), 1000)
+
+
+
   const style = new Events.State("display: grid; gap: 0.5em")
 
   const todos = new Events.State(["Wake Up", "Shower", "Eat", "Sleep"])
   const todosIndex = new Events.StateIndex(todos)
 
 
-  const onAdd = () => document.startViewTransition(() => todosIndex.push((todosIndex.length + 1).toString()))
-  const onReflow = () => this.tree.transit(newView)
+  const onAdd = () => todosIndex.push((todosIndex.length + 1).toString())
+  const onReflow = () => this.view.transit(newView)
   const onReplace = () => todosIndex.replace(["1", "2", "3"])
   const onStateSet = () => todos.set(["A new", "data", "has come"])
   const onRebase = () => todosIndex.rebase()
@@ -39,7 +45,7 @@ function Todos(this: Proton.Shell) {
 
 
   function ControlButtons(this: Proton.Shell) {
-    this.tree.set(
+    this.view.set(
       <div>
         <button type="button" on={{ click: onAdd }}>+</button>
         <button type="button" on={{ click: onReflow }}>Reflow</button>
@@ -51,7 +57,7 @@ function Todos(this: Proton.Shell) {
     )
   }
 
-  this.tree.set(
+  this.view.set(
     <div className="todos">
       <ControlButtons />
       {todosIndex.map((todo, index) => <Todo content={todo} onRemove={() => document.startViewTransition(() => todosIndex.nullAt(index))} />)}

@@ -7,6 +7,11 @@ import Proton from "./Proton"
 import ProtonJSX from "./ProtonJSX"
 
 
+export interface InflationResult {
+
+}
+
+
 export abstract class Inflator {
   public inflate(subject: unknown): unknown {
     if (subject == null) return subject
@@ -24,14 +29,15 @@ export abstract class Inflator {
     }
   }
 
+  protected pack() { }
+
   protected abstract inflatePrimitive(primitive: Primitive): unknown
   protected abstract inflateFragment(): unknown
 
   protected inflateComponent(constructor: <T extends Proton.Shell>(this: T, props: {}) => T, props: {}) {
-    const shell = new Proton.Shell(this)
+    const shell = new Proton.Shell(this, this.componentParent)
 
     constructor.call(shell, props)
-    // if (component !== shell) throw new TypeError("Proton Component must return `this`.")
 
     return shell
   }
@@ -42,6 +48,8 @@ export class WebInflator extends Inflator {
     function transformIntrinsic(input) { return input },
     function transformElement(element) { return element }
   )
+
+  private components = new Set
 
   public inflate<T>(subject: T): T extends Node ? T : (T extends ProtonJSX.Node ? (HTMLElement | Comment) : (T extends Exclude<Primitive, null | undefined> ? Node : T)) {
     if (subject instanceof Node) return subject as never
@@ -268,3 +276,11 @@ export class WebInflator extends Inflator {
 const HTMLInputNativeValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!
 const HTMLInputNativeSet = HTMLInputNativeValue.set!
 const HTMLInputNativeGet = HTMLInputNativeValue.get!
+
+
+
+class BlaBla {
+  constructor(readonly inflator: Inflator) { }
+
+
+}
