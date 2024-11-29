@@ -1,5 +1,6 @@
 import { Primitive } from "type-fest"
 
+import Accessor from "./Accessor"
 import ActBindings from "./ActBinding"
 import Events from "./Events"
 import Null from "./Null"
@@ -39,20 +40,48 @@ export abstract class Inflator {
   protected abstract inflatePrimitive(primitive: Primitive): unknown
   protected abstract inflateFragment(): unknown
 
-  protected inflateComponent(constructor: <T extends Proton.Shell>(this: T, props: {}) => T, props: {}) {
-    const shell = new Proton.Shell(this, this.componentParent)
+  private declare parentShell: Proton.Shell
+  private declare catchCallback: (thrown: unknown) => void
+  private declare suspenseCallback: (promise: Promise<void>) => void
 
-    const asd = async () => {
+  private suspenses: Promise<unknown>[] = []
+  private parentLastView: unknown = null
+
+  protected inflateComponent(constructor: <T extends Proton.Shell>(this: T, props: {}) => T, props: {}) {
+    const shell = new Proton.Shell(this, this.parentShell)
+
+    const asyncTry = async () => {
       try {
         await constructor.call(shell, props)
       } catch (thrown) {
+        if (this.suspenseCallback != null && thrown instanceof Promise) {
+          if (this.suspenses.length === 0) {
+            this.parentLastView = this.parentShell.getView()
+            this.suspenseCallback(thrown)
+          }
+          if (!this.suspenses.includes(thrown)) {
+            this.suspenses.push(thrown)
+          }
+
+          const length = this.suspenses.length
+
+          await Promise.all(this.suspenses)
+          await constructor.call(shell, props)
+
+          if (length === this.suspenses.length) {
+            this.parentLastView && this.parentShell.view.set(this.parentLastView)
+            this.suspenses = []
+          }
+
+          return
+        }
         if (this.catchCallback != null) return void this.catchCallback(thrown)
 
         throw thrown
       }
     }
 
-    asd()
+    asyncTry()
 
     return shell
   }
@@ -109,7 +138,14 @@ export class WebInflator extends Inflator {
     const comment = document.createComment(index.constructor.name)
     const inflateItem = (item: unknown) => item !== Null.OBJECT ? this.inflate(item) : item
 
-    let inflatedItems = index.array.map(inflateItem)
+    let inflatedItems = index.array.map((item: unknown, index: number) => {
+      const inflated = item !== Null.OBJECT ? this.inflate(item) : item
+      if (inflated instanceof Comment) {
+        inflated.onReplace(view => inflatedItems[index] = view)
+      }
+
+      return inflated
+    })
 
     requestAnimationFrame(() => {
       // Probably, something went wrong and the Element was not added or removed finally.
@@ -130,11 +166,10 @@ export class WebInflator extends Inflator {
     })
     index.on("replace").subscribe?.(newItems => {
       inflatedItems.forEach(item => item !== Null.OBJECT && item.remove())
-      inflatedItems = []
 
       const newInflatedItems = newItems.map(inflateItem)
 
-      inflatedItems.push(...newInflatedItems)
+      inflatedItems = newInflatedItems
       comment.before(...newInflatedItems)
     })
 
@@ -148,11 +183,10 @@ export class WebInflator extends Inflator {
 
     if (typeof style !== "object") return
 
-    if (Symbol.subscribe in style) {
-      const subscribe = style[Symbol.subscribe]
-
-      element.style.cssText = style.get?.() ?? ""
-      subscribe(value => element.style.cssText = style.get?.() ?? value)
+    const styleAccessor = Accessor.extractObservable<string>(style)
+    if (styleAccessor != null) {
+      element.style.cssText = styleAccessor.get?.() ?? ""
+      styleAccessor.subscribe?.(value => element.style.cssText = styleAccessor.get?.() ?? value)
 
       return
     }
@@ -201,31 +235,26 @@ export class WebInflator extends Inflator {
 
 
     if (intrinsic.type === "input") {
-      if (intrinsic.props.value instanceof Object) {
-        const get = intrinsic.props.value.get instanceof Function ? () => intrinsic.props.value.get() : null
-        const set = intrinsic.props.value.set instanceof Function ? v => intrinsic.props.value.set(v) : null
-        const subscribe = intrinsic.props.value[Symbol.subscribe] instanceof Function ? next => intrinsic.props.value[Symbol.subscribe](next) : null
-
-
-        if (get) HTMLInputNativeSet.call(intrinsicInflated, get())
-        if (set) {
+      const accessor = Accessor.extractObservable(intrinsic.props.value)
+      if (accessor != null) {
+        if (accessor.get) HTMLInputNativeSet.call(intrinsicInflated, accessor.get())
+        if (accessor.set) {
           Object.defineProperty(intrinsicInflated, "value", {
             get: () => HTMLInputNativeGet.call(intrinsicInflated),
             set: value => {
               HTMLInputNativeSet.call(intrinsicInflated, value)
-              set(value)
+              accessor.set!(value)
             }
           })
 
-          intrinsicInflated.addEventListener("change", event => set(event.currentTarget.value))
+          intrinsicInflated.addEventListener("change", event => accessor.set!((event.currentTarget as HTMLInputElement).value))
         }
-        if (subscribe) subscribe(value => HTMLInputNativeSet.call(intrinsicInflated, get ? get() : value))
+        accessor.subscribe?.(value => HTMLInputNativeSet.call(intrinsicInflated, accessor.get?.() ?? value))
       }
     }
 
     if (intrinsic.props.type != null) intrinsicInflated.type = intrinsic.props.type
     if (intrinsic.props.on instanceof Object) {
-
       if (this.catchCallback == null)
         for (const key in intrinsic.props.on) {
           intrinsicInflated.addEventListener(key, intrinsic.props.on[key])
@@ -261,6 +290,8 @@ export class WebInflator extends Inflator {
       anchor = view
     } else {
       const comment = document.createComment(this.constructor.name)
+      comment.onReplace = shell.onViewChange.bind(shell)
+
       anchor = comment
     }
 
@@ -305,11 +336,3 @@ export class WebInflator extends Inflator {
 const HTMLInputNativeValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!
 const HTMLInputNativeSet = HTMLInputNativeValue.set!
 const HTMLInputNativeGet = HTMLInputNativeValue.get!
-
-
-
-class BlaBla {
-  constructor(readonly inflator: Inflator) { }
-
-
-}

@@ -1,3 +1,4 @@
+import Deferred from "@/Deferred"
 import Events from "@/Events"
 import Proton from "@/Proton"
 
@@ -10,8 +11,15 @@ class TodoProps {
   onRemove?(): void
 }
 
+const deferreds = new WeakMap<Proton.Shell, Deferred<unknown>>()
+
 async function Todo(this: Proton.Shell, props = new TodoProps) {
-  await new Promise(resolve => setTimeout(resolve, Math.random() * 2000))
+  // await new Promise(resolve => setTimeout(resolve, Math.random() * 2000))
+  const deferred = deferreds.has(this) ? deferreds.get(this)! : deferreds.set(this, new Deferred).get(this)!
+  if (!deferred.awaited) {
+    setTimeout(deferred.resolve, Math.random() * 2000)
+    throw deferred.promise
+  }
 
   const todoContext = this.context.require(TodoContext)
 

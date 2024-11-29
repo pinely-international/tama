@@ -32,7 +32,7 @@ namespace Proton {
 
     constructor(inflator: Inflator, parent?: Shell) {
       this.inflator = cloneInstance(inflator)
-      this.inflator.componentParent = this
+      this.inflator.parentShell = this
 
       // this.inflator.createComponent()
 
@@ -57,6 +57,15 @@ namespace Proton {
     }
 
     catch<T>(catchCallback: (thrown: T) => void) { this.inflator.catchCallback = catchCallback }
+    /**
+     * Calls passed `callback` just before the component is going to be suspended.
+     * Batches any down tree suspensions together while there are some unresolved.
+     *
+     * The `callback` can be used to set a temporary `view`.
+     *
+     * When the component is unsuspended, all the effects applied in the `callback` are reverted by a built-in mechanism.
+     */
+    suspense<T = void>(callback: (result: T) => void) { this.inflator.suspenseCallback = callback }
 
     onViewChange(callback: (view: unknown) => void) {
       const viewCallback = () => callback(this.viewElement)

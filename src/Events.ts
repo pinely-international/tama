@@ -10,10 +10,6 @@ Symbol.subscribe = Symbol.for("subscribe")
 const finalization = new FinalizationRegistry<() => void>(unsubscribe => unsubscribe())
 
 class Events<EventMap extends Record<EventName, unknown>, EventName extends keyof EventMap = keyof EventMap> {
-  constructor() {
-    const temp = { callbacks: this.callbacks }
-    finalization.register(this, () => temp.callbacks = {})
-  }
   // public static Map = class Map
 
 
@@ -101,6 +97,7 @@ namespace Events {
       this.boundGet[Symbol.subscribe] = this[Symbol.subscribe]
     }
 
+
     get(): T { return this.value }
     set(newValue: T | ((current: T) => T)): void {
       const value = newValue instanceof Function ? newValue(this.value) : newValue
@@ -109,7 +106,16 @@ namespace Events {
       this.dispatch(value)
     }
 
-    select<U>(predicate: (value: T) => U): State<U> {
+
+    private readonly __it = new Proxy(this, {
+      get: (target, key: keyof T) => target.to(value => value[key]),
+      set: (target, key: keyof T, newValue) => target.value[key] = newValue
+    }) as unknown as T
+
+    get it() { return this.__it }
+    set it(value: T) { this.set(value) }
+
+    to<U>(predicate: (value: T) => U): State<U> {
       const newState = new State(predicate(this.value))
 
       this[Symbol.subscribe](value => newState.set(predicate(value)))
@@ -117,8 +123,9 @@ namespace Events {
       return newState
     }
 
+
     readonly(): StateReadonly<T> {
-      return Act.compute(value => value, [this])
+      return { get: () => this.get(), [Symbol.subscribe]: next => this[Symbol.subscribe](next) }
     }
 
     writeonly(): StateWriteonly<T> {
@@ -127,6 +134,7 @@ namespace Events {
 
     private boundGet: ((() => T) & Observable<T>) = () => this.get()
     private boundSet = (newValue: T | ((current: T) => T)) => this.set(newValue)
+
 
     private dispatch(value: T) {
       this.callbacks.forEach(callback => callback(value))
@@ -137,13 +145,11 @@ namespace Events {
       return { get: this.boundGet, set: this.boundSet }
     }
 
-    public readonly _Tuple!: readonly [typeof this.boundGet, typeof this.boundSet]
-
     *[Symbol.iterator]() {
       yield this.boundGet
       yield this.boundSet
     }
-    [Symbol.subscribe] = (next: (value: T) => void) => {
+    [Symbol.subscribe](next: (value: T) => void) {
       this.callbacks.add(next)
 
       const unsubscribe = () => void this.callbacks.delete(next)
@@ -212,14 +218,7 @@ namespace Events {
     }
 
     on(event: string) {
-      const asd = this.events.observe(event)
-      return {
-        subscribe: next => {
-          const sub = asd.subscribe!(next)
-          finalization.register(this.array, sub.unsubscribe)
-          return sub
-        }
-      }
+      return this.events.observe(event)
     }
   }
 

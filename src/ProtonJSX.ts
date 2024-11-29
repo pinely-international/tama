@@ -24,7 +24,7 @@ namespace ProtonJSX {
     }
   }
 
-  export class Intrinsic extends Node { override type!: keyof never }
+  export class Intrinsic extends Node { override type!: keyof never; override props?: JSX.InputElementAttributes }
   export class Component extends Node { override type!: Function }
   export class _Fragment extends Node { }
 

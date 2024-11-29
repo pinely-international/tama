@@ -21,9 +21,10 @@ function Row(this: Proton.Shell, props: { i: number, count: Events.State<number>
   // const left = (`${Math.cos(+props.count / 10) * 10}px`)
   // const background = (`rgb(0,0,${+props.count % 255})`)
 
-  const top = props.count.select(count => `${Math.sin(count / 10) * 10}px`)
-  const left = props.count.select(count => `${Math.cos(count / 10) * 10}px`)
-  const background = props.count.select(count => `rgb(0,0,${count % 255})`)
+  const top = props.count.to(count => `${Math.sin(count / 10) * 10}px`)
+  const left = props.count.to(count => `${Math.cos(count / 10) * 10}px`)
+  const background = props.count.to(count => `rgb(0,0,${count % 255})`)
+  // const background = props.count.in`rgb(0,0,${+props.count.it % 255})`
 
   this.view.set(
     <div className="box-view">

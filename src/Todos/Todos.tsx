@@ -8,7 +8,7 @@ import TodoContext from "./Todo.context"
 
 
 async function Todos(this: Proton.Shell) {
-  this.view.set(<div>Loading...</div>)
+  this.view.set(<div>Parent Loading...</div>)
   await new Promise(resolve => setTimeout(resolve, 1000))
 
 
@@ -16,13 +16,16 @@ async function Todos(this: Proton.Shell) {
   setInterval(() => todoContext.text.set(Date.now().toString()), 1000)
 
 
-
-  this.catch((error: Error) => this.view.set(
-    <div>
-      <span>Error: {error.message}</span>
-      <button type="button" on={{ click: () => this.view.set(defaultView) }}>Restore</button>
-    </div>
-  ))
+  this.catch<Error>(error => {
+    console.error("caught", error)
+    this.view.set(
+      <div>
+        <span>Error: {error.message}</span>
+        <button type="button" on={{ click: () => this.view.set(defaultView) }}>Restore</button>
+      </div>
+    )
+  })
+  this.suspense(() => this.view.set(<div>Children Loading...</div>))
 
 
   const style = new Events.State("display: grid; gap: 0.5em")
@@ -77,10 +80,12 @@ async function Todos(this: Proton.Shell) {
   const defaultView = (
     <div className="todos" on={{ pointermove: event => mousePosition.set([event.x, event.y]) }}>
       <span>{mousePosition}</span>
-      <span>{mousePosition.select(([x, y]) => `${x}px ${y}px`)}</span>
+      <span>{mousePosition.to(([x, y]) => `${x}px ${y}px`)}</span>
+      <span>{mousePosition.it[0]}px {mousePosition.it[1]}px</span>
+      <button type="button" on={{ click: () => mousePosition.it = [0, 0] }}>Reset Mouse Position</button>
 
       <ControlButtons />
-      {todosIndex.map((todo, index) => <Todo content={todo} onRemove={() => document.startViewTransition(() => todosIndex.nullAt(index))} />)}
+      {todosIndex.map((todo, index) => <Todo content={todo} onRemove={() => todosIndex.nullAt(index)} />)}
     </div>
   )
 
