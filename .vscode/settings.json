@@ -4,6 +4,7 @@
     "source.fixAll.eslint": "explicit"
   },
   "cSpell.words": [
-    "Componentus"
+    "Componentus",
+    "unsuspense"
   ],
 }

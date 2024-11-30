@@ -38,10 +38,15 @@ namespace Proton {
 
       this.context = new TreeContextAPI(parent?.context)
 
+      let previousView: unknown
       this.view = {
         set: subject => {
           try {
             const object = this.inflator.inflate(subject)
+
+            if (subject !== previousView) {
+              previousView = this.viewElement
+            }
 
             this.viewElement = object
             this.viewCallbacks.forEach(callback => callback())
@@ -51,6 +56,7 @@ namespace Proton {
             throw thrown
           }
         },
+        reset: () => this.view.set(previousView),
         detach: () => this.events.dispatch("detach"),
         transit: subject => document.startViewTransition(() => this.view.set(subject)),
       }
@@ -66,6 +72,7 @@ namespace Proton {
      * When the component is unsuspended, all the effects applied in the `callback` are reverted by a built-in mechanism.
      */
     suspense<T = void>(callback: (result: T) => void) { this.inflator.suspenseCallback = callback }
+    unsuspense<T = void>(callback: (result: T) => void) { this.inflator.unsuspenseCallback = callback }
 
     onViewChange(callback: (view: unknown) => void) {
       const viewCallback = () => callback(this.viewElement)

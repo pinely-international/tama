@@ -26,6 +26,7 @@ async function Todos(this: Proton.Shell) {
     )
   })
   this.suspense(() => this.view.set(<div>Children Loading...</div>))
+  this.unsuspense(() => this.view.reset())
 
 
   const style = new Events.State("display: grid; gap: 0.5em")
@@ -35,11 +36,11 @@ async function Todos(this: Proton.Shell) {
 
 
   const onAdd = () => todosIndex.push((todosIndex.length + 1).toString())
-  const onReflow = () => this.view.transit(newView)
+  const onReflow = () => this.view.set(newView)
   const onReplace = () => todosIndex.replace(["1", "2", "3"])
   const onStateSet = () => todos.set(["A new", "data", "has come"])
   const onRebase = () => todosIndex.rebase()
-  const onRestyle = () => document.startViewTransition(() => style.set("display: flex; gap: 0.5em"))
+  const onRestyle = () => style.set("display: flex; gap: 0.5em")
   const onThrowError = () => { throw new Error("Event error") }
 
 

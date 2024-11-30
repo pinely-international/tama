@@ -43,6 +43,7 @@ export abstract class Inflator {
   private declare parentShell: Proton.Shell
   private declare catchCallback: (thrown: unknown) => void
   private declare suspenseCallback: (promise: Promise<void>) => void
+  private declare unsuspenseCallback: (promise: Promise<void>) => void
 
   private suspenses: Promise<unknown>[] = []
   private parentLastView: unknown = null
@@ -56,7 +57,7 @@ export abstract class Inflator {
       } catch (thrown) {
         if (this.suspenseCallback != null && thrown instanceof Promise) {
           if (this.suspenses.length === 0) {
-            this.parentLastView = this.parentShell.getView()
+            // this.parentLastView = this.parentShell.getView()
             this.suspenseCallback(thrown)
           }
           if (!this.suspenses.includes(thrown)) {
@@ -69,7 +70,12 @@ export abstract class Inflator {
           await constructor.call(shell, props)
 
           if (length === this.suspenses.length) {
-            this.parentLastView && this.parentShell.view.set(this.parentLastView)
+            if (this.unsuspenseCallback) {
+              this.unsuspenseCallback(thrown)
+            } else {
+              // this.parentLastView && this.parentShell.view.set(this.parentLastView)
+            }
+
             this.suspenses = []
           }
 
