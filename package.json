@@ -1,12 +1,18 @@
 {
   "type": "module",
-  "name": "proton",
+  "name": "@denshya/proton",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/denshya"
+  },
   "main": "src/index.ts",
+  "types": "src/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && bun build:types",
+    "build:types": "tsup src/index.ts --outDir build --format esm --dts-only --tsconfig tsconfig.build.json",
     "preview": "vite preview",
     "stats": "bun stats:treemap && bun stats:sunburst",
     "stats:treemap": "vite-bundle-visualizer --sourcemap -o ./stats/treemap.html",
@@ -14,6 +20,9 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "dependencies": {},
+  "peerDependencies": {
+    "type-fest": "4.x"
+  },
   "devDependencies": {
     "@types/react": "^18.3.12",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
@@ -23,9 +32,9 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
     "sass": "^1.69.5",
-    "type-fest": "^4.8.3",
-    "typescript": "^5.6.3",
+    "typescript": "^5.7.2",
     "vite": "^4.5.0",
-    "vite-bundle-visualizer": "^1.2.1"
+    "vite-bundle-visualizer": "^1.2.1",
+    "tsup": "^8.3.5"
   }
 }

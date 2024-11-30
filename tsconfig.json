@@ -28,13 +28,16 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "build",
     "jsx": "react",
     "jsxFactory": "Proton.JSX.Element",
     "jsxFragmentFactory": "Proton.JSX.Fragment",
     /* Linting */
     "strict": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "noEmitOnError": false
   },
   "include": [
     "src"
