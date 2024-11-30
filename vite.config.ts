@@ -1,27 +1,19 @@
 import path from "path"
-import rollupTS2 from "rollup-plugin-typescript2"
 import { defineConfig } from "vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [rollupTS2({ abortOnError: false, check: false, useTsconfigDeclarationDir: true })],
+  plugins: [],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
   build: {
-    target: false,
+    target: "esnext",
     outDir: "build",
     sourcemap: true,
-    modulePreload: false,
-
     emptyOutDir: true,
-
-    rollupOptions: {
-      external: [/(?!react-modal-global)react.*/],
-      treeshake: true
-    },
     lib: {
       entry: path.resolve(__dirname, "./src/index.ts"),
       formats: ["es"],
@@ -31,7 +23,7 @@ export default defineConfig({
   esbuild: {
     treeShaking: true,
     minifyIdentifiers: false,
-    minifyWhitespace: false,
+    minifyWhitespace: true,
     ignoreAnnotations: false,
   },
 })
