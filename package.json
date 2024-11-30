@@ -1,13 +1,13 @@
 {
   "type": "module",
   "name": "@denshya/proton",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "publishConfig": {
     "access": "restricted",
     "registry": "https://npm.pkg.github.com/denshya"
   },
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "types": "src/index.d.ts",
   "scripts": {
     "dev": "vite",
