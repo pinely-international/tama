@@ -3,9 +3,6 @@ import Observable from "./Observable"
 export { }
 
 
-document.body.addEventListener("abort")
-
-
 declare global {
   type IntrinsicElementEvents = {
     [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void

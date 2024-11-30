@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": false,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    // App
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "types": [
+      "vite/client"
+    ],
+    "verbatimModuleSyntax": false,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "jsxFactory": "Proton.JSX.Element",
+    "jsxFragmentFactory": "Proton.JSX.Fragment",
+    /* Linting */
+    "strict": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

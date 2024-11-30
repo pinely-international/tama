@@ -10,15 +10,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: false,
-    outDir: "build",
     sourcemap: true,
-    emptyOutDir: true,
-    lib: {
-      entry: path.resolve(__dirname, "./src/index.ts"),
-      formats: ["es"],
-      fileName: "index"
-    }
   },
   esbuild: {
     treeShaking: true,
@@ -26,4 +18,7 @@ export default defineConfig({
     minifyWhitespace: true,
     ignoreAnnotations: false,
   },
+  optimizeDeps: {
+    exclude: ["@denshya/proton"]
+  }
 })
