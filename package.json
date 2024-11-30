@@ -9,6 +9,9 @@
   },
   "main": "src/index.js",
   "types": "src/index.d.ts",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build && bun build:types",
