@@ -1,4 +1,4 @@
-import Act from "./Act"
+import Observable from "./Observable"
 
 interface ActBindingOff {
   (): void
@@ -16,8 +16,9 @@ class ActBindings<Source extends object> {
   constructor(readonly source: Source) { }
 
   set<Target extends object>(target: Target, property: ActProperty<Target, keyof Target>) {
-    const act = target[property] as Act
-    const off = act[Symbol.subscribe](value => this.source[property] = value)
+    const act = target[property] as Observable<unknown>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const off = act[Symbol.subscribe](value => (this.source as any)[property] = value)
     return off
   }
   unset<Target extends object>(target: Target, property: ActProperty<Target, keyof Target>) {

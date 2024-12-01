@@ -1,6 +1,3 @@
-import Events from "./Events"
-import Observable from "./Observable"
-
 type TreeContext = new (...args: never[]) => unknown
 
 class TreeContextError extends Error { }
@@ -11,13 +8,14 @@ class TreeContextAPI {
   constructor(readonly parent?: TreeContextAPI) { }
 
   provide<T extends InstanceType<TreeContext>>(context: T extends TreeContext ? never : T): T {
-    this.contexts.set(context.constructor, context)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.contexts.set((context as any).constructor, context)
     return context
   }
   find<T extends TreeContext>(context: T): InstanceType<T> | null {
     const instance = this.contexts.get(context)
-    if (instance != null) return instance as InstanceType<T>
 
+    if (instance != null) return instance as InstanceType<T>
     if (this.parent != null) return this.parent.find(context)
 
     return null
@@ -31,7 +29,7 @@ class TreeContextAPI {
 
     return instance
   }
-  for<T extends TreeContext>(context: T): Events<{ add(): Observable<InstanceType<T>>, remove(): Observable<void> }> { }
+  // for<T extends TreeContext>(context: T): Events<{ add(): Observable<InstanceType<T>>, remove(): Observable<void> }> { }
 }
 
 export default TreeContextAPI

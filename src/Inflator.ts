@@ -163,11 +163,10 @@ export class WebInflator extends Inflator {
   }
 
   protected bindStyle(style: unknown, element: HTMLElement) {
+    if (style == null) return
     if (typeof style === "string") {
       element.style.cssText = style
     }
-
-    if (typeof style !== "object") return
 
     const styleAccessor = Accessor.extractObservable<string>(style)
     if (styleAccessor != null) {
@@ -179,7 +178,9 @@ export class WebInflator extends Inflator {
 
     const reactions = new ActBindings(element.style)
 
-    for (const property in style) {
+    for (const _property in style) {
+      const property = _property as keyof typeof style
+
       const value = style[property]
       if (value[Symbol.subscribe] != null) {
         reactions.set(style, property)
@@ -248,8 +249,10 @@ export class WebInflator extends Inflator {
       if (this.catchCallback != null)
         for (const key in intrinsic.props.on) {
           intrinsicInflated.addEventListener(key, event => {
+            if (intrinsic.props?.on?.[key as never] == null) return
+
             try {
-              intrinsic.props.on[key].call(event.currentTarget, event)
+              intrinsic.props.on[key as never].call(event.currentTarget, event)
             } catch (thrown) {
               if (this.catchCallback != null) return void this.catchCallback(thrown)
 

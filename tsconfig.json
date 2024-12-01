@@ -40,11 +40,7 @@
     "noEmitOnError": false
   },
   "include": [
-    "src",
-    "demos/todo/Todos",
-    "demos/todo/todos-demo.tsx",
-    "demos/index.tsx",
-    "demos/circles/demo.tsx"
+    "src"
   ],
   "references": [
     {

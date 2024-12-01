@@ -1,6 +1,6 @@
 import Act from "./Act"
 import Null from "./Null"
-import Observable from "./Observable"
+import Observable, { Subscriptable } from "./Observable"
 
 // @ts-expect-error it's ok.
 Symbol.subscribe = Symbol.for("subscribe")
@@ -10,9 +10,6 @@ Symbol.subscribe = Symbol.for("subscribe")
 const finalization = new FinalizationRegistry<() => void>(unsubscribe => unsubscribe())
 
 class Events<EventMap extends Record<EventName, unknown>, EventName extends keyof EventMap = keyof EventMap> {
-  // public static Map = class Map
-
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private callbacks: Partial<Record<keyof never, Set<(value: any) => void>>> = {}
 
@@ -46,7 +43,7 @@ class Events<EventMap extends Record<EventName, unknown>, EventName extends keyo
   public dispatch<Event extends keyof EventMap>(event: Event, payload: EventMap[Event]) {
     this.callbacks[event]?.forEach(callback => callback(payload))
   }
-  public observe<Event extends keyof EventMap>(event: Event): Observable<EventMap[Event]> {
+  public observe<Event extends keyof EventMap>(event: Event): Subscriptable<EventMap[Event]> {
     return {
       subscribe: (next?: (value: EventMap[Event]) => void) => {
         const callback = (value: EventMap[Event]) => next?.(value)
@@ -58,6 +55,13 @@ class Events<EventMap extends Record<EventName, unknown>, EventName extends keyo
   }
 
   // public toReadonly(): Observable<EventActionFrom<T>> {}
+}
+
+
+interface IndexEvents<T = unknown> {
+  push: T[]
+  null: number
+  replace: T[]
 }
 
 namespace Events {
@@ -94,6 +98,8 @@ namespace Events {
 
     constructor(initialValue: T) {
       this.value = initialValue
+
+      this.boundGet = (() => this.get()) as never
       this.boundGet[Symbol.subscribe] = this[Symbol.subscribe]
     }
 
@@ -108,8 +114,8 @@ namespace Events {
 
 
     private readonly __it = new Proxy(this, {
-      get: (target, key: keyof T) => target.to(value => value[key]),
-      set: (target, key: keyof T, newValue) => target.value[key] = newValue
+      get: (target, key) => target.to(value => value[key as keyof T]),
+      set: (target, key, newValue) => target.value[key as keyof T] = newValue
     }) as unknown as T
 
     get it() { return this.__it }
@@ -132,7 +138,7 @@ namespace Events {
       return { set: v => this.set(v) }
     }
 
-    private boundGet: ((() => T) & Observable<T>) = () => this.get()
+    private boundGet: ((() => T) & Observable<T>)
     private boundSet = (newValue: T | ((current: T) => T)) => this.set(newValue)
 
 
@@ -161,7 +167,7 @@ namespace Events {
 
   export class Index<T> {
     private array: T[]
-    private readonly events = new Events
+    private readonly events = new Events<IndexEvents<T>>
 
     constructor(init: Iterable<T>) { this.array = [...init] }
 
@@ -187,13 +193,13 @@ namespace Events {
     }
 
     map<U>(predicate: (value: T, index: number, array: T[]) => U) {
-      const map = (items: never[]) => items.map((item, i) => predicate(item, i + index.array.length, items))
-      const map2 = (items: never[]) => items.map((item, i) => predicate(item, i, items))
+      const map = (items: T[]) => items.map((item, i) => predicate(item, i + index.array.length, items))
+      const map2 = (items: T[]) => items.map((item, i) => predicate(item, i, items))
 
       const index = new Index(this.array.map((item, i, arr) => item !== Null.OBJECT ? predicate(item, i, arr) : item))
-      this.on("push").subscribe?.(items => index.push(...map(items)))
-      this.on("replace").subscribe?.(items => index.replace(map2(items)))
-      this.on("null").subscribe?.(i => index.nullAt(i))
+      this.on("push").subscribe(items => index.push(...map(items)))
+      this.on("replace").subscribe(items => index.replace(map2(items)))
+      this.on("null").subscribe(i => index.nullAt(i))
       return index
     }
 
@@ -217,9 +223,7 @@ namespace Events {
       this.replace(this.nonNullableArray())
     }
 
-    on(event: string) {
-      return this.events.observe(event)
-    }
+    on<K extends keyof IndexEvents>(event: K) { return this.events.observe(event) }
   }
 
   export class StateIndex<T> extends Index<State<T>> {
@@ -227,11 +231,11 @@ namespace Events {
       if (init instanceof State) {
         super(State.of([...init.get()]))
 
-        init[Symbol.subscribe](items => this.replace(items))
+        init[Symbol.subscribe](items => this.replace([...items]))
       } else if (Symbol.iterator in init === false) {
         super(Null.ARRAY)
 
-        init[Symbol.subscribe](items => this.replace(items))
+        init[Symbol.subscribe](items => this.replace([...items]))
       } else {
         super(State.of([...init]))
       }
