@@ -113,13 +113,13 @@ namespace Events {
     }
 
 
-    private readonly __it = new Proxy(this, {
+    private readonly __$ = new Proxy(this, {
       get: (target, key) => target.to(value => value[key as keyof T]),
       set: (target, key, newValue) => target.value[key as keyof T] = newValue
     }) as unknown as T
 
-    get it() { return this.__it }
-    set it(value: T) { this.set(value) }
+    get $() { return this.__$ }
+    set $(value: T) { this.set(value) }
 
     to<U>(predicate: (value: T) => U): State<U> {
       const newState = new State(predicate(this.value))
