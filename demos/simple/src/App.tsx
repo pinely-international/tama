@@ -1,16 +1,21 @@
+import "@/assets/scss/base.scss"
+
 import { Proton } from "@denshya/proton"
-import Navbar from "./Navbar/Navbar"
+
+import Navbar from "./ui/Navbar/Navbar"
+import MiniProfile from "./ui/MiniProfile/MiniProfile"
+
 
 function App(this: Proton.Shell) {
   this.view.set(
-    <main>
-      <head>
-        <meta name="description" content="blabla" />
-      </head>
+    <>
       <header>
         <Navbar />
       </header>
-    </main>
+      <main>
+        <MiniProfile user={{ avatar: "", email: "asd@as.com", firstName: "John", lastName: "Doe" }} />
+      </main>
+    </>
   )
 }
 

@@ -1,0 +1,181 @@
+@import "vars";
+
+/* Helpers */
+
+@mixin Outline {
+	outline: 4px solid rgba($color-blue, 0.25);
+}
+
+// Input, Select, Textarea label.
+@mixin InputLabel {
+	font-size: $font-size-h3;
+	font-weight: 500;
+
+	span.weak {
+		color: $color-gray;
+	}
+}
+
+// Input, Select, Textarea appearance.
+@mixin InputAppearance($padding: 0.75em 0.875em) {
+	flex: 1;
+
+	padding: $padding;
+	border: 1px solid $color-gray-light;
+	border-radius: 0.5em;
+
+	color: $color-dark;
+	transition: 200ms ease background-color, 200ms ease border-color, 200ms ease color;
+
+	&--dark {
+		color: white;
+	}
+
+	&:focus:not(&--invalid),
+	&:focus-within:not(&--invalid),
+	&--focused:not(&--invalid) {
+		border-color: $color-green-pale;
+	}
+
+	&--invalid {
+		background: white;
+		border-color: $color-red-pale;
+		color: $color-red;
+
+		input:-webkit-autofill {
+			color-scheme: light;
+		}
+	}
+
+	input:-webkit-autofill {
+		-webkit-background-clip: text;
+	}
+
+	&:disabled,
+	&--disabled {
+		background: white;
+		color: $color-dark;
+
+		cursor: not-allowed;
+	}
+}
+
+@mixin Badge($size: 1em, $float: true) {
+	@if $float==true {
+		position: absolute;
+		top: $size / -2;
+		right: $size / -2;
+	}
+
+	padding: $size / 2;
+	border-radius: 50%;
+}
+
+/* Font */
+
+@mixin Typography($size: null, $weight: null) {
+	font-size: $size;
+	font-weight: $weight;
+
+	white-space: pre-line;
+	word-break: normal;
+	line-height: 1.25;
+
+	@include Mobile() {
+		white-space: normal;
+
+		br {
+			display: none;
+		}
+	}
+}
+
+/* Adaptive (Goes from `DesktopLowResolution` to `Mobile`) */
+
+@mixin DesktopLowResolution {
+	@media screen and (max-width: #{$width-desktop}) {
+		@content;
+	}
+}
+
+@mixin Tablet {
+	@media screen and (max-width: #{$width-desktop-low-resolution}) {
+		@content;
+	}
+}
+
+
+@mixin Mobile {
+	@media screen and (max-width: #{$width-tablet}) {
+		@content;
+	}
+}
+
+
+/* Utils */
+
+@mixin line-clamp($lines) {
+	@supports (display: -webkit-box) {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: $lines;
+	}
+
+	@supports (display: box) {
+		display: box;
+		box-orient: vertical;
+		line-clamp: $lines;
+	}
+
+	@supports (not (display: -webkit-box)) and (not (display: box)) {
+		max-height: 1em * $lines;
+	}
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@mixin WidthLimit {
+	max-width: $width-desktop;
+
+	margin-left: auto;
+	margin-right: auto;
+
+	@include Tablet {
+		padding-left: 4vw;
+		padding-right: 4vw;
+	}
+}
+
+@mixin column-gap($gap) {
+	&>*:not(:first-child) {
+		margin-left: $gap;
+	}
+}
+
+@mixin row-gap($gap) {
+	&>*:not(:first-child) {
+		margin-top: $gap;
+	}
+}
+
+/* Scrollbar */
+
+@mixin Scrollbar($size: 0.325em, $thumbColor: rgba(#677783, 0.5), $trackColor: transparent) {
+
+	/* Chrome, Edge, and Safari */
+	&::-webkit-scrollbar {
+		height: $size;
+		width: $size;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: $trackColor;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: $thumbColor;
+		border-radius: 0.5em;
+		border: 3px solid $trackColor;
+	}
+}

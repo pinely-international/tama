@@ -16,13 +16,13 @@
     "@denshya/proton": "^0.1.7"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.13.1",
-    "@typescript-eslint/parser": "^6.13.1",
-    "eslint": "8.55.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-simple-import-sort": "^10.0.0",
-    "eslint-plugin-unused-imports": "^3.0.0",
-    "sass": "^1.69.5",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "eslint": "9.16.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "sass": "^1.81.0",
     "typescript": "^5.7.2",
     "vite": "^4.5.0",
     "vite-bundle-visualizer": "^1.2.1"

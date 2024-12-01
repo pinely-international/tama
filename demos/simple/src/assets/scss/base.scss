@@ -1,0 +1,137 @@
+@import "@/assets/scss/bundle.scss";
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	font: 16px/1 "Inter", Arial, sans-serif;
+	margin: unset;
+	color: $color-gray-dark;
+	background: white;
+}
+
+/* Text */
+
+h1 {
+	font-size: $font-size-h1;
+	font-weight: 400;
+}
+
+h2 {
+	font-size: $font-size-h2;
+	font-weight: 400;
+}
+
+h3 {
+	font-size: $font-size-h3;
+	font-weight: 400;
+}
+
+h4 {
+	font-size: $font-size-h4;
+	font-weight: 400;
+}
+
+h5 {
+	font-size: $font-size-h5;
+	font-weight: 400;
+}
+
+p {
+	line-height: 1.25;
+}
+
+/* Anchor */
+
+a {
+	font-weight: 400;
+	word-break: normal;
+
+	&:hover {
+		text-decoration: none;
+	}
+
+	&.ghost {
+		position: absolute;
+		inset: 0;
+	}
+}
+
+/* UX */
+
+input,
+button,
+textarea {
+	all: unset;
+	position: relative;
+}
+
+input {
+	cursor: revert;
+}
+
+button,
+textarea {
+	&:focus-visible {
+		outline: revert;
+	}
+}
+
+button {
+	cursor: pointer;
+	transition: 100ms ease opacity;
+
+	&:disabled {
+		cursor: not-allowed;
+	}
+
+	&:not(:disabled):active {
+		opacity: 0.75;
+	}
+
+	&.ghost {
+		position: absolute;
+		inset: 0;
+	}
+}
+
+pre {
+	padding: 1em;
+	border: 1px solid #bdbdbd;
+	border-radius: 0.25em;
+
+	white-space: pre-wrap;
+}
+
+kbd {
+	display: inline-block;
+
+	padding: 2px 4px;
+	background: #eee;
+	border: 1px solid #b4b4b4;
+	border-radius: 3px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+
+	color: #333;
+	font-size: 0.85em;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.icon {
+	$size: var(--icon-size, 1em);
+	$color: var(--icon-color, currentColor);
+
+	display: inline-block;
+	width: $size;
+	height: $size;
+	vertical-align: top;
+	object-fit: contain;
+
+	color: $color;
+
+	use {
+		pointer-events: none;
+	}
+}
