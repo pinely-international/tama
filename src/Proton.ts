@@ -7,9 +7,15 @@ import TreeContextAPI from "./TreeContextAPI"
 declare global {
   namespace JSX {
     interface ElementTypeConstructor {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (this: never, props: any): void | Promise<void>
     }
   }
+}
+
+
+interface ShellEvents {
+  view: unknown
 }
 
 namespace Proton {
@@ -23,7 +29,7 @@ namespace Proton {
     public readonly inflator: Inflator
     public readonly context: TreeContextAPI
 
-    private readonly events = new Events
+    private readonly events = new Events<ShellEvents>
 
     private viewElement: unknown = null
     private viewCallbacks = new Set<() => void>()
@@ -33,8 +39,6 @@ namespace Proton {
     constructor(inflator: Inflator, parent?: Shell) {
       this.inflator = cloneInstance(inflator)
       this.inflator.parentShell = this
-
-      // this.inflator.createComponent()
 
       this.context = new TreeContextAPI(parent?.context)
 
@@ -74,15 +78,8 @@ namespace Proton {
     suspense<T = void>(callback: (result: T) => void) { this.inflator.suspenseCallback = callback }
     unsuspense<T = void>(callback: (result: T) => void) { this.inflator.unsuspenseCallback = callback }
 
-    onViewChange(callback: (view: unknown) => void) {
-      const viewCallback = () => callback(this.viewElement)
-
-      this.viewCallbacks.add(viewCallback)
-      return () => void this.viewCallbacks.delete(viewCallback)
-    }
-
     getView() { return this.viewElement }
-    on(event: string) { return this.events.observe(event) }
+    on(event: keyof ShellEvents) { return this.events.observe(event) }
   }
 }
 

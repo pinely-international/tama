@@ -1,9 +1,10 @@
 // @ts-expect-error it's ok.
 Symbol.subscribe = Symbol.for("subscribe")
 
-import { WebInflator } from "./Inflator"
-import Proton from "./Proton"
 import Todos from "./Todos/Todos"
+
+import { WebInflator } from "../../src/Inflator"
+import Proton from "../../src/Proton"
 
 Proton
 

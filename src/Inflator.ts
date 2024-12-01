@@ -8,15 +8,6 @@ import Proton from "./Proton"
 import ProtonJSX from "./ProtonJSX"
 
 
-export interface InflationResult {
-
-}
-
-
-interface InflatorComponent {
-
-}
-
 
 export abstract class Inflator {
   public inflate(subject: unknown): unknown {
@@ -40,13 +31,12 @@ export abstract class Inflator {
   protected abstract inflatePrimitive(primitive: Primitive): unknown
   protected abstract inflateFragment(): unknown
 
-  private declare parentShell: Proton.Shell
-  private declare catchCallback: (thrown: unknown) => void
-  private declare suspenseCallback: (promise: Promise<void>) => void
-  private declare unsuspenseCallback: (promise: Promise<void>) => void
+  protected declare parentShell: Proton.Shell
+  protected declare catchCallback: (thrown: unknown) => void
+  protected declare suspenseCallback: (promise: Promise<void>) => void
+  protected declare unsuspenseCallback: (promise: Promise<void>) => void
 
   private suspenses: Promise<unknown>[] = []
-  private parentLastView: unknown = null
 
   protected inflateComponent(constructor: <T extends Proton.Shell>(this: T, props: {}) => T, props: {}) {
     const shell = new Proton.Shell(this, this.parentShell)
@@ -56,26 +46,18 @@ export abstract class Inflator {
         await constructor.call(shell, props)
       } catch (thrown) {
         if (this.suspenseCallback != null && thrown instanceof Promise) {
-          if (this.suspenses.length === 0) {
-            // this.parentLastView = this.parentShell.getView()
-            this.suspenseCallback(thrown)
-          }
-          if (!this.suspenses.includes(thrown)) {
-            this.suspenses.push(thrown)
-          }
+          if (this.suspenses.length === 0) this.suspenseCallback(thrown)
+          if (!this.suspenses.includes(thrown)) this.suspenses.push(thrown)
 
           const length = this.suspenses.length
+
 
           await Promise.all(this.suspenses)
           await constructor.call(shell, props)
 
-          if (length === this.suspenses.length) {
-            if (this.unsuspenseCallback) {
-              this.unsuspenseCallback(thrown)
-            } else {
-              // this.parentLastView && this.parentShell.view.set(this.parentLastView)
-            }
 
+          if (length === this.suspenses.length) {
+            this.unsuspenseCallback?.(thrown)
             this.suspenses = []
           }
 
@@ -91,8 +73,6 @@ export abstract class Inflator {
 
     return shell
   }
-
-  createComponent(): InflatorComponent { }
 }
 
 export class WebInflator extends Inflator {
@@ -303,8 +283,7 @@ export class WebInflator extends Inflator {
 
     let lastAnimationFrame = -1
 
-    // shell.on("detach").subscribe?.(() => )
-    shell.onViewChange(view => {
+    shell.on("view").subscribe(view => {
       if (view instanceof Node === false) return
 
       // Assume that the anchor node was already connected.

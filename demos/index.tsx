@@ -1,11 +1,11 @@
 // @ts-expect-error it's ok.
 Symbol.subscribe = Symbol.for("subscribe")
 
-import Act from "./Act"
-import ActBindings from "./ActBinding"
-import Events from "./Events"
-import { WebInflator } from "./Inflator"
-import Proton from "./Proton"
+import Act from "../src/Act"
+import ActBindings from "../src/ActBinding"
+import Events from "../src/Events"
+import { WebInflator } from "../src/Inflator"
+import Proton from "../src/Proton"
 
 
 const inflator = new WebInflator
