@@ -324,3 +324,13 @@ export class WebInflator extends Inflator {
 const HTMLInputNativeValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!
 const HTMLInputNativeSet = HTMLInputNativeValue.set!
 const HTMLInputNativeGet = HTMLInputNativeValue.get!
+
+class HTMLElementComponent extends HTMLElement {
+  constructor() {
+    super()
+
+    this.attachShadow({ mode: "open", delegatesFocus: true }).getRootNode()
+  }
+}
+
+window.customElements.define("Component", HTMLElementComponent)
