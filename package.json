@@ -25,7 +25,7 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "type-fest": "4.x"
+    "type-fest": "4.x.x"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
