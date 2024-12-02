@@ -61,7 +61,7 @@ declare global {
 
     interface IntrinsicElements {
       // HTML
-      a: IntrinsicAttributes
+      a: AnchorElementAttributes
       abbr: IntrinsicAttributes
       address: IntrinsicAttributes
       area: IntrinsicAttributes
@@ -114,7 +114,7 @@ declare global {
       html: IntrinsicAttributes
       i: IntrinsicAttributes
       iframe: IntrinsicAttributes
-      img: IntrinsicAttributes
+      img: ImageElementAttributes
       input: InputElementAttributes
       ins: IntrinsicAttributes
       kbd: IntrinsicAttributes
