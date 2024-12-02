@@ -1,5 +1,5 @@
 interface User {
-  avatar: string
+  avatar?: string
   email: string
 
   firstName: string
