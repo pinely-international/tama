@@ -5,6 +5,11 @@ interface Accessor<T> {
   set(value: T): void
 }
 
+export interface AccessorReadonly<T> { get(): T }
+export interface AccessorWriteonly<T> { set(value: T): void }
+
+export type Accessible<T> = Accessor<T> | AccessorReadonly<T> | AccessorWriteonly<T>
+
 namespace Accessor {
   // export class ProxyRecord {
   //   constructor(private readonly object: object) { }

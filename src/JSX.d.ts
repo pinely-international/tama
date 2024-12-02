@@ -1,18 +1,31 @@
+import { Accessible } from "./Accessor"
+import Guarded from "./Guarded"
 import Observable from "./Observable"
 
 export { }
 
 
 declare global {
+  type ElementAttribute<T> =
+    | T
+    | Observable<T>
+    | Accessible<T>
+    | (Observable<T> & Accessible<T>)
+    | Guarded<T>
+    | (Guarded<T> & Observable<T>)
+    | (Guarded<T> & Accessible<T>)
+    | (Guarded<T> & Observable<T> & Accessible<T>)
+
   type IntrinsicElementEvents = {
     [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
   }
 
   interface IntrinsicAttributes {
     on?: IntrinsicElementEvents
-    key?: unknown
-    style?: Record<string, string | CSSUnitValue | Observable> | string | Observable<string>
-    className?: string
+    mounted?: ElementAttribute<boolean>
+
+    style?: ElementAttribute<Record<string, ElementAttribute<string | CSSUnitValue>> | string>
+    className?: ElementAttribute<string>
   }
   interface ProtonSVGElement { }
 
@@ -31,11 +44,19 @@ declare global {
 
 
     interface InputElementAttributes extends IntrinsicAttributes {
-      value: string | Observable<string> | (Observable<string> & { set(value: string): void })
+      value?: ElementAttribute<string>
     }
 
     interface ButtonElementAttributes extends IntrinsicAttributes {
-      type?: "button" | "reset" | "submit"
+      type?: ElementAttribute<"button" | "reset" | "submit">
+    }
+
+    interface ImageElementAttributes extends IntrinsicAttributes {
+      src?: ElementAttribute<"button" | "reset" | "submit">
+    }
+
+    interface AnchorElementAttributes extends IntrinsicAttributes {
+      href?: ElementAttribute<string>
     }
 
     interface IntrinsicElements {

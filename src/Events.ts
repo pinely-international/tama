@@ -1,4 +1,5 @@
 import Act from "./Act"
+import Guarded from "./Guarded"
 import Null from "./Null"
 import Observable, { Subscriptable } from "./Observable"
 
@@ -116,10 +117,12 @@ namespace Events {
     private readonly __$ = new Proxy(this, {
       get: (target, key) => target.to(value => value[key as keyof T]),
       set: (target, key, newValue) => target.value[key as keyof T] = newValue
-    }) as unknown as T
+    }) as unknown as { [K in keyof T]-?: State<T[K]> }
 
     get $() { return this.__$ }
-    set $(value: T) { this.set(value) }
+
+    get it() { return this.value }
+    set it(value: T) { this.set(value) }
 
     to<U>(predicate: (value: T) => U): State<U> {
       const newState = new State(predicate(this.value))
@@ -129,7 +132,6 @@ namespace Events {
       return newState
     }
 
-
     readonly(): StateReadonly<T> {
       return { get: () => this.get(), [Symbol.subscribe]: next => this[Symbol.subscribe](next) }
     }
@@ -137,6 +139,16 @@ namespace Events {
     writeonly(): StateWriteonly<T> {
       return { set: v => this.set(v) }
     }
+
+
+    if(predicate: (value: T) => unknown): StateReadonly<boolean> { }
+    readonly ifNullable: StateReadonly<boolean>
+    readonly ifNonNullable: StateReadonly<boolean>
+
+    guard<U>(predicate: (value: T) => value is U): Guarded<U, T> { }
+    readonly nullable: Guarded<T | null | undefined, T | null | undefined>
+    readonly nonNullable: Guarded<T, T | null | undefined>
+
 
     private boundGet: ((() => T) & Observable<T>)
     private boundSet = (newValue: T | ((current: T) => T)) => this.set(newValue)
