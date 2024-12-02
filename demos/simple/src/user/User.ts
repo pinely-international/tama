@@ -4,8 +4,6 @@ interface User {
 
   firstName: string
   lastName: string
-
-  if(ads: (user: this) => any): any
 }
 namespace User { }
 

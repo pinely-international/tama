@@ -4,16 +4,19 @@ import { Proton } from "@denshya/proton"
 
 import Navbar from "./ui/Navbar/Navbar"
 import MiniProfile from "./ui/MiniProfile/MiniProfile"
+import User from "./user/User"
 
 
 function App(this: Proton.Shell) {
+  const user = { avatar: "", email: "asd@as.com", firstName: "John", lastName: "Doe" } as User | undefined
+
   this.view.set(
     <>
       <header>
         <Navbar />
       </header>
       <main>
-        <MiniProfile user={{ avatar: "", email: "asd@as.com", firstName: "John", lastName: "Doe" }} />
+        <MiniProfile user={user} />
       </main>
     </>
   )
