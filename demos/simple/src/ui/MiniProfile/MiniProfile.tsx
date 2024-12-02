@@ -42,7 +42,7 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
         {this.inflator.inflateMount(user.$.avatar, Boolean, () => (
           <img className="mini-profile__avatar" src={user.$.avatar} alt="avatar" />
         ))}
-        {this.inflator.inflateMount(user.$.avatar, Boolean, (
+        {this.mountable(user.$.avatar.ifNonNullable, (
           <img className="mini-profile__avatar" src={user.$.avatar} alt="avatar" />
         ))}
         {setMount(user.$.avatar, Boolean, user => (
@@ -50,11 +50,11 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
         ))}
 
         {setMount(user.$.avatar.to(avatar => avatar != null && (
-          <img className="mini-profile__avatar" style={user.$.avatar} alt="avatar" />
+          <img className="mini-profile__avatar" style={user.$.avatar} />
         )))}
 
-        <img mounted={ } className="mini-profile__avatar" src={user.$.avatar} alt="avatar" />
-
+        <img className="mini-profile__avatar" src={user.$.avatar} alt="avatar" />
+        <img className="mini-profile__avatar" src={user.$.avatar.guard(it => it != null)} alt="avatar" />
 
         {Observable.trap()}
 
