@@ -8,7 +8,7 @@ import { Simplify } from "type-fest"
 
 
 interface MiniProfileProps {
-  user: Events.StateSubject<User>
+  user: User
 }
 
 function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
@@ -17,7 +17,7 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
   this.view.set(
     <div className="mini-profile">
       <div className="mini-profile__profile">
-        <div className="mini-profile__letter" mounted={user.$.avatar.ifNullable}>
+        <div className="mini-profile__letter" mounted={user.$.avatar.isNotNullish}>
           <ColoredLetter letter={user.to(user => user.firstName[0])} />
         </div>
         <img className="mini-profile__avatar" src={user.$.avatar.required} alt="avatar" />
@@ -32,6 +32,3 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
 }
 
 export default MiniProfile
-
-const asd: Simplify<Asd<User>> = {} as never
-asd
