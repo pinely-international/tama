@@ -1,3 +1,4 @@
+import { AccessorReadonly } from "./Accessor"
 import Act from "./Act"
 import Guarded from "./Guarded"
 import Null from "./Null"
@@ -114,12 +115,10 @@ namespace Events {
     }
 
 
-    private readonly __$ = new Proxy(this, {
+    readonly $ = new Proxy(this, {
       get: (target, key) => target.to(value => value[key as keyof T]),
       set: (target, key, newValue) => target.value[key as keyof T] = newValue
     }) as unknown as { [K in keyof T]-?: State<T[K]> }
-
-    get $() { return this.__$ }
 
     get it() { return this.value }
     set it(value: T) { this.set(value) }
@@ -140,14 +139,22 @@ namespace Events {
       return { set: v => this.set(v) }
     }
 
+    is(predicate: (value: T) => boolean): StateReadonly<boolean>
+    is<U extends T>(predicate: (value: T) => value is U): StateReadonly<boolean> {
+      return this.to(predicate).readonly()
+    }
+    readonly isNullish: StateReadonly<boolean> = this.is(value => value == null)
+    readonly isNotNullish: StateReadonly<boolean> = this.is(value => value != null)
 
-    if(predicate: (value: T) => unknown): StateReadonly<boolean> { }
-    readonly ifNullable: StateReadonly<boolean>
-    readonly ifNonNullable: StateReadonly<boolean>
+    guard<U extends T>(predicate: (value: T) => boolean): Guarded<U, T> & StateReadonly<T>
+    guard<U extends T>(predicate: (value: T) => value is U): Guarded<U, T> & StateReadonly<T> {
+      const guardedState = this.to(v => v).readonly() as Guarded<U, T> & StateReadonly<T>
+      guardedState.valid = predicate
 
-    guard<U>(predicate: (value: T) => value is U): Guarded<U, T> { }
-    readonly nullable: Guarded<T | null | undefined, T | null | undefined>
-    readonly nonNullable: Guarded<T, T | null | undefined>
+      return guardedState
+    }
+    readonly nullable: Guarded<T | null | undefined, T | null | undefined> & StateReadonly<T> = this.guard(value => value == null)
+    readonly nonNullable: Guarded<T & {}, T> & StateReadonly<T> = this.guard(value => value != null)
 
 
     private boundGet: ((() => T) & Observable<T>)
@@ -263,5 +270,5 @@ export default Events
 // export function signal(): PropertyDecorator | ParameterDecorator { return (target: Object, propertyKey: string | symbol) => { } }
 
 
-type StateReadonly<T> = Observable<T> & { get(): T }
+type StateReadonly<T> = Observable<T> & AccessorReadonly<T>
 type StateWriteonly<T> = { set(value: T | ((value: T) => T)): void }

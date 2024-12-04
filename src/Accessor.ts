@@ -8,7 +8,7 @@ interface Accessor<T> {
 export interface AccessorReadonly<T> { get(): T }
 export interface AccessorWriteonly<T> { set(value: T): void }
 
-export type Accessible<T> = Accessor<T> | AccessorReadonly<T> | AccessorWriteonly<T>
+export type Accessible<T> = Partial<Accessor<T>>
 
 namespace Accessor {
   // export class ProxyRecord {

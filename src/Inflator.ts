@@ -1,9 +1,10 @@
 import { Primitive } from "type-fest"
 
-import Accessor from "./Accessor"
+import Accessor, { AccessorReadonly } from "./Accessor"
 import ActBindings from "./ActBinding"
 import Events from "./Events"
 import Null from "./Null"
+import { Subscriptable } from "./Observable"
 import Proton from "./Proton"
 import ProtonJSX from "./ProtonJSX"
 
@@ -210,7 +211,7 @@ export class WebInflator extends Inflator {
     return object
   }
 
-  protected inflateJSXIntrinsic(intrinsic: ProtonJSX.Intrinsic): HTMLElement | DocumentFragment {
+  protected inflateJSXIntrinsic(intrinsic: ProtonJSX.Intrinsic): HTMLElement | DocumentFragment | Comment {
     const intrinsicInflated = this.jsxIntrinsicEvaluator.evaluate(intrinsic as never)
 
     if (intrinsic.props == null) return intrinsicInflated
@@ -260,6 +261,60 @@ export class WebInflator extends Inflator {
             }
           })
         }
+    }
+
+    // Guard Rendering.
+    const comment = document.createComment(intrinsic.type.toString())
+    const properties = Object.values(intrinsic.props)
+
+    const guards = new Map<object, boolean>()
+    const guardAccessors: (AccessorReadonly<unknown> & Subscriptable<unknown>)[] = []
+
+    for (const property of properties) {
+      if ("valid" in property === false) continue
+
+      const accessor = Accessor.extractObservable(property)
+      if (accessor == null) continue
+
+      guardAccessors.push(accessor as never)
+      accessor.subscribe?.(value => {
+        value = accessor.get?.() ?? value
+        guards.set(accessor, property.valid(value))
+
+        if (guards.values().every(Boolean)) {
+          if (!comment.isConnected) return
+          comment.replaceWith(intrinsicInflated)
+        } else {
+          if (!intrinsicInflated.isConnected) return
+          intrinsicInflated.replaceWith(comment)
+        }
+      })
+
+      const value = accessor.get?.()
+      if (property.valid(value) === false) return comment
+    }
+
+    // `Mounted` property.
+    if (intrinsic.props.mounted) {
+      const accessor = Accessor.extractObservable(intrinsic.props.mounted)
+      if (accessor == null) return intrinsicInflated
+
+      guardAccessors.push(accessor as never)
+
+      accessor.subscribe?.(mounted => {
+        mounted = accessor.get?.() ?? mounted
+
+        if (mounted) {
+          if (!comment.isConnected) return
+          comment.replaceWith(intrinsicInflated)
+        } else {
+          if (!intrinsicInflated.isConnected) return
+          intrinsicInflated.replaceWith(comment)
+        }
+      })
+
+      if (accessor?.get == null) return intrinsicInflated
+      if (!accessor.get()) return comment
     }
 
     return intrinsicInflated

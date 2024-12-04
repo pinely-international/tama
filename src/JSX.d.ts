@@ -6,180 +6,182 @@ export { }
 
 
 declare global {
-  type ElementAttribute<T> =
-    | T
-    | Observable<T>
-    | Accessible<T>
-    | (Observable<T> & Accessible<T>)
-    | Guarded<T>
-    | (Guarded<T> & Observable<T>)
-    | (Guarded<T> & Accessible<T>)
-    | (Guarded<T> & Observable<T> & Accessible<T>)
-
-  type IntrinsicElementEvents = {
-    [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
-  }
-
-  interface IntrinsicAttributes {
-    on?: IntrinsicElementEvents
-    mounted?: ElementAttribute<boolean>
-
-    style?: ElementAttribute<Record<string, ElementAttribute<string | CSSUnitValue>> | string>
-    className?: ElementAttribute<string>
-  }
-  interface ProtonSVGElement { }
-
   namespace JSX {
+    interface ProtonSVGElement { }
     interface Element {
       type: never
       props: never
       children: []
     }
 
-
     interface ElementTypeConstructor { }
-
     type ElementType = string | ElementTypeConstructor
 
 
+    type AttributeValue<T> =
+      | T
+      | Observable<T>
+      | Accessible<T>
+      | (Observable<T> & Accessible<T>)
+      | (Guarded<T> & Observable<T>)
+      | (Guarded<T> & Accessible<T>)
+      | (Guarded<T> & Observable<T> & Accessible<T>)
 
-    interface InputElementAttributes extends IntrinsicAttributes {
-      value?: ElementAttribute<string>
+    type ElementEvents = {
+      [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
     }
 
-    interface ButtonElementAttributes extends IntrinsicAttributes {
-      type?: ElementAttribute<"button" | "reset" | "submit">
+    interface IntrinsicAttributes {
+      mounted?: AttributeValue<boolean>
     }
 
-    interface ImageElementAttributes extends IntrinsicAttributes {
-      src?: ElementAttribute<"button" | "reset" | "submit">
+    interface ElementAttributes extends IntrinsicAttributes {
+      on?: ElementEvents
+
+      style?: AttributeValue<Record<string, AttributeValue<string | CSSUnitValue>> | string>
+      className?: AttributeValue<string>
     }
 
-    interface AnchorElementAttributes extends IntrinsicAttributes {
-      href?: ElementAttribute<string>
+
+
+
+    interface InputElementAttributes extends ElementAttributes {
+      value?: AttributeValue<string>
+    }
+
+    interface ButtonElementAttributes extends ElementAttributes {
+      type?: AttributeValue<"button" | "reset" | "submit">
+    }
+
+    interface ImageElementAttributes extends ElementAttributes {
+      src?: AttributeValue<"button" | "reset" | "submit">
+    }
+
+    interface AnchorElementAttributes extends ElementAttributes {
+      href?: AttributeValue<string>
     }
 
     interface IntrinsicElements {
       // HTML
       a: AnchorElementAttributes
-      abbr: IntrinsicAttributes
-      address: IntrinsicAttributes
-      area: IntrinsicAttributes
-      article: IntrinsicAttributes
-      aside: IntrinsicAttributes
-      audio: IntrinsicAttributes
-      b: IntrinsicAttributes
-      base: IntrinsicAttributes
-      bdi: IntrinsicAttributes
-      bdo: IntrinsicAttributes
-      big: IntrinsicAttributes
-      blockquote: IntrinsicAttributes
-      body: IntrinsicAttributes
-      br: IntrinsicAttributes
+      abbr: ElementAttributes
+      address: ElementAttributes
+      area: ElementAttributes
+      article: ElementAttributes
+      aside: ElementAttributes
+      audio: ElementAttributes
+      b: ElementAttributes
+      base: ElementAttributes
+      bdi: ElementAttributes
+      bdo: ElementAttributes
+      big: ElementAttributes
+      blockquote: ElementAttributes
+      body: ElementAttributes
+      br: ElementAttributes
       button: ButtonElementAttributes
-      canvas: IntrinsicAttributes
-      caption: IntrinsicAttributes
-      center: IntrinsicAttributes
-      cite: IntrinsicAttributes
-      code: IntrinsicAttributes
-      col: IntrinsicAttributes
-      colgroup: IntrinsicAttributes
-      data: IntrinsicAttributes
-      datalist: IntrinsicAttributes
-      dd: IntrinsicAttributes
-      del: IntrinsicAttributes
-      details: IntrinsicAttributes
-      dfn: IntrinsicAttributes
-      dialog: IntrinsicAttributes
-      div: IntrinsicAttributes
-      dl: IntrinsicAttributes
-      dt: IntrinsicAttributes
-      em: IntrinsicAttributes
-      embed: IntrinsicAttributes
-      fieldset: IntrinsicAttributes
-      figcaption: IntrinsicAttributes
-      figure: IntrinsicAttributes
-      footer: IntrinsicAttributes
-      form: IntrinsicAttributes
-      h1: IntrinsicAttributes
-      h2: IntrinsicAttributes
-      h3: IntrinsicAttributes
-      h4: IntrinsicAttributes
-      h5: IntrinsicAttributes
-      h6: IntrinsicAttributes
-      head: IntrinsicAttributes
-      header: IntrinsicAttributes
-      hgroup: IntrinsicAttributes
-      hr: IntrinsicAttributes
-      html: IntrinsicAttributes
-      i: IntrinsicAttributes
-      iframe: IntrinsicAttributes
+      canvas: ElementAttributes
+      caption: ElementAttributes
+      center: ElementAttributes
+      cite: ElementAttributes
+      code: ElementAttributes
+      col: ElementAttributes
+      colgroup: ElementAttributes
+      data: ElementAttributes
+      datalist: ElementAttributes
+      dd: ElementAttributes
+      del: ElementAttributes
+      details: ElementAttributes
+      dfn: ElementAttributes
+      dialog: ElementAttributes
+      div: ElementAttributes
+      dl: ElementAttributes
+      dt: ElementAttributes
+      em: ElementAttributes
+      embed: ElementAttributes
+      fieldset: ElementAttributes
+      figcaption: ElementAttributes
+      figure: ElementAttributes
+      footer: ElementAttributes
+      form: ElementAttributes
+      h1: ElementAttributes
+      h2: ElementAttributes
+      h3: ElementAttributes
+      h4: ElementAttributes
+      h5: ElementAttributes
+      h6: ElementAttributes
+      head: ElementAttributes
+      header: ElementAttributes
+      hgroup: ElementAttributes
+      hr: ElementAttributes
+      html: ElementAttributes
+      i: ElementAttributes
+      iframe: ElementAttributes
       img: ImageElementAttributes
       input: InputElementAttributes
-      ins: IntrinsicAttributes
-      kbd: IntrinsicAttributes
-      keygen: IntrinsicAttributes
-      label: IntrinsicAttributes
-      legend: IntrinsicAttributes
-      li: IntrinsicAttributes
-      link: IntrinsicAttributes
-      main: IntrinsicAttributes
-      map: IntrinsicAttributes
-      mark: IntrinsicAttributes
-      menu: IntrinsicAttributes
-      menuitem: IntrinsicAttributes
-      meta: IntrinsicAttributes
-      meter: IntrinsicAttributes
-      nav: IntrinsicAttributes
-      noindex: IntrinsicAttributes
-      noscript: IntrinsicAttributes
-      object: IntrinsicAttributes
-      ol: IntrinsicAttributes
-      optgroup: IntrinsicAttributes
-      option: IntrinsicAttributes
-      output: IntrinsicAttributes
-      p: IntrinsicAttributes
-      param: IntrinsicAttributes
-      picture: IntrinsicAttributes
-      pre: IntrinsicAttributes
-      progress: IntrinsicAttributes
-      q: IntrinsicAttributes
-      rp: IntrinsicAttributes
-      rt: IntrinsicAttributes
-      ruby: IntrinsicAttributes
-      s: IntrinsicAttributes
-      samp: IntrinsicAttributes
-      search: IntrinsicAttributes
-      slot: IntrinsicAttributes
-      script: IntrinsicAttributes
-      section: IntrinsicAttributes
-      select: IntrinsicAttributes
-      small: IntrinsicAttributes
-      source: IntrinsicAttributes
-      span: IntrinsicAttributes
-      strong: IntrinsicAttributes
-      style: IntrinsicAttributes
-      sub: IntrinsicAttributes
-      summary: IntrinsicAttributes
-      sup: IntrinsicAttributes
-      table: IntrinsicAttributes
-      template: IntrinsicAttributes
-      tbody: IntrinsicAttributes
-      td: IntrinsicAttributes
-      textarea: IntrinsicAttributes
-      tfoot: IntrinsicAttributes
-      th: IntrinsicAttributes
-      thead: IntrinsicAttributes
-      time: IntrinsicAttributes
-      title: IntrinsicAttributes
-      tr: IntrinsicAttributes
-      track: IntrinsicAttributes
-      u: IntrinsicAttributes
-      ul: IntrinsicAttributes
-      "var": IntrinsicAttributes
-      video: IntrinsicAttributes
-      wbr: IntrinsicAttributes
-      webview: IntrinsicAttributes
+      ins: ElementAttributes
+      kbd: ElementAttributes
+      keygen: ElementAttributes
+      label: ElementAttributes
+      legend: ElementAttributes
+      li: ElementAttributes
+      link: ElementAttributes
+      main: ElementAttributes
+      map: ElementAttributes
+      mark: ElementAttributes
+      menu: ElementAttributes
+      menuitem: ElementAttributes
+      meta: ElementAttributes
+      meter: ElementAttributes
+      nav: ElementAttributes
+      noindex: ElementAttributes
+      noscript: ElementAttributes
+      object: ElementAttributes
+      ol: ElementAttributes
+      optgroup: ElementAttributes
+      option: ElementAttributes
+      output: ElementAttributes
+      p: ElementAttributes
+      param: ElementAttributes
+      picture: ElementAttributes
+      pre: ElementAttributes
+      progress: ElementAttributes
+      q: ElementAttributes
+      rp: ElementAttributes
+      rt: ElementAttributes
+      ruby: ElementAttributes
+      s: ElementAttributes
+      samp: ElementAttributes
+      search: ElementAttributes
+      slot: ElementAttributes
+      script: ElementAttributes
+      section: ElementAttributes
+      select: ElementAttributes
+      small: ElementAttributes
+      source: ElementAttributes
+      span: ElementAttributes
+      strong: ElementAttributes
+      style: ElementAttributes
+      sub: ElementAttributes
+      summary: ElementAttributes
+      sup: ElementAttributes
+      table: ElementAttributes
+      template: ElementAttributes
+      tbody: ElementAttributes
+      td: ElementAttributes
+      textarea: ElementAttributes
+      tfoot: ElementAttributes
+      th: ElementAttributes
+      thead: ElementAttributes
+      time: ElementAttributes
+      title: ElementAttributes
+      tr: ElementAttributes
+      track: ElementAttributes
+      u: ElementAttributes
+      ul: ElementAttributes
+      "var": ElementAttributes
+      video: ElementAttributes
+      wbr: ElementAttributes
+      webview: ElementAttributes
 
       // SVG
       svg: ProtonSVGElement
