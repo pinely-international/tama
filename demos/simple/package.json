@@ -23,6 +23,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "sass": "^1.81.0",
+    "type-fest": "^4.30.0",
     "typescript": "^5.7.2",
     "vite": "^4.5.0",
     "vite-bundle-visualizer": "^1.2.1"

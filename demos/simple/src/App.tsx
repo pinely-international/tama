@@ -1,6 +1,6 @@
 import "@/assets/scss/base.scss"
 
-import { Proton } from "@denshya/proton"
+import { Events, Proton } from "@denshya/proton"
 
 import Navbar from "./ui/Navbar/Navbar"
 import MiniProfile from "./ui/MiniProfile/MiniProfile"
@@ -8,7 +8,7 @@ import User from "./user/User"
 
 
 function App(this: Proton.Shell) {
-  const user = { avatar: "", email: "asd@as.com", firstName: "John", lastName: "Doe" } as User | undefined
+  const user = new Events.State<User | undefined>({ avatar: "", email: "asd@as.com", firstName: "John", lastName: "Doe" })
 
   this.view.set(
     <>
@@ -16,7 +16,7 @@ function App(this: Proton.Shell) {
         <Navbar />
       </header>
       <main>
-        <MiniProfile user={user} />
+        <MiniProfile user={user.required} />
       </main>
     </>
   )
