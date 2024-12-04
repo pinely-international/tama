@@ -1,25 +1,25 @@
 import "./ColoredLetter.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Act, Events, Proton } from "@denshya/proton"
 
 
 interface ColoredLetterProps {
-  letter: string
-  baseHSL?: [number, number, number]
+  letter: Events.State<string>
+  baseHSL?: Events.State<[number, number, number]>
 }
 
-function ColoredLetter(this: Proton.Shell, props: Events.StateSubjectsOf<ColoredLetterProps>) {
-  const letterBackground = Events.StatesTo(props, props => {
-    const [h, s, l] = props.baseHSL ?? [255, 50, 50]
+function ColoredLetter(this: Proton.Shell, props: ColoredLetterProps) {
+  const backgroundColor = Act.compute((letter, baseHSL) => {
+    const [h, s, l] = baseHSL
 
-    const letterIndex = alphabet.indexOf(props.letter.toLowerCase())
+    const letterIndex = alphabet.indexOf(letter.toLowerCase())
     const letterBackground = `hsl(${h / alphabet.length * letterIndex} ${s}% ${l}%)`
 
     return letterBackground
-  })
+  }, [props.letter, props.baseHSL ?? new Events.State([255, 50, 50])])
 
   this.view.set(
-    <span className="colored-letter" style={{ backgroundColor: letterBackground }}>{props.$.letter}</span>
+    <span className="colored-letter" style={{ backgroundColor }}>{props.letter}</span>
   )
 }
 

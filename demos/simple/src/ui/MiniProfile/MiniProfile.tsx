@@ -8,7 +8,7 @@ import { Simplify } from "type-fest"
 
 
 interface MiniProfileProps {
-  user: User
+  user: User | Events.State<User>
 }
 
 function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {

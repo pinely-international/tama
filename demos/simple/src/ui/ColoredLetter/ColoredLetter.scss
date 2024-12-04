@@ -1,4 +1,4 @@
-@import "@/assets/scss/bundle.scss";
+@use "@/assets/scss/bundle.scss" as *;
 
 .colored-letter {
 	display: flex;

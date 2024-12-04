@@ -7,10 +7,11 @@
 Import `_bundle.scss` in your in isolated scss files to get access to variables and intellisense.
 
 ```scss
-@import "~/assets/scss/bundle.scss"; // "~" means root directory.
+@use "~/assets/scss/bundle.scss"; // "~" means root directory.
 ```
 
 ## Colors
 
 To get more colors you may use these services
-- https://coolors.co/
+
+- <https://coolors.co/>

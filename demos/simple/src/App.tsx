@@ -8,7 +8,7 @@ import User from "./user/User"
 
 
 function App(this: Proton.Shell) {
-  const user = new Events.State<User | undefined>({ avatar: "", email: "asd@as.com", firstName: "John", lastName: "Doe" })
+  const user = new Events.State<User>({ avatar: "", email: "asd@as.com", firstName: "John", lastName: "Doe" })
 
   this.view.set(
     <>
@@ -16,7 +16,7 @@ function App(this: Proton.Shell) {
         <Navbar />
       </header>
       <main>
-        <MiniProfile user={user.required} />
+        <MiniProfile user={user} />
       </main>
     </>
   )

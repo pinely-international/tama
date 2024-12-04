@@ -1,4 +1,4 @@
-@import "@/assets/scss/bundle.scss";
+@use "bundle.scss" as *;
 
 * {
 	box-sizing: border-box;
