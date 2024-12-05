@@ -342,7 +342,7 @@ export class WebInflator extends Inflator {
     if (accessor.get == null && accessor.subscribe == null) return
 
     if (accessor.get) element[key] = accessor.get()
-    if (accessor.subscribe) accessor.subscribe(value => accessor.get?.() ?? value)
+    if (accessor.subscribe) accessor.subscribe(value => element[key] = accessor.get?.() ?? value)
   }
 
 
