@@ -334,6 +334,11 @@ export class WebInflator extends Inflator {
   }
 
   protected bindIntrinsicProperty(key: string, value: unknown, element: HTMLElement): void {
+    if (typeof value === "string") {
+      element[key] = value
+      return
+    }
+
     const accessor = Accessor.extractObservable(value)
     if (accessor == null) return
     if (accessor.get == null && accessor.subscribe == null) return
