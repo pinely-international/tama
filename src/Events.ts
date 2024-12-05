@@ -115,7 +115,7 @@ namespace Events {
     }
 
 
-    sets(other: State<T>): Unsubscribe {
+    sets<U>(other: State<T | U>): Unsubscribe {
       return this[Symbol.subscribe](value => other.set(value))
     }
 
