@@ -154,8 +154,8 @@ namespace Events {
       return guardedState
     }
     // readonly nullable: Guarded<T | null | undefined, T | null | undefined> & StateReadonly<T> = this.guard(value => value == null)
-    // readonly nonNullable: Guarded<T & {}, T> & StateReadonly<T> = this.guard(value => value != null)
-    // readonly required: Guarded<T & {}, T> & StateReadonly<T> = this.nonNullable
+    readonly nonNullable: Guarded<T & {}, T> & StateReadonly<T> = this.guard(value => value != null)
+    readonly required: Guarded<T & {}, T> & StateReadonly<T> = this.nonNullable
 
 
     private boundGet: ((() => T) & Observable<T>)
