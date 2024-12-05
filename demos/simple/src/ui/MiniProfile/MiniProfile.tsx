@@ -18,7 +18,6 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
   const inputMounted = new Events.State(false)
 
   inputValue[Symbol.subscribe](value => userAvatar.set(value))
-  inputValue[Symbol.subscribe](v => console.log(v))
 
   this.view.set(
     <div className="mini-profile">
