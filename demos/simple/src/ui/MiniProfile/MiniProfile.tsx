@@ -17,10 +17,10 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
   this.view.set(
     <div className="mini-profile">
       <div className="mini-profile__profile">
-        <div className="mini-profile__letter">
+        <div className="mini-profile__letter" mounted={false}>
           <ColoredLetter letter={user.to(user => user.firstName[0])} />
         </div>
-        <img className="mini-profile__avatar" src={user.$.avatar.required} alt="avatar" />
+        <img className="mini-profile__avatar" src={user.$.avatar.guard(it => it != null)} alt="avatar" />
         <div className="mini-profile__info">
           <div className="mini-profile__name">{user.$.firstName} {user.$.lastName.to(it => it[0].toUpperCase())}</div>
           <div className="mini-profile__email">{user.$.email}</div>

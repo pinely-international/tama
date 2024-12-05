@@ -16,7 +16,7 @@ function App(this: Proton.Shell) {
         <Navbar />
       </header>
       <main>
-        {/* <MiniProfile user={user} /> */}
+        <MiniProfile user={user} />
       </main>
     </>
   )
