@@ -4,7 +4,6 @@ import User from "@/user/User"
 import { Events, Proton } from "@denshya/proton"
 
 import ColoredLetter from "../ColoredLetter/ColoredLetter"
-import { Simplify } from "type-fest"
 
 
 interface MiniProfileProps {
@@ -17,7 +16,7 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
   this.view.set(
     <div className="mini-profile">
       <div className="mini-profile__profile">
-        <div className="mini-profile__letter" mounted={false}>
+        <div className="mini-profile__letter" mounted={user.$.avatar.is(it => it == null)}>
           <ColoredLetter letter={user.to(user => user.firstName[0])} />
         </div>
         <img className="mini-profile__avatar" src={user.$.avatar.guard(it => it != null)} alt="avatar" />
@@ -25,7 +24,8 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
           <div className="mini-profile__name">{user.$.firstName} {user.$.lastName.to(it => it[0].toUpperCase())}</div>
           <div className="mini-profile__email">{user.$.email}</div>
         </div>
-        <a className="ghost" href="/user/profile/settings" />
+        {/* <a className="ghost" href="/user/profile/settings" /> */}
+
       </div>
     </div>
   )
