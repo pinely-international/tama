@@ -17,14 +17,13 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
   const inputValue = new Events.State("")
   const inputMounted = new Events.State(false)
 
-  inputValue[Symbol.subscribe](value => userAvatar.set(value))
+  inputValue.sets(userAvatar)
 
   this.view.set(
     <div className="mini-profile">
       <div className="mini-profile__profile">
-        <button className="mini-profile__letter" type="button" on={{ click: () => inputMounted.set(true) }}>
-          {/* <ColoredLetter letter={user.to(user => user.firstName[0])} /> */}
-          asd
+        <button className="mini-profile__letter" mounted={userAvatar.is(it => it == null)}>
+          <ColoredLetter letter={user.to(user => user.firstName[0])} />
         </button>
         <input value={inputValue} mounted={inputMounted} />
         <img className="mini-profile__avatar" src={userAvatar.required} alt="avatar" />
@@ -33,6 +32,7 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
           <div className="mini-profile__email">{user.$.email}</div>
         </div>
       </div>
+      <button type="button" on={{ click: () => inputMounted.set(it => !it) }} style={{ position: "absolute", inset: "0" }} />
     </div>
   )
 }
