@@ -1,4 +1,4 @@
-import { AccessorGet } from "./Accessor"
+import { AccessorGet, AccessorSet } from "./Accessor"
 import Act from "./Act"
 import Guarded from "./Guarded"
 import Null from "./Null"
@@ -115,7 +115,7 @@ namespace Events {
     }
 
 
-    sets<U>(other: State<T | U>): Unsubscribe {
+    sets<U>(other: AccessorSet<T | U>): Unsubscribe {
       return this[Symbol.subscribe](value => other.set(value))
     }
 
@@ -128,18 +128,16 @@ namespace Events {
     set it(value: T) { this.set(value) }
 
     to<U>(predicate: (value: T) => U): State<U> {
-      const newState = new State(predicate(this.value))
-
-      this[Symbol.subscribe](value => newState.set(predicate(value)))
-
-      return newState
+      const fork = new State(predicate(this.value))
+      this[Symbol.subscribe](value => fork.set(predicate(value)))
+      return fork
     }
 
-    clone() { new State(this.get()) }
-    share() {
-      const shared = new State(this.get())
-      this.sets(shared)
-      return shared
+    fork() { new State(this.get()) }
+    clone() {
+      const cloned = new State(this.get())
+      this.sets(cloned)
+      return cloned
     }
 
     readonly(): StateReadonly<T> {
