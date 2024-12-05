@@ -77,12 +77,7 @@ export abstract class Inflator {
 }
 
 export class WebInflator extends Inflator {
-  protected jsxIntrinsicEvaluator = new ProtonJSX.HTMLIntrinsicEvaluator(
-    function transformIntrinsic(input) { return input },
-    function transformElement(element) { return element }
-  )
-
-  private components = new Set
+  // private components = new Set
 
   public inflate<T>(subject: T): T extends Node ? T : (T extends ProtonJSX.Node ? (HTMLElement | Comment) : (T extends Exclude<Primitive, null | undefined> ? Node : T)) {
     if (subject instanceof Node) return subject as never
@@ -212,14 +207,14 @@ export class WebInflator extends Inflator {
   }
 
   protected inflateJSXIntrinsic(intrinsic: ProtonJSX.Intrinsic): HTMLElement | DocumentFragment | Comment {
-    const intrinsicInflated = this.jsxIntrinsicEvaluator.evaluate(intrinsic as never)
+    if (typeof intrinsic.type !== "string") {
+      throw new TypeError(typeof intrinsic.type + " type of intrinsic element is not supported", { cause: { type: intrinsic.type } })
+    }
 
+    const intrinsicInflated = document.createElement(intrinsic.type)
     if (intrinsic.props == null) return intrinsicInflated
 
     if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, intrinsicInflated)
-
-    if (intrinsic.props.className)
-      intrinsicInflated.className = intrinsic.props.className
 
 
     if (intrinsic.type === "input") {
@@ -241,7 +236,6 @@ export class WebInflator extends Inflator {
       }
     }
 
-    if (intrinsic.props.type != null) intrinsicInflated.type = intrinsic.props.type
     if (intrinsic.props.on instanceof Object) {
       if (this.catchCallback == null)
         for (const key in intrinsic.props.on) {
@@ -263,14 +257,16 @@ export class WebInflator extends Inflator {
         }
     }
 
+    const properties = Object.entries(intrinsic.props)
+
+
     // Guard Rendering.
     const comment = document.createComment(intrinsic.type.toString())
-    const properties = Object.values(intrinsic.props)
 
     const guards = new Map<object, boolean>()
     const guardAccessors: (AccessorGet<unknown> & Subscriptable<unknown>)[] = []
 
-    for (const property of properties) {
+    for (const [, property] of properties) {
       if (property instanceof Object === false) continue
       if ("valid" in property === false) continue
 
@@ -318,8 +314,34 @@ export class WebInflator extends Inflator {
       if (!accessor.get()) return comment
     }
 
+
+
+    for (const [key, value] of properties) {
+      if (key === "style") continue
+      if (key === "on") continue
+      if (key === "mounted") continue
+
+      if (intrinsic.type === "input") {
+        if (key === "value") continue
+      }
+
+      this.bindIntrinsicProperty(key, value, intrinsicInflated)
+    }
+
+
+
     return intrinsicInflated
   }
+
+  protected bindIntrinsicProperty(key: string, value: unknown, element: HTMLElement): void {
+    const accessor = Accessor.extractObservable(value)
+    if (accessor == null) return
+    if (accessor.get == null && accessor.subscribe == null) return
+
+    if (accessor.get) element[key] = accessor.get()
+    if (accessor.subscribe) accessor.subscribe(value => accessor.get?.() ?? value)
+  }
+
 
   protected inflateJSXComponent(component: ProtonJSX.Component) {
     const shell = this.inflateComponent(component.type as never, component.props)
