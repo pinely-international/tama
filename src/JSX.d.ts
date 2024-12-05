@@ -1,4 +1,4 @@
-import { Accessible } from "./Accessor"
+import { Accessible, AccessorGet } from "./Accessor"
 import Guarded from "./Guarded"
 import Observable from "./Observable"
 
@@ -32,7 +32,7 @@ declare global {
     }
 
     interface IntrinsicAttributes {
-      mounted?: AttributeValue<boolean>
+      mounted?: AccessorGet<T> & Observable<T>
     }
 
     interface ElementAttributes extends IntrinsicAttributes {
@@ -54,7 +54,8 @@ declare global {
     }
 
     interface ImageElementAttributes extends ElementAttributes {
-      src?: AttributeValue<"button" | "reset" | "submit">
+      src?: AttributeValue<string>
+      alt?: AttributeValue<string>
     }
 
     interface AnchorElementAttributes extends ElementAttributes {

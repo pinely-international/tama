@@ -5,8 +5,8 @@ interface Accessor<T> {
   set(value: T): void
 }
 
-export interface AccessorReadonly<T> { get(): T }
-export interface AccessorWriteonly<T> { set(value: T): void }
+export interface AccessorGet<T> { get(): T }
+export interface AccessorSet<T> { set(value: T): void }
 
 export type Accessible<T> = Partial<Accessor<T>>
 

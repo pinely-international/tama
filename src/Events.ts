@@ -1,4 +1,4 @@
-import { AccessorReadonly } from "./Accessor"
+import { AccessorGet } from "./Accessor"
 import Act from "./Act"
 import Guarded from "./Guarded"
 import Null from "./Null"
@@ -271,5 +271,5 @@ export default Events
 // export function signal(): PropertyDecorator | ParameterDecorator { return (target: Object, propertyKey: string | symbol) => { } }
 
 
-type StateReadonly<T> = Observable<T> & AccessorReadonly<T>
+type StateReadonly<T> = Observable<T> & AccessorGet<T>
 type StateWriteonly<T> = { set(value: T | ((value: T) => T)): void }

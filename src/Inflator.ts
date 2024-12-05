@@ -1,6 +1,6 @@
 import { Primitive } from "type-fest"
 
-import Accessor, { AccessorReadonly } from "./Accessor"
+import Accessor, { AccessorGet } from "./Accessor"
 import ActBindings from "./ActBinding"
 import Events from "./Events"
 import Null from "./Null"
@@ -268,7 +268,7 @@ export class WebInflator extends Inflator {
     const properties = Object.values(intrinsic.props)
 
     const guards = new Map<object, boolean>()
-    const guardAccessors: (AccessorReadonly<unknown> & Subscriptable<unknown>)[] = []
+    const guardAccessors: (AccessorGet<unknown> & Subscriptable<unknown>)[] = []
 
     for (const property of properties) {
       if (property instanceof Object === false) continue
