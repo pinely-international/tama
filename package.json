@@ -29,7 +29,6 @@
     "type-fest": "4.x.x"
   },
   "devDependencies": {
-    "@types/react": "^18.3.12",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
     "eslint": "8.55.0",
