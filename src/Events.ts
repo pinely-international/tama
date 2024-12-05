@@ -143,8 +143,8 @@ namespace Events {
     is<U extends T>(predicate: (value: T) => value is U): StateReadonly<boolean> {
       return this.to(predicate).readonly()
     }
-    readonly isNullish: StateReadonly<boolean> = this.is(value => value == null)
-    readonly isNotNullish: StateReadonly<boolean> = this.is(value => value != null)
+    // readonly isNullish: StateReadonly<boolean> = this.is(value => value == null)
+    // readonly isNotNullish: StateReadonly<boolean> = this.is(value => value != null)
 
     guard<U extends T>(predicate: (value: T) => boolean): Guarded<U, T> & StateReadonly<T>
     guard<U extends T>(predicate: (value: T) => value is U): Guarded<U, T> & StateReadonly<T> {
@@ -153,9 +153,9 @@ namespace Events {
 
       return guardedState
     }
-    readonly nullable: Guarded<T | null | undefined, T | null | undefined> & StateReadonly<T> = this.guard(value => value == null)
-    readonly nonNullable: Guarded<T & {}, T> & StateReadonly<T> = this.guard(value => value != null)
-    readonly required: Guarded<T & {}, T> & StateReadonly<T> = this.nonNullable
+    // readonly nullable: Guarded<T | null | undefined, T | null | undefined> & StateReadonly<T> = this.guard(value => value == null)
+    // readonly nonNullable: Guarded<T & {}, T> & StateReadonly<T> = this.guard(value => value != null)
+    // readonly required: Guarded<T & {}, T> & StateReadonly<T> = this.nonNullable
 
 
     private boundGet: ((() => T) & Observable<T>)
