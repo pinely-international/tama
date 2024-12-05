@@ -148,14 +148,14 @@ namespace Events {
 
     guard<U extends T>(predicate: (value: T) => boolean): Guarded<U, T> & StateReadonly<T>
     guard<U extends T>(predicate: (value: T) => value is U): Guarded<U, T> & StateReadonly<T> {
-      const guardedState = this.to(v => v).readonly() as Guarded<U, T> & StateReadonly<T>
+      const guardedState = this.readonly() as Guarded<U, T> & StateReadonly<T>
       guardedState.valid = predicate
 
       return guardedState
     }
     // readonly nullable: Guarded<T | null | undefined, T | null | undefined> & StateReadonly<T> = this.guard(value => value == null)
-    readonly nonNullable: Guarded<T & {}, T> & StateReadonly<T> = this.guard(value => value != null)
-    readonly required: Guarded<T & {}, T> & StateReadonly<T> = this.nonNullable
+    readonly nonNullable: Guarded<T & {}, T> & StateReadonly<T & {}> = this.guard(value => value != null) as never
+    readonly required: Guarded<T & {}, T> & StateReadonly<T & {}> = this.nonNullable
 
 
     private boundGet: ((() => T) & Observable<T>)
