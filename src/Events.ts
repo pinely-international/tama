@@ -2,7 +2,7 @@ import { AccessorGet } from "./Accessor"
 import Act from "./Act"
 import Guarded from "./Guarded"
 import Null from "./Null"
-import Observable, { Subscriptable } from "./Observable"
+import Observable, { Subscriptable, Unsubscribe } from "./Observable"
 
 // @ts-expect-error it's ok.
 Symbol.subscribe = Symbol.for("subscribe")
@@ -115,6 +115,10 @@ namespace Events {
     }
 
 
+    sets(other: State<T>): Unsubscribe {
+      return this[Symbol.subscribe](value => other.set(value))
+    }
+
     readonly $ = new Proxy(this, {
       get: (target, key) => target.to(value => value[key as keyof T]),
       set: (target, key, newValue) => target.value[key as keyof T] = newValue
@@ -131,6 +135,13 @@ namespace Events {
       return newState
     }
 
+    clone() { new State(this.get()) }
+    share() {
+      const shared = new State(this.get())
+      this.sets(shared)
+      return shared
+    }
+
     readonly(): StateReadonly<T> {
       return { get: () => this.get(), [Symbol.subscribe]: next => this[Symbol.subscribe](next) }
     }
@@ -141,10 +152,10 @@ namespace Events {
 
     is(predicate: (value: T) => boolean): StateReadonly<boolean>
     is<U extends T>(predicate: (value: T) => value is U): StateReadonly<boolean> {
-      return this.to(predicate).readonly()
+      return { get: () => predicate(this.get()), [Symbol.subscribe]: next => this[Symbol.subscribe](value => next(predicate(value))) }
     }
-    // readonly isNullish: StateReadonly<boolean> = this.is(value => value == null)
-    // readonly isNotNullish: StateReadonly<boolean> = this.is(value => value != null)
+    readonly isNullish: StateReadonly<boolean> = this.is(value => value == null)
+    readonly isNotNullish: StateReadonly<boolean> = this.is(value => value != null)
 
     guard<U extends T>(predicate: (value: T) => boolean): Guarded<U, T> & StateReadonly<T>
     guard<U extends T>(predicate: (value: T) => value is U): Guarded<U, T> & StateReadonly<T> {
@@ -153,7 +164,7 @@ namespace Events {
 
       return guardedState
     }
-    // readonly nullable: Guarded<T | null | undefined, T | null | undefined> & StateReadonly<T> = this.guard(value => value == null)
+    readonly nullable: Guarded<T | null | undefined, T | null | undefined> & StateReadonly<T> = this.guard(value => value == null)
     readonly nonNullable: Guarded<T & {}, T> & StateReadonly<T & {}> = this.guard(value => value != null) as never
     readonly required: Guarded<T & {}, T> & StateReadonly<T & {}> = this.nonNullable
 
