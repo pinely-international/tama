@@ -334,7 +334,7 @@ export class WebInflator extends Inflator {
       anchor = view
     } else {
       const comment = document.createComment(this.constructor.name)
-      comment.onReplace = shell.onViewChange.bind(shell)
+      comment.onReplace = shell.on("view").subscribe
 
       anchor = comment
     }
