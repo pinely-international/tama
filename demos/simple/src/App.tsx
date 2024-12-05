@@ -5,6 +5,7 @@ import { Events, Proton } from "@denshya/proton"
 import Navbar from "./ui/Navbar/Navbar"
 import MiniProfile from "./ui/MiniProfile/MiniProfile"
 import User from "./user/User"
+import EditableAvatar from "./ui/EditableAvatar/EditableAvatar"
 
 
 function App(this: Proton.Shell) {
@@ -17,6 +18,7 @@ function App(this: Proton.Shell) {
       </header>
       <main>
         <MiniProfile user={user} />
+        <EditableAvatar image="" onChange={() => new Promise(() => { })} />
       </main>
     </>
   )

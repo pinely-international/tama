@@ -1,0 +1,65 @@
+import { bem } from "@/utils/bem"
+import { Proton } from "@denshya/proton"
+
+export type IconName =
+  | "chevron-left"
+  | "chevron-right"
+  | "chevron-down"
+  | "gear"
+  | "arrow-right"
+  | "arrow-left"
+  | "question-mark"
+  | "exclamation-mark"
+  | "play-circle"
+  | "quote"
+  | "plus"
+  | "minus"
+  | "cross"
+  | "crown"
+  | "check"
+  | "tag"
+  | "touch"
+  | "home"
+  | "font-size"
+  | "github"
+  | "google"
+  | "facebook"
+  | "timer"
+  // | "asd"
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | (string & {})
+
+interface IconProps {
+  name?: IconName
+  modifiers?: Array<string | number | false | null | undefined>
+}
+
+/**
+ *
+ * @prop `modifiers` only work when className given.
+ * @prop `className` is a root class, which is modified by `name`,
+ * that will be modified by `modifiers` including `name` modifications.
+ *
+ * Example: `"icon mentor-search__icon mentor-search__icon--chevron mentor-search__icon mentor-search__icon--chevron--up"`
+ *
+ */
+function Icon(this: Proton.Shell, props: IconProps) {
+  if (props.href) {
+    this.view.set(
+      // <img src={props.href} className={classMerge("icon", props.className && classWithModifiers(props.className, ...props.modifiers || []))} />
+      <img src={props.href} className={bem("icon", bem(props.className, props.modifiers ?? []))} />
+    )
+
+    return
+  }
+
+  this.view.set(
+    // <svg {...props} className={classMerge("icon", props.className && classWithModifiers(classWithModifiers(props.className, props.name), ...props.modifiers || []))}>
+    <svg {...props} className={bem("icon", bem(bem(props.className, props.name), props.modifiers ?? []))}>
+      <use href={`/static/icons.svg#${props.name}`} />
+    </svg>
+  )
+}
+
+
+export default Icon

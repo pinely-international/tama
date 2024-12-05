@@ -1,0 +1,51 @@
+@use "@/assets/scss/bundle" as *;
+
+.editable-avatar {
+	position: relative;
+
+	$size: 10em;
+
+	width: $size;
+	height: $size;
+
+	border: 1px solid $color-gray;
+	border-radius: 50%;
+	overflow: hidden;
+
+	&--pending {
+		border: 2px solid $color-blue;
+	}
+}
+
+.editable-avatar__image {
+	width: inherit;
+	height: inherit;
+	object-fit: cover;
+}
+
+.editable-avatar__cover {
+	position: absolute;
+	inset: 0;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	background: linear-gradient(to bottom, $color-dark, rgba($color-dark, 0.6) 110%);
+	transition: 350ms ease opacity;
+	cursor: pointer;
+
+	&:not(:hover) {
+		opacity: 0;
+	}
+}
+
+.editable-avatar__icon {
+	--icon-size: 2.25em;
+
+	color: $color-white;
+}
+
+input.editable-avatar__input {
+	display: none;
+}
