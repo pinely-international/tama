@@ -271,6 +271,7 @@ export class WebInflator extends Inflator {
     const guardAccessors: (AccessorReadonly<unknown> & Subscriptable<unknown>)[] = []
 
     for (const property of properties) {
+      if (property instanceof Object === false) continue
       if ("valid" in property === false) continue
 
       const accessor = Accessor.extractObservable(property)
