@@ -17,7 +17,7 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
   this.view.set(
     <div className="mini-profile">
       <div className="mini-profile__profile">
-        <div className="mini-profile__letter" mounted={user.$.avatar.isNotNullish}>
+        <div className="mini-profile__letter">
           <ColoredLetter letter={user.to(user => user.firstName[0])} />
         </div>
         <img className="mini-profile__avatar" src={user.$.avatar.required} alt="avatar" />
