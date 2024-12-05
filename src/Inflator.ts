@@ -230,7 +230,7 @@ export class WebInflator extends Inflator {
             }
           })
 
-          intrinsicInflated.addEventListener("change", event => accessor.set!((event.currentTarget as HTMLInputElement).value))
+          intrinsicInflated.addEventListener("input", event => accessor.set!((event.currentTarget as HTMLInputElement).value))
         }
         accessor.subscribe?.(value => HTMLInputNativeSet.call(intrinsicInflated, accessor.get?.() ?? value))
       }
@@ -258,6 +258,18 @@ export class WebInflator extends Inflator {
     }
 
     const properties = Object.entries(intrinsic.props)
+
+    for (const [key, value] of properties) {
+      if (key === "style") continue
+      if (key === "on") continue
+      if (key === "mounted") continue
+
+      if (intrinsic.type === "input") {
+        if (key === "value") continue
+      }
+
+      this.bindIntrinsicProperty(key, value, intrinsicInflated)
+    }
 
 
     // Guard Rendering.
@@ -312,20 +324,6 @@ export class WebInflator extends Inflator {
 
       if (accessor?.get == null) return intrinsicInflated
       if (!accessor.get()) return comment
-    }
-
-
-
-    for (const [key, value] of properties) {
-      if (key === "style") continue
-      if (key === "on") continue
-      if (key === "mounted") continue
-
-      if (intrinsic.type === "input") {
-        if (key === "value") continue
-      }
-
-      this.bindIntrinsicProperty(key, value, intrinsicInflated)
     }
 
 
