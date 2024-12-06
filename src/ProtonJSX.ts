@@ -24,7 +24,8 @@ namespace ProtonJSX {
     }
   }
 
-  export class Intrinsic extends Node { override type!: keyof never; override props?: JSX.HTMLSpecialAttributes }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export class Intrinsic extends Node { override type!: keyof never; override props?: any }
   export class Component extends Node { override type!: Function }
   export class _Fragment extends Node { }
 

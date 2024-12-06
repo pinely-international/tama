@@ -67,10 +67,13 @@ declare global {
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]
 
     type HTMLElementAttributes<T> = Partial<AttributesOf<T>> & HTMLSpecialAttributes & IntrinsicAttributes
+    type SVGElementAttributes<T> = HTMLElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : never)
+
+    type SVGURIReferenceAttribute = SVGURIReference | Attribute<string>
 
 
     type HTMLElements = { [Tag in keyof HTMLElementTagNameMap]: HTMLElementAttributes<HTMLElementTagNameMap[Tag]> }
-    type SVGElements = { [Tag in keyof SVGElementTagNameMap]: HTMLElementAttributes<SVGElementTagNameMap[Tag]> }
+    type SVGElements = { [Tag in keyof SVGElementTagNameMap]: SVGElementAttributes<SVGElementTagNameMap[Tag]> }
     type MathMLElements = { [Tag in keyof MathMLElementTagNameMap]: HTMLElementAttributes<MathMLElementTagNameMap[Tag]> }
 
     interface IntrinsicElements extends HTMLElements, SVGElements, MathMLElements { }

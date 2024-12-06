@@ -217,6 +217,19 @@ export class WebInflator extends Inflator {
     if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, intrinsicInflated)
 
 
+    if (intrinsic.type === "use") {
+      const svgUse = (intrinsicInflated as unknown as SVGUseElement)
+      if (typeof intrinsic.props.href === "string") svgUse.href.baseVal = intrinsic.props.href
+      if (typeof intrinsic.props.href === "object") {
+        const accessor = Accessor.extractObservable(intrinsic.props.href)
+        if (accessor != null) {
+          svgUse.href.baseVal = accessor.get?.() ?? ""
+          accessor.subscribe?.(value => svgUse.href.baseVal = accessor.get?.() ?? value)
+        } else {
+          svgUse.href.baseVal = intrinsic.props.href.baseVal
+        }
+      }
+    }
     if (intrinsic.type === "input") {
       const accessor = Accessor.extractObservable(intrinsic.props.value)
       if (accessor != null) {
@@ -266,6 +279,10 @@ export class WebInflator extends Inflator {
 
       if (intrinsic.type === "input") {
         if (key === "value") continue
+      }
+
+      if (intrinsic.type === "use") {
+        if (key === "href") continue
       }
 
       this.bindIntrinsicProperty(key, value, intrinsicInflated)
