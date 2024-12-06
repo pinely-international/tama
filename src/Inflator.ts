@@ -213,7 +213,7 @@ export class WebInflator extends Inflator {
         return document.createElementNS("http://www.w3.org/2000/svg", type)
 
       default:
-        return document.createElement("svg")
+        return document.createElement(type)
     }
   }
 
