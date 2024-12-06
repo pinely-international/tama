@@ -158,7 +158,7 @@ export class WebInflator extends Inflator {
     return comment
   }
 
-  protected bindStyle(style: unknown, element: HTMLElement) {
+  protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
     if (style == null) return
     if (typeof style === "string") {
       element.style.cssText = style
@@ -206,19 +206,30 @@ export class WebInflator extends Inflator {
     return object
   }
 
+  protected asd(type: string) {
+    switch (type) {
+      case "svg":
+      case "use":
+        return document.createElementNS("http://www.w3.org/2000/svg", type)
+
+      default:
+        return document.createElement(type)
+    }
+  }
+
   protected inflateJSXIntrinsic(intrinsic: ProtonJSX.Intrinsic): HTMLElement | DocumentFragment | Comment {
     if (typeof intrinsic.type !== "string") {
       throw new TypeError(typeof intrinsic.type + " type of intrinsic element is not supported", { cause: { type: intrinsic.type } })
     }
 
-    const intrinsicInflated = document.createElement(intrinsic.type)
+    const intrinsicInflated = this.asd(intrinsic.type)
     if (intrinsic.props == null) return intrinsicInflated
 
     if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, intrinsicInflated)
 
 
     if (intrinsic.type === "use") {
-      const svgUse = (intrinsicInflated as unknown as SVGUseElement)
+      const svgUse = intrinsicInflated as SVGUseElement
       if (typeof intrinsic.props.href === "string") svgUse.href.baseVal = intrinsic.props.href
       if (typeof intrinsic.props.href === "object") {
         const accessor = Accessor.extractObservable(intrinsic.props.href)
