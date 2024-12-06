@@ -29,7 +29,9 @@ export type IconName =
   // eslint-disable-next-line @typescript-eslint/ban-types
   | (string & {})
 
-interface IconProps {
+interface IconProps extends Partial<JSX.AttributesOf<SVGElement>> {
+  href?: string
+  className?: string
   name?: IconName
   modifiers?: Array<string | number | false | null | undefined>
 }

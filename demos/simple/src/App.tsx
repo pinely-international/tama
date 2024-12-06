@@ -18,7 +18,7 @@ function App(this: Proton.Shell) {
       </header>
       <main>
         <MiniProfile user={user} />
-        <EditableAvatar image="" onChange={() => new Promise(() => { })} />
+        <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
       </main>
     </>
   )

@@ -5,6 +5,8 @@ interface User {
   firstName: string
   lastName: string
 }
-namespace User { }
+namespace User {
+  export class Resource { }
+}
 
 export default User
