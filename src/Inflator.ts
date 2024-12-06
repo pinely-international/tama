@@ -213,7 +213,7 @@ export class WebInflator extends Inflator {
         return document.createElementNS("http://www.w3.org/2000/svg", type)
 
       default:
-        return document.createElement(type)
+        return document.createElement("svg")
     }
   }
 
@@ -227,6 +227,11 @@ export class WebInflator extends Inflator {
 
     if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, intrinsicInflated)
 
+    if (intrinsicInflated instanceof SVGElement) {
+      if (intrinsic.props.className != null) {
+        this.bindPropertyCallback(intrinsic.props.className, value => intrinsicInflated.setAttribute("class", value))
+      }
+    }
 
     if (intrinsic.type === "use") {
       const svgUse = intrinsicInflated as SVGUseElement
@@ -296,7 +301,11 @@ export class WebInflator extends Inflator {
         if (key === "href") continue
       }
 
-      this.bindIntrinsicProperty(key, value, intrinsicInflated)
+      if (intrinsicInflated instanceof SVGElement) {
+        if (key === "className") continue
+      }
+
+      this.bindProperty(key, value, intrinsicInflated)
     }
 
 
@@ -359,18 +368,22 @@ export class WebInflator extends Inflator {
     return intrinsicInflated
   }
 
-  protected bindIntrinsicProperty(key: string, value: unknown, element: HTMLElement): void {
-    if (typeof value === "string") {
-      element[key] = value
+  protected bindProperty(key: string, source: unknown, target: Element): void {
+    this.bindPropertyCallback(source, value => target[key] = value)
+  }
+
+  protected bindPropertyCallback(source: unknown, targetBindCallback: (value: unknown) => void): void {
+    if (typeof source === "string") {
+      targetBindCallback(source)
       return
     }
 
-    const accessor = Accessor.extractObservable(value)
+    const accessor = Accessor.extractObservable(source)
     if (accessor == null) return
     if (accessor.get == null && accessor.subscribe == null) return
 
-    if (accessor.get) element[key] = accessor.get()
-    if (accessor.subscribe) accessor.subscribe(value => element[key] = accessor.get?.() ?? value)
+    if (accessor.get) targetBindCallback(accessor.get())
+    if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get?.() ?? value))
   }
 
 
