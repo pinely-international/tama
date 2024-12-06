@@ -228,8 +228,8 @@ export class WebInflator extends Inflator {
     if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, intrinsicInflated)
 
     if (intrinsicInflated instanceof SVGElement) {
-      if (intrinsic.props.className != null) {
-        this.bindPropertyCallback(intrinsic.props.className, value => intrinsicInflated.setAttribute("class", value))
+      if (intrinsic.props.class != null) {
+        this.bindPropertyCallback(intrinsic.props.class, value => intrinsicInflated.setAttribute("class", value))
       }
     }
 
@@ -302,7 +302,7 @@ export class WebInflator extends Inflator {
       }
 
       if (intrinsicInflated instanceof SVGElement) {
-        if (key === "className") continue
+        if (key === "class") continue
       }
 
       this.bindProperty(key, value, intrinsicInflated)

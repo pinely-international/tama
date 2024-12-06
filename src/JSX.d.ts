@@ -67,9 +67,9 @@ declare global {
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]
 
     type HTMLElementAttributes<T> = Partial<AttributesOf<T>> & HTMLSpecialAttributes & IntrinsicAttributes
-    type SVGElementAttributes<T> = HTMLElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : never)
+    type SVGElementAttributes<T> = HTMLElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : never) & { class?: Attribute<string> }
 
-    type SVGURIReferenceAttribute = SVGURIReference | Attribute<string>
+    type SVGURIReferenceAttribute = SVGURIReference | { href?: Attribute<string> }
 
 
     type HTMLElements = { [Tag in keyof HTMLElementTagNameMap]: HTMLElementAttributes<HTMLElementTagNameMap[Tag]> }
