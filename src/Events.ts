@@ -118,6 +118,7 @@ namespace Events {
     sets<U>(other: AccessorSet<T | U>): Unsubscribe {
       return this[Symbol.subscribe](value => other.set(value))
     }
+    copy(other: AccessorGet<T>) { this.set(other.get()) }
 
     readonly $ = new Proxy(this, {
       get: (target, key) => target.to(value => value[key as keyof T]),
