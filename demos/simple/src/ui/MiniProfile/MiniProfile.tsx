@@ -19,22 +19,11 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
 
   inputValue.sets(userAvatar)
 
-
-
-
-  function randomFirstNameLetter() {
-    const alphabet = "abcdefghijklmnopqrstuvwxyz".split("")
-    user.set(it => ({ ...it, firstName: alphabet[Math.floor(Math.random() * (alphabet.length - 1))].toUpperCase() + it.firstName.slice(1) }))
-  }
-  setTimeout(randomFirstNameLetter)
-
-  // const isString: (value: unknown) => value is string = ((value: unknown) => !!value) as never
-
   this.view.set(
     <div className="mini-profile">
       <div className="mini-profile__profile">
         <button className="mini-profile__letter" mounted={userAvatar.is(it => !it)}>
-          <ColoredLetter letter={user.to(user => user.firstName[0])} onTransitionEnd={() => setTimeout(randomFirstNameLetter)} />
+          <ColoredLetter letter={user.to(user => user.firstName[0])} />
         </button>
         <img className="mini-profile__avatar" src={userAvatar.required} alt="avatar" />
         <input value={inputValue} mounted={inputMounted} />

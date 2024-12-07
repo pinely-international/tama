@@ -6,8 +6,6 @@ import { Act, Events, Proton } from "@denshya/proton"
 interface ColoredLetterProps {
   letter: Events.State<string>
   baseHSL?: Events.State<[number, number, number]>
-
-  onTransitionEnd?(): void
 }
 
 function ColoredLetter(this: Proton.Shell, props: ColoredLetterProps) {
@@ -21,7 +19,7 @@ function ColoredLetter(this: Proton.Shell, props: ColoredLetterProps) {
   }, [props.letter, ads])
 
   this.view.set(
-    <span className="colored-letter" style={{ backgroundColor }} on={{ transitionend: props.onTransitionEnd }}>{props.letter}</span>
+    <span className="colored-letter" style={{ backgroundColor }}>{props.letter}</span>
   )
 }
 

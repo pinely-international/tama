@@ -57,7 +57,7 @@ function Icon(this: Proton.Shell, props: IconProps) {
 
   this.view.set(
     // <svg {...props} className={classMerge("icon", props.className && classWithModifiers(classWithModifiers(props.className, props.name), ...props.modifiers || []))}>
-    <svg {...props} className={bem("icon", bem(bem(props.className, props.name), props.modifiers ?? []))}>
+    <svg {...props} className={undefined} class={bem("icon", bem(bem(props.className, props.name), props.modifiers ?? []))}>
       <use href={`/static/icons.svg#${props.name}`} />
     </svg>
   )
