@@ -422,11 +422,13 @@ export class WebInflator extends Inflator {
         if (view === null) view = comment
         if (view instanceof Node === false) return
 
-        if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-          currentView.replaceWith(view)
-          currentView = view
+        if (currentViewChildren.length === 0) { // currentView is not spreading DocumentFragment.
+          if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
+            currentView.replaceWith(view)
+            currentView = view
 
-          return
+            return
+          }
         }
 
         const anchorFirstChild = currentViewChildren.shift()
