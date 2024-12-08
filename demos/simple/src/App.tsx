@@ -22,7 +22,9 @@ function App(this: Proton.Shell) {
         <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
 
         <section>
-          <Route path="/">Home</Route>
+          <Route path="/"><span>123</span></Route>
+          <Route path="/terms">Terms</Route>
+          <Route path="/contacts">Contacts</Route>
         </section>
       </main>
     </>
@@ -32,10 +34,11 @@ function App(this: Proton.Shell) {
 export default App
 
 function Route(this: Proton.Shell, props: { path: string; children: unknown }) {
-  const nothing = this.inflator.inflate(<span />)
-  const children = this.inflator.inflate(props.children)
+  let children
 
   router[Symbol.subscribe](path => {
-    this.view.set(path === props.path ? children : nothing)
+    if (children == null) children = this.inflator.inflate(<>{props.children}</>)
+
+    this.view.set(path === props.path ? children : null)
   })
 }

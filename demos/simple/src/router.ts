@@ -3,7 +3,9 @@ import { Events } from "@denshya/proton"
 class Router {
   readonly current = new Events.State("")
 
-  navigate(to: string) {
+  navigate(alpha: number): void
+  navigate(path: string): void
+  navigate(to: string | number) {
     this.current.set(to)
   }
 
