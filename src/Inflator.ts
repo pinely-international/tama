@@ -406,41 +406,43 @@ export class WebInflator extends Inflator {
     comment.onReplace = shell.on("view").subscribe
 
 
-    let anchor: Node = this.getInitialView(view, comment)
-    let anchorChildren: Node[] = Null.ARRAY
+    let oldView: Node = this.getInitialView(view, comment)
+    let oldViewChildren: Node[] = Null.ARRAY
 
     if (view instanceof DocumentFragment) {
-      anchorChildren = [...view.childNodes]
+      oldViewChildren = [...view.childNodes]
     }
 
 
-    console.debug(this.constructor.name, { view, anchor, anchorChildren })
+    console.debug(this.constructor.name, { view, anchor: oldView, anchorChildren: oldViewChildren })
 
     let lastAnimationFrame = -1
 
     shell.on("view").subscribe(view => {
       // Assume that the anchor node was already connected.
       const schedule = () => {
-        console.debug(this.constructor.name, { view, anchor, anchorChildren })
+        console.debug(this.constructor.name, { view, anchor: oldView, anchorChildren: oldViewChildren })
 
         if (view === null) view = comment
         if (view instanceof Node === false) return
 
-        const anchorFirstChild = anchorChildren.shift()
-        if (anchorFirstChild == null) {
-          anchor.replaceWith(view)
-          anchor = view
+        if ("replaceWith" in oldView) {
+          oldView.replaceWith(view)
+          oldView = view
 
           return
         }
 
+        const anchorFirstChild = oldViewChildren.shift()
+        if (anchorFirstChild == null) return
+
         const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
         if (!anchorFirstChildParent) return
 
-        anchorChildren.forEach(rest => anchorFirstChildParent.removeChild(rest as never))
+        oldViewChildren.forEach(rest => anchorFirstChildParent.removeChild(rest as never))
 
-        anchor = view
-        anchorChildren = [...view.childNodes]
+        oldView = view
+        oldViewChildren = [...view.childNodes]
 
         anchorFirstChildParent.replaceChild(view, anchorFirstChild)
       }
@@ -449,7 +451,7 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(schedule)
     })
 
-    return anchor as never
+    return oldView as never
   }
 }
 
