@@ -387,13 +387,9 @@ export class WebInflator extends Inflator {
   }
 
   private getInitialView(view: unknown, comment: Comment): Node {
-    if (view == null) return comment
-    if (view instanceof DocumentFragment) return comment
-    if (view instanceof Node) {
-      if ("replaceWith" in view) return view
-
-      return comment
-    }
+    // if (view == null) return comment
+    // if (view instanceof DocumentFragment) return comment
+    if (view instanceof Node && "replaceWith" in view) return view
 
     return comment
   }
@@ -406,43 +402,43 @@ export class WebInflator extends Inflator {
     comment.onReplace = shell.on("view").subscribe
 
 
-    let oldView: Node = this.getInitialView(view, comment)
-    let oldViewChildren: Node[] = Null.ARRAY
+    let currentView: Node = this.getInitialView(view, comment)
+    let currentViewChildren: Node[] = Null.ARRAY
 
     if (view instanceof DocumentFragment) {
-      oldViewChildren = [...view.childNodes]
+      currentViewChildren = [...view.childNodes]
     }
 
 
-    console.debug(this.constructor.name, { view, anchor: oldView, anchorChildren: oldViewChildren })
+    console.debug(this.constructor.name, { view, anchor: currentView, anchorChildren: currentViewChildren })
 
     let lastAnimationFrame = -1
 
     shell.on("view").subscribe(view => {
       // Assume that the anchor node was already connected.
       const schedule = () => {
-        console.debug(this.constructor.name, { view, anchor: oldView, anchorChildren: oldViewChildren })
+        console.debug(this.constructor.name, { view, anchor: currentView, anchorChildren: currentViewChildren })
 
         if (view === null) view = comment
         if (view instanceof Node === false) return
 
-        if ("replaceWith" in oldView) {
-          oldView.replaceWith(view)
-          oldView = view
+        if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
+          currentView.replaceWith(view)
+          currentView = view
 
           return
         }
 
-        const anchorFirstChild = oldViewChildren.shift()
+        const anchorFirstChild = currentViewChildren.shift()
         if (anchorFirstChild == null) return
 
         const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
         if (!anchorFirstChildParent) return
 
-        oldViewChildren.forEach(rest => anchorFirstChildParent.removeChild(rest as never))
+        currentViewChildren.forEach(rest => anchorFirstChildParent.removeChild(rest as never))
 
-        oldView = view
-        oldViewChildren = [...view.childNodes]
+        currentView = view
+        currentViewChildren = [...view.childNodes]
 
         anchorFirstChildParent.replaceChild(view, anchorFirstChild)
       }
@@ -451,7 +447,7 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(schedule)
     })
 
-    return oldView as never
+    return currentView as never
   }
 }
 
