@@ -21,9 +21,9 @@ function App(this: Proton.Shell) {
         <MiniProfile user={user} />
         <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
 
-        {/* <section>
+        <section>
           <Route path="/">Home</Route>
-        </section> */}
+        </section>
       </main>
     </>
   )
@@ -38,6 +38,7 @@ function Route(this: Proton.Shell, props: { path: string; children: unknown }) {
   this.view.set(nothing)
 
   router[Symbol.subscribe](path => {
+    console.log(path, props.path, children, props.children)
     this.view.set(path === props.path ? children : nothing)
   })
 }
