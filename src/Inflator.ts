@@ -398,9 +398,11 @@ export class WebInflator extends Inflator {
     comment.onReplace = shell.on("view").subscribe
 
     if (view instanceof DocumentFragment) {
-      anchor = view
+      anchor = comment
       anchorChildren = [...view.childNodes]
     } else if (view instanceof Node) {
+      anchor = comment
+    } else if (view.replaceWith != null) {
       anchor = view
     } else {
       anchor = comment
