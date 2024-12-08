@@ -400,7 +400,7 @@ export class WebInflator extends Inflator {
     } else if (view instanceof Node) {
       anchor = view
     } else {
-      const comment = document.createComment(this.constructor.name)
+      const comment = document.createComment(component.type.name)
       comment.onReplace = shell.on("view").subscribe
 
       anchor = comment
@@ -414,6 +414,7 @@ export class WebInflator extends Inflator {
       // Assume that the anchor node was already connected.
       const schedule = () => {
         if (anchor instanceof Node === false) return
+        console.debug(this.constructor.name, { view, anchor, anchorChildren })
 
         const anchorFirstChild = anchorChildren.shift()
         if (anchorFirstChild == null) {
