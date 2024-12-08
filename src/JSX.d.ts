@@ -41,6 +41,13 @@ declare global {
     interface ElementTypeConstructor { }
     type ElementType = string | ElementTypeConstructor
 
+    interface ElementChildrenAttribute {
+      children: {}
+    }
+    interface ElementAttributesProperty {
+      props: {}
+    }
+
 
     type Attribute<T> =
       | T
