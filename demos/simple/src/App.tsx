@@ -35,10 +35,7 @@ function Route(this: Proton.Shell, props: { path: string; children: unknown }) {
   const nothing = this.inflator.inflate(<span />)
   const children = this.inflator.inflate(props.children)
 
-  this.view.set(nothing)
-
   router[Symbol.subscribe](path => {
-    console.log(path, props.path, children, props.children)
     this.view.set(path === props.path ? children : nothing)
   })
 }
