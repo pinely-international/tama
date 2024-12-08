@@ -6,6 +6,7 @@ import Navbar from "./ui/Navbar/Navbar"
 import MiniProfile from "./ui/MiniProfile/MiniProfile"
 import User from "./user/User"
 import EditableAvatar from "./ui/EditableAvatar/EditableAvatar"
+import { router } from "./router"
 
 
 function App(this: Proton.Shell) {
@@ -19,9 +20,24 @@ function App(this: Proton.Shell) {
       <main>
         <MiniProfile user={user} />
         <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
+
+        <section>
+          <Route path="/">Home</Route>
+        </section>
       </main>
     </>
   )
 }
 
 export default App
+
+function Route(this: Proton.Shell, props: { path: string; children?: unknown }) {
+  const nothing = this.inflator.inflate(<span />)
+  const children = this.inflator.inflate(props.children)
+
+  this.view.set(nothing)
+
+  router[Symbol.subscribe](path => {
+    this.view.set(path === props.path ? children : nothing)
+  })
+}

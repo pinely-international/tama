@@ -52,5 +52,5 @@ export function bemState(classNames: string | string[], ...modifiers: (Record<ke
   return state
 }
 
-type Statable<T> = T | Events.State<T>
-const bemSs = Events.State.for(bem, (classNames: Statable<string> | Statable<string[]>, ...mods) => [classNames, ...mods])
+// type Statable<T> = T | Events.State<T>
+// const bemSs = Events.State.for(bem, (classNames: Statable<string> | Statable<string[]>, ...mods) => [classNames, ...mods])
