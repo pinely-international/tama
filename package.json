@@ -18,7 +18,7 @@
     "build": "vite build && bun build:types",
     "build:types": "tsup src/index.ts src/globals.ts --outDir build --format esm --dts-only --tsconfig tsconfig.build.json",
     "preview": "vite preview",
-    "release:patch": "npm version patch && bun run build && npm publish",
+    "release:patch": "npm version patch && bun run build && export GITHUB_TOKEN=${GITHUB_TOKEN} && npm publish",
     "stats": "bun stats:treemap && bun stats:sunburst",
     "stats:treemap": "vite-bundle-visualizer --sourcemap -o ./stats/treemap.html",
     "stats:sunburst": "vite-bundle-visualizer -o ./stats/sunburst.html -t sunburst",
