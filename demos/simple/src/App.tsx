@@ -21,9 +21,9 @@ function App(this: Proton.Shell) {
         <MiniProfile user={user} />
         <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
 
-        <section>
+        {/* <section>
           <Route path="/">Home</Route>
-        </section>
+        </section> */}
       </main>
     </>
   )
@@ -31,7 +31,7 @@ function App(this: Proton.Shell) {
 
 export default App
 
-function Route(this: Proton.Shell, props: { path: string; children?: unknown }) {
+function Route(this: Proton.Shell, props: { path: string; children: unknown }) {
   const nothing = this.inflator.inflate(<span />)
   const children = this.inflator.inflate(props.children)
 
