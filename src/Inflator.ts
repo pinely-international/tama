@@ -388,7 +388,7 @@ export class WebInflator extends Inflator {
 
   private getInitialView(view: unknown, comment: Comment): Node {
     // if (view == null) return comment
-    // if (view instanceof DocumentFragment) return comment
+    if (view instanceof DocumentFragment) return view
     if (view instanceof Node && "replaceWith" in view) return view
 
     return comment
@@ -422,13 +422,11 @@ export class WebInflator extends Inflator {
         if (view === null) view = comment
         if (view instanceof Node === false) return
 
-        if (currentViewChildren.length === 0) { // currentView is not spreading DocumentFragment.
-          if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-            currentView.replaceWith(view)
-            currentView = view
+        if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
+          currentView.replaceWith(view)
+          currentView = view
 
-            return
-          }
+          return
         }
 
         const anchorFirstChild = currentViewChildren.shift()
