@@ -386,27 +386,33 @@ export class WebInflator extends Inflator {
     if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get?.() ?? value))
   }
 
+  private getInitialView(view: unknown, comment: Comment): Node {
+    if (view == null) return comment
+    if (view instanceof DocumentFragment) return comment
+    if (view instanceof Node) {
+      if ("replaceWith" in view) return view
+
+      return comment
+    }
+
+    return comment
+  }
 
   protected inflateJSXComponent(component: ProtonJSX.Component) {
     const shell = this.inflateComponent(component.type as never, component.props)
     const view = shell.getView()
 
-    let anchor: Node
-    let anchorChildren: Node[] = Null.ARRAY
-
     const comment = document.createComment(component.type.name)
     comment.onReplace = shell.on("view").subscribe
 
+
+    let anchor: Node = this.getInitialView(view, comment)
+    let anchorChildren: Node[] = Null.ARRAY
+
     if (view instanceof DocumentFragment) {
-      anchor = comment
       anchorChildren = [...view.childNodes]
-    } else if (view instanceof Node) {
-      anchor = comment
-    } else if (view.replaceWith != null) {
-      anchor = view
-    } else {
-      anchor = comment
     }
+
 
     console.debug(this.constructor.name, { view, anchor, anchorChildren })
 
