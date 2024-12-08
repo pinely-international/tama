@@ -188,9 +188,9 @@ export class WebInflator extends Inflator {
     }
   }
 
-  private inflateJSXDeeply(value: ProtonJSX.Node | Primitive): HTMLElement | DocumentFragment | Node {
-    const object = this.inflateJSX(value)
-    if (value instanceof ProtonJSX.Intrinsic === false) return object as never
+  private inflateJSXDeeply(node: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
+    const object = this.inflateJSX(node)
+    if (node instanceof ProtonJSX.Component) return object as never
 
 
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
@@ -200,8 +200,8 @@ export class WebInflator extends Inflator {
       object.appendChild(childInflated)
     }
 
-    value.children?.forEach(appendChildObject)
-    value.childrenExtrinsic?.forEach(appendChildObject)
+    node.children?.forEach(appendChildObject)
+    node.childrenExtrinsic?.forEach(appendChildObject)
 
     return object
   }
