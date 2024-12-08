@@ -1,5 +1,7 @@
 import { Primitive } from "type-fest"
 
+import Null from "./Null"
+
 
 namespace ProtonJSX {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
@@ -24,7 +26,18 @@ namespace ProtonJSX {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export class Intrinsic extends Node { override type!: keyof never; override props?: any }
-  export class Component extends Node { override type!: Function }
+  export class Component extends Node {
+    override type!: Function
+
+    constructor(type: keyof never | Function, props: unknown, children: unknown, childrenExtrinsic: unknown[]) {
+      super(type, props, children, childrenExtrinsic)
+
+      if (props != null && (children != null || childrenExtrinsic != null)) {
+        this.props.children = [...this.children ?? Null.ARRAY, ...childrenExtrinsic ?? Null.ARRAY]
+      }
+    }
+
+  }
   export class _Fragment extends Node { }
 
 
