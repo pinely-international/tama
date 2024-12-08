@@ -7,7 +7,7 @@ class Router {
     this.current.set(to)
   }
 
-  [Symbol.subscribe](next) { return this.current[Symbol.subscribe](next) }
+  [Symbol.subscribe](next: (value: string) => void) { return this.current[Symbol.subscribe](next) }
 }
 
 export default Router

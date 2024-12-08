@@ -5,6 +5,8 @@ import { Proton } from "@denshya/proton"
 
 
 function Navbar(this: Proton.Shell) {
+  console.log(<Link className="navbar__link" to="/">Home</Link>)
+
   this.view.set(
     <div className="navbar">
       <Link className="navbar__link" to="/">Home</Link>
