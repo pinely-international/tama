@@ -406,6 +406,8 @@ export class WebInflator extends Inflator {
       anchor = comment
     }
 
+    console.debug(this.constructor.name, { view, anchor, anchorChildren })
+
     let lastAnimationFrame = -1
 
     shell.on("view").subscribe(view => {
@@ -413,8 +415,9 @@ export class WebInflator extends Inflator {
 
       // Assume that the anchor node was already connected.
       const schedule = () => {
-        if (anchor instanceof Node === false) return
         console.debug(this.constructor.name, { view, anchor, anchorChildren })
+
+        if (anchor instanceof Node === false) return
 
         const anchorFirstChild = anchorChildren.shift()
         if (anchorFirstChild == null) {
