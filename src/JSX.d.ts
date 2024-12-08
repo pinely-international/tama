@@ -69,6 +69,7 @@ declare global {
     interface HTMLSpecialAttributes {
       on?: HTMLElementEvents
       style?: Attribute<Record<string, Attribute<string | CSSStyleValue>> | { [K in keyof CSSStyleDeclaration]?: Attribute<CSSStyleDeclaration[K] | CSSStyleValue | null | undefined> } | string>
+      children?: unknown
     }
 
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]
