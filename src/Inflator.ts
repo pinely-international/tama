@@ -394,15 +394,15 @@ export class WebInflator extends Inflator {
     let anchor: Node
     let anchorChildren: Node[] = Null.ARRAY
 
+    const comment = document.createComment(component.type.name)
+    comment.onReplace = shell.on("view").subscribe
+
     if (view instanceof DocumentFragment) {
       anchor = view
       anchorChildren = [...view.childNodes]
     } else if (view instanceof Node) {
       anchor = view
     } else {
-      const comment = document.createComment(component.type.name)
-      comment.onReplace = shell.on("view").subscribe
-
       anchor = comment
     }
 
@@ -411,13 +411,12 @@ export class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     shell.on("view").subscribe(view => {
-      if (view instanceof Node === false) return
-
       // Assume that the anchor node was already connected.
       const schedule = () => {
         console.debug(this.constructor.name, { view, anchor, anchorChildren })
 
-        if (anchor instanceof Node === false) return
+        if (view === null) view = comment
+        if (view instanceof Node === false) return
 
         const anchorFirstChild = anchorChildren.shift()
         if (anchorFirstChild == null) {
