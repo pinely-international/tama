@@ -32,8 +32,6 @@ namespace Proton {
     private readonly events = new Events<ShellEvents>
 
     private viewElement: unknown = null
-    private viewCallbacks = new Set<() => void>()
-
 
 
     constructor(inflator: Inflator, parent?: Shell) {
@@ -53,7 +51,7 @@ namespace Proton {
             }
 
             this.viewElement = object
-            this.viewCallbacks.forEach(callback => callback())
+            this.events.dispatch("view", object)
           } catch (thrown) {
             if (this.inflator.catchCallback != null) return void this.inflator.catchCallback(thrown)
 
