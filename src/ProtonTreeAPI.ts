@@ -1,4 +1,6 @@
 interface ProtonViewAPI {
+  default: unknown
+
   set(subject: unknown): void
   reset(): void
   transit(subject: unknown): ViewTransition

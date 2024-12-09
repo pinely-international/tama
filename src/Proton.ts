@@ -61,6 +61,7 @@ namespace Proton {
         reset: () => this.view.set(previousView),
         detach: () => this.events.dispatch("detach"),
         transit: subject => document.startViewTransition(() => this.view.set(subject)),
+        default: null
       }
     }
 

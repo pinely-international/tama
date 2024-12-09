@@ -44,7 +44,7 @@ export abstract class Inflator {
 
     const asyncTry = async () => {
       try {
-        await constructor.call(shell, props)
+        shell.view.default = await constructor.call(shell, props)
       } catch (thrown) {
         if (this.suspenseCallback != null && thrown instanceof Promise) {
           if (this.suspenses.length === 0) this.suspenseCallback(thrown)
@@ -54,7 +54,7 @@ export abstract class Inflator {
 
 
           await Promise.all(this.suspenses)
-          await constructor.call(shell, props)
+          shell.view.default = await constructor.call(shell, props)
 
 
           if (length === this.suspenses.length) {
@@ -67,6 +67,8 @@ export abstract class Inflator {
         if (this.catchCallback != null) return void this.catchCallback(thrown)
 
         throw thrown
+      } finally {
+        shell.view.set(shell.view.default)
       }
     }
 
@@ -206,7 +208,7 @@ export class WebInflator extends Inflator {
     return object
   }
 
-  protected asd(type: string) {
+  protected inflateDocumentElement(type: string) {
     switch (type) {
       case "svg":
       case "use":
@@ -217,12 +219,12 @@ export class WebInflator extends Inflator {
     }
   }
 
-  protected inflateJSXIntrinsic(intrinsic: ProtonJSX.Intrinsic): HTMLElement | DocumentFragment | Comment {
+  protected inflateJSXIntrinsic(intrinsic: ProtonJSX.Intrinsic): Element | Comment {
     if (typeof intrinsic.type !== "string") {
       throw new TypeError(typeof intrinsic.type + " type of intrinsic element is not supported", { cause: { type: intrinsic.type } })
     }
 
-    const intrinsicInflated = this.asd(intrinsic.type)
+    const intrinsicInflated = this.inflateDocumentElement(intrinsic.type)
     if (intrinsic.props == null) return intrinsicInflated
 
     if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, intrinsicInflated)
