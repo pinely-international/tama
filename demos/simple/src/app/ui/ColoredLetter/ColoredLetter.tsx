@@ -18,7 +18,7 @@ function ColoredLetter(this: Proton.Shell, props: ColoredLetterProps) {
     return letterBackground
   }, [props.letter, ads])
 
-  this.view.set(
+  return (
     <span className="colored-letter" style={{ backgroundColor }}>{props.letter}</span>
   )
 }

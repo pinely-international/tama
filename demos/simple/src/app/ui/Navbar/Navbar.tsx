@@ -5,9 +5,7 @@ import { Proton } from "@denshya/proton"
 
 
 function Navbar(this: Proton.Shell) {
-  console.log(<Link className="navbar__link" to="/">Home</Link>)
-
-  this.view.set(
+  return (
     <div className="navbar">
       <Link className="navbar__link" to="/">Home</Link>
       <Link className="navbar__link" to="/terms">Terms</Link>
@@ -25,5 +23,7 @@ function Link(this: Proton.Shell, props: { to: string; className?: string; child
     router.navigate(props.to)
   }
 
-  this.view.set(<a className={props.className} href={props.to} on={{ click: onClick }}>{props.children}</a>)
+  return (
+    <a className={props.className} href={props.to} on={{ click: onClick }}>{props.children}</a>
+  )
 }

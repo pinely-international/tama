@@ -47,15 +47,13 @@ interface IconProps extends Partial<JSX.AttributesOf<SVGElement>> {
  */
 function Icon(this: Proton.Shell, props: IconProps) {
   if (props.href) {
-    this.view.set(
+    return (
       // <img src={props.href} className={classMerge("icon", props.className && classWithModifiers(props.className, ...props.modifiers || []))} />
       <img src={props.href} className={bem("icon", bem(props.className, props.modifiers ?? []))} />
     )
-
-    return
   }
 
-  this.view.set(
+  return (
     // <svg {...props} className={classMerge("icon", props.className && classWithModifiers(classWithModifiers(props.className, props.name), ...props.modifiers || []))}>
     <svg {...props} className={undefined} class={bem("icon", bem(bem(props.className, props.name), props.modifiers ?? []))}>
       <use href={`/static/icons.svg#${props.name}`} />

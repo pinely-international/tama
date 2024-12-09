@@ -2,17 +2,17 @@ import "@/assets/scss/base.scss"
 
 import { Events, Proton } from "@denshya/proton"
 
-import Navbar from "./ui/Navbar/Navbar"
-import MiniProfile from "./ui/MiniProfile/MiniProfile"
-import User from "./user/User"
-import EditableAvatar from "./ui/EditableAvatar/EditableAvatar"
+import Navbar from "./app/ui/Navbar/Navbar"
+import MiniProfile from "./app/ui/MiniProfile/MiniProfile"
+import User from "./app/user/User"
+import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
 import { router } from "./router"
 
 
 function App(this: Proton.Shell) {
   const user = new Events.State<User>({ email: "asd@as.com", firstName: "John", lastName: "Doe" })
 
-  this.view.set(
+  return (
     <>
       <header>
         <Navbar />
@@ -34,7 +34,7 @@ function App(this: Proton.Shell) {
 export default App
 
 function Route(this: Proton.Shell, props: { path: string; children: unknown }) {
-  let children
+  let children: unknown
 
   router[Symbol.subscribe](path => {
     if (children == null) children = this.inflator.inflate(<>{props.children}</>)

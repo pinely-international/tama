@@ -41,7 +41,7 @@ function EditableAvatar(this: Proton.Shell, props: EditableAvatarProps) {
   const asd = new Events.State(bem("editable-avatar", { pending: pending.get() }))
   pending[Symbol.subscribe](() => asd.set(bem("editable-avatar", { pending: pending.get() })))
 
-  this.view.set(
+  return (
     <div className={asd}>
       <img src={image} alt="avatar" className="editable-avatar__image" />
       <label className="editable-avatar__cover">

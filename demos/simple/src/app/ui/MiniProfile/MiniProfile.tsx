@@ -1,6 +1,6 @@
 import "./MiniProfile.scss"
 
-import User from "@/user/User"
+import User from "@/app/user/User"
 import { Events, Proton } from "@denshya/proton"
 
 import ColoredLetter from "../ColoredLetter/ColoredLetter"
@@ -19,7 +19,7 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
 
   inputValue.sets(userAvatar)
 
-  this.view.set(
+  return (
     <div className="mini-profile">
       <div className="mini-profile__profile">
         <button className="mini-profile__letter" mounted={userAvatar.is(it => !it)}>
