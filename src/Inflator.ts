@@ -461,6 +461,7 @@ export class WebInflator extends Inflator {
 
         if (view === null) view = comment
         if (view instanceof Node === false) return
+        if (view === currentView) return
 
         if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
           if (view instanceof DocumentFragment) {
