@@ -10,7 +10,7 @@ declare global {
   namespace JSX {
     interface ElementTypeConstructor {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this: never, props: any): void | Promise<void>
+      (this: never, props: any): unknown | Promise<unknown>
     }
   }
 }
