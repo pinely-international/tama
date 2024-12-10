@@ -119,9 +119,6 @@ export class WebInflator extends Inflator {
 
     const fragmentProxy = new Proxy(fragment, {
       get(target, property: keyof DocumentFragment) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const value = target[property] as any
-
         switch (property) {
           case "append":
           case "appendChild":
@@ -130,14 +127,14 @@ export class WebInflator extends Inflator {
           case "replaceChild":
           case "replaceChildren": {
             return (...args: unknown[]) => {
-              const result = value(...args)
+              const result = target[property](...args)
               children = [...target.childNodes]
               return result
             }
           }
 
           default:
-            return value
+            return target[property]
         }
       },
     })
