@@ -117,38 +117,13 @@ export class WebInflator extends Inflator {
       firstChildParent.replaceChild(tempFragment, firstChild)
     }
 
-    const fragmentProxy = new Proxy(fragment, {
-      get(target, property: keyof DocumentFragment) {
-        switch (property) {
-          case "append":
-          case "appendChild":
-          case "prepend":
-          case "removeChild":
-          case "replaceChild":
-          case "replaceChildren": {
-            return (...args: unknown[]) => {
-              const result = target[property](...args)
-              children = [...target.childNodes]
-              return result
-            }
-          }
-
-          default:
-            return target[property]
-        }
-      },
+    const observer = new MutationObserver(() => {
+      children = [...fragment.childNodes]
     })
 
-    const observer = new MutationObserver((mutationsList) => {
-      for (const mutation of mutationsList) {
-        console.log("Mutation observed:", mutation)
-      }
-    })
-
-    // Observe changes in child nodes of the fragment
     observer.observe(fragment, { childList: true })
 
-    return fragmentProxy
+    return fragment
   }
 
   protected inflateJSX(value: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
