@@ -490,31 +490,8 @@ export class WebInflator extends Inflator {
           oldView.replaceChildren(...oldViewChildren)
         }
 
+        console.debug(currentView, currentView instanceof DocumentFragment)
         throw new Error("Couldn't update view")
-      }
-
-      const schedule2 = () => {
-        console.debug(this.constructor.name, { view, anchor: currentView, anchorChildren: currentViewChildren })
-
-        if (view === null) view = comment
-        if (view instanceof Node === false) return
-
-        if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-          currentViewChildren = Null.ARRAY
-
-          if (view instanceof DocumentFragment) {
-            currentViewChildren = [...view.childNodes]
-          }
-
-          currentView.replaceWith(view)
-          currentView = view
-
-          if (view instanceof DocumentFragment) {
-            view.replaceChildren(...currentViewChildren)
-          }
-
-          return
-        }
       }
 
       cancelAnimationFrame(lastAnimationFrame)
