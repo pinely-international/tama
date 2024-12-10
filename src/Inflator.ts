@@ -491,6 +491,9 @@ export class WebInflator extends Inflator {
         }
 
         console.debug(currentView, currentView instanceof DocumentFragment)
+        console.debug(currentView, "replaceWith" in currentView)
+        console.debug(currentView, currentView.replaceWith instanceof Function)
+        console.debug(currentView, currentView.replaceWith)
         throw new Error("Couldn't update view")
       }
 
