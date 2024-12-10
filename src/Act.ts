@@ -27,35 +27,35 @@ namespace Act {
     }
   }
 
-  export function string(...args: unknown[]) {
-    const l = listenables[0]
+  // export function string(...args: unknown[]) {
+  //   const l = listenables[0]
 
-    return {
-      [Symbol.subscribe](next: (value: R) => void) {
-        // listenables.map(listenable => listenable[Symbol.subscribe])
-        return l[Symbol.subscribe](value => next(callback(value)))
-      }
-    }
-  }
+  //   return {
+  //     [Symbol.subscribe](next: (value: R) => void) {
+  //       // listenables.map(listenable => listenable[Symbol.subscribe])
+  //       return l[Symbol.subscribe](value => next(callback(value)))
+  //     }
+  //   }
+  // }
 
   // export const Deps = eval("() => eval(DETECT_DEPS)")
   // eval.arguments
 
-  export function mux<T>(initialValue: T, clause: () => void, deps): Observable<T> {
-    return deps(clause)
+  // export function mux<T>(initialValue: T, clause: () => void, deps): Observable<T> {
+  //   return deps(clause)
 
-    // return {
-    //   [Symbol.subscribe](next: T) {
-    //     return act[Symbol.subscribe](value => next(callback(value)))
-    //   }
-    // }
-  }
+  //   // return {
+  //   //   [Symbol.subscribe](next: T) {
+  //   //     return act[Symbol.subscribe](value => next(callback(value)))
+  //   //   }
+  //   // }
+  // }
 
-  export function define<T extends object>(object: T, record: Partial<Record<keyof T, { [descriptor](): PropertyDescriptor }>>): void {
-    for (const key in record) {
-      Object.defineProperty(object, key, record[key][descriptor]())
-    }
-  }
+  // export function define<T extends object>(object: T, record: Partial<Record<keyof T, { [descriptor](): PropertyDescriptor }>>): void {
+  //   for (const key in record) {
+  //     Object.defineProperty(object, key, record[key][descriptor]())
+  //   }
+  // }
 }
 
 // const DETECT_DEPS = `(clause) => {
