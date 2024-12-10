@@ -76,6 +76,10 @@ export abstract class Inflator {
   }
 }
 
+class WebFragment { }
+
+const tempFragment = document.createDocumentFragment()
+
 export class WebInflator extends Inflator {
   private Fragment = class { }
 
@@ -94,7 +98,60 @@ export class WebInflator extends Inflator {
   }
 
   protected inflateFragment(): DocumentFragment {
-    return document.createDocumentFragment()
+    let children: (Node | string)[] = []
+
+    const fragment = document.createDocumentFragment()
+
+    fragment.rewind = () => fragment.replaceChildren(...children)
+    fragment.replaceWith = (...nodes: (Node | string)[]) => {
+      const firstChild = children.shift()
+      if (firstChild == null) throw new Error("Can't replace live element of fragment")
+
+      const firstChildParent = firstChild instanceof Node && firstChild.parentElement
+      if (!firstChildParent) throw new Error("Can't replace live element of fragment")
+
+      children.forEach(rest => firstChildParent.removeChild(rest as never))
+      children = [...nodes]
+
+      tempFragment.replaceChildren(...nodes)
+      firstChildParent.replaceChild(tempFragment, firstChild)
+    }
+
+    const fragmentProxy = new Proxy(fragment, {
+      get(target, property: keyof DocumentFragment) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const value = target[property] as any
+
+        switch (property) {
+          case "append":
+          case "appendChild":
+          case "prepend":
+          case "removeChild":
+          case "replaceChild":
+          case "replaceChildren": {
+            return (...args: unknown[]) => {
+              const result = value(...args)
+              children = [...target.childNodes]
+              return result
+            }
+          }
+
+          default:
+            return value
+        }
+      },
+    })
+
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        console.log("Mutation observed:", mutation)
+      }
+    })
+
+    // Observe changes in child nodes of the fragment
+    observer.observe(fragment, { childList: true })
+
+    return fragmentProxy
   }
 
   protected inflateJSX(value: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
@@ -402,6 +459,7 @@ export class WebInflator extends Inflator {
     let currentViewChildren: Node[] = Null.ARRAY
 
     if (view instanceof DocumentFragment) {
+      view.childrenRefs
       currentViewChildren = [...view.childNodes]
     }
 
@@ -447,8 +505,20 @@ export class WebInflator extends Inflator {
         anchorFirstChildParent.replaceChild(view, anchorFirstChild)
       }
 
+      const schedule2 = () => {
+        console.debug(this.constructor.name, { view, anchor: currentView, anchorChildren: currentViewChildren })
+
+        if (view === null) view = comment
+        if (view instanceof Node === false) return
+
+        if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
+          currentView.replaceWith(view)
+          currentView = view
+        }
+      }
+
       cancelAnimationFrame(lastAnimationFrame)
-      lastAnimationFrame = requestAnimationFrame(schedule)
+      lastAnimationFrame = requestAnimationFrame(schedule2)
     })
 
     return currentView as never
