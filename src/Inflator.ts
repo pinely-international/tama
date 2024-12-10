@@ -77,6 +77,8 @@ export abstract class Inflator {
 }
 
 export class WebInflator extends Inflator {
+  private Fragment = class { }
+
   public inflate<T>(subject: T): T extends Node ? T : (T extends JSX.Element ? (Element | Comment) : unknown) {
     if (subject instanceof Node) return subject as never
     if (subject instanceof ProtonJSX.Node) return this.inflateJSXDeeply(subject) as never
@@ -423,6 +425,10 @@ export class WebInflator extends Inflator {
 
           currentView.replaceWith(view)
           currentView = view
+
+          if (view instanceof DocumentFragment) {
+            view.replaceChildren(...currentViewChildren)
+          }
 
           return
         }
