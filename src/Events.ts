@@ -3,6 +3,7 @@ import Act from "./Act"
 import Guarded from "./Guarded"
 import Null from "./Null"
 import Observable, { Subscriptable, Unsubscribe } from "./Observable"
+import Proton from "./Proton"
 
 // @ts-expect-error it's ok.
 Symbol.subscribe = Symbol.for("subscribe")
@@ -60,11 +61,6 @@ class Events<EventMap extends Record<EventName, unknown>, EventName extends keyo
 }
 
 
-interface IndexEvents<T = unknown> {
-  push: T[]
-  null: number
-  replace: T[]
-}
 
 namespace Events {
   export class Messager<T> {
@@ -197,7 +193,7 @@ namespace Events {
 
   export class Index<T> {
     private array: T[]
-    private readonly events = new Events<IndexEvents<T>>
+    private readonly events = new Events<Proton.IndexEvents<T>>
 
     constructor(init: Iterable<T>) { this.array = [...init] }
 
@@ -253,7 +249,10 @@ namespace Events {
       this.replace(this.nonNullableArray())
     }
 
-    on<K extends keyof IndexEvents>(event: K) { return this.events.observe(event) }
+    on<K extends keyof Proton.IndexEvents>(event: K) { return this.events.observe(event) }
+
+    readonly [Proton.Symbol.index] = this
+    readonly EMPTY = Null.OBJECT
   }
 
   export class StateIndex<T> extends Index<State<T>> {

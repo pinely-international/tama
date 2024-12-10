@@ -1,5 +1,7 @@
 import Events from "./Events"
 import { Inflator } from "./Inflator"
+import Null from "./Null"
+import { Subscriptable } from "./Observable"
 import ProtonJSX from "./ProtonJSX"
 import ProtonViewAPI from "./ProtonTreeAPI"
 import TreeContextAPI from "./TreeContextAPI"
@@ -19,6 +21,14 @@ interface ShellEvents {
 }
 
 namespace Proton {
+  export const Symbol: {
+    readonly index: unique symbol
+    readonly guard: unique symbol
+  } = {
+    index: window.Symbol.for("Proton.Index") as never,
+    guard: window.Symbol.for("Proton.Guard") as never,
+  }
+
   export interface ShellConstructor { }
 
   export const JSX = ProtonJSX
@@ -79,6 +89,20 @@ namespace Proton {
 
     getView() { return this.viewElement }
     on(event: keyof ShellEvents) { return this.events.observe(event) }
+  }
+
+  export abstract class Index {
+    abstract array: unknown[]
+    abstract on<K extends keyof IndexEvents>(event: K): Subscriptable<IndexEvents[K]>
+
+    readonly [Proton.Symbol.index] = this
+    readonly EMPTY = Null.OBJECT
+  }
+
+  export interface IndexEvents<T = unknown> {
+    push: T[]
+    null: number
+    replace: T[]
   }
 }
 
