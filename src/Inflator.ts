@@ -76,7 +76,20 @@ export abstract class Inflator {
   }
 }
 
-class WebFragment { }
+class WebFragment {
+  static replaceWith(nodes: (Node | string)[], children: Node[]) {
+    const firstChild = children.shift()
+    if (firstChild == null) throw new Error("Can't replace live element of fragment")
+
+    const firstChildParent = firstChild instanceof Node && firstChild.parentElement
+    if (!firstChildParent) throw new Error("Can't replace live element of fragment")
+
+    children.forEach(rest => firstChildParent.removeChild(rest as never))
+
+    tempFragment.replaceChildren(...nodes)
+    firstChildParent.replaceChild(tempFragment, firstChild)
+  }
+}
 
 const tempFragment = document.createDocumentFragment()
 
@@ -98,31 +111,31 @@ export class WebInflator extends Inflator {
   }
 
   protected inflateFragment(): DocumentFragment {
-    let children: (Node | string)[] = []
+    // let children: (Node | string)[] = []
 
     const fragment = document.createDocumentFragment()
 
-    fragment.rewind = () => fragment.replaceChildren(...children)
-    fragment.replaceWith = (...nodes: (Node | string)[]) => {
-      console.log(children, nodes)
+    // fragment.rewind = () => fragment.replaceChildren(...children)
+    // fragment.replaceWith = (...nodes: (Node | string)[]) => {
+    //   console.log(children, nodes)
 
-      const firstChild = children.shift()
-      if (firstChild == null) throw new Error("Can't replace live element of fragment")
+    //   const firstChild = children.shift()
+    //   if (firstChild == null) throw new Error("Can't replace live element of fragment")
 
-      const firstChildParent = firstChild instanceof Node && firstChild.parentElement
-      if (!firstChildParent) throw new Error("Can't replace live element of fragment")
+    //   const firstChildParent = firstChild instanceof Node && firstChild.parentElement
+    //   if (!firstChildParent) throw new Error("Can't replace live element of fragment")
 
-      children.forEach(rest => firstChildParent.removeChild(rest as never))
-      children = [...nodes]
+    //   children.forEach(rest => firstChildParent.removeChild(rest as never))
+    //   children = [...nodes]
 
-      tempFragment.replaceChildren(...nodes)
-      firstChildParent.replaceChild(tempFragment, firstChild)
-    }
+    //   tempFragment.replaceChildren(...nodes)
+    //   firstChildParent.replaceChild(tempFragment, firstChild)
+    // }
 
-    const observer = new MutationObserver(() => {
-      children = [...fragment.childNodes]
-    })
-    observer.observe(fragment, { childList: true })
+    // const observer = new MutationObserver(() => {
+    //   children = [...fragment.childNodes]
+    // })
+    // observer.observe(fragment, { childList: true })
 
     return fragment
   }
@@ -457,25 +470,27 @@ export class WebInflator extends Inflator {
           currentView.replaceWith(view)
           currentView = view
 
-          if (view instanceof DocumentFragment) {
-            view.replaceChildren(...currentViewChildren)
-          }
-
           return
         }
 
-        const anchorFirstChild = currentViewChildren.shift()
-        if (anchorFirstChild == null) return
+        if (currentView instanceof DocumentFragment) {
+          const anchorFirstChild = currentViewChildren[0]
+          if (anchorFirstChild == null) return
 
-        const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
-        if (!anchorFirstChildParent) return
+          const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
+          if (!anchorFirstChildParent) return
 
-        currentViewChildren.forEach(rest => anchorFirstChildParent.removeChild(rest as never))
+          const oldView = currentView
+          const oldViewChildren = currentViewChildren
 
-        currentView = view
-        currentViewChildren = [...view.childNodes]
+          currentView = view
+          currentViewChildren = [...view.childNodes]
 
-        anchorFirstChildParent.replaceChild(view, anchorFirstChild)
+          anchorFirstChildParent.replaceChild(view, anchorFirstChild)
+          oldView.replaceChildren(...oldViewChildren)
+        }
+
+        throw new Error("Couldn't update view")
       }
 
       const schedule2 = () => {
@@ -485,13 +500,25 @@ export class WebInflator extends Inflator {
         if (view instanceof Node === false) return
 
         if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
+          currentViewChildren = Null.ARRAY
+
+          if (view instanceof DocumentFragment) {
+            currentViewChildren = [...view.childNodes]
+          }
+
           currentView.replaceWith(view)
           currentView = view
+
+          if (view instanceof DocumentFragment) {
+            view.replaceChildren(...currentViewChildren)
+          }
+
+          return
         }
       }
 
       cancelAnimationFrame(lastAnimationFrame)
-      lastAnimationFrame = requestAnimationFrame(schedule2)
+      lastAnimationFrame = requestAnimationFrame(schedule)
     })
 
     return currentView as never
