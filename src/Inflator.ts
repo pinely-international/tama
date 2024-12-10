@@ -27,8 +27,6 @@ export abstract class Inflator {
     }
   }
 
-  protected pack() { }
-
   protected abstract inflatePrimitive(primitive: Primitive): unknown
   protected abstract inflateFragment(): unknown
 
@@ -68,7 +66,7 @@ export abstract class Inflator {
 
         throw thrown
       } finally {
-        shell.view.set(shell.view.default)
+        shell.view.default && shell.view.set(shell.view.default)
       }
     }
 
@@ -79,14 +77,13 @@ export abstract class Inflator {
 }
 
 export class WebInflator extends Inflator {
-  // private components = new Set
-
-  public inflate<T>(subject: T): T extends Node ? T : (T extends ProtonJSX.Node ? (HTMLElement | Comment) : (T extends Exclude<Primitive, null | undefined> ? Node : T)) {
+  public inflate<T>(subject: T): T extends Node ? T : (T extends JSX.Element ? (Element | Comment) : unknown) {
     if (subject instanceof Node) return subject as never
     if (subject instanceof ProtonJSX.Node) return this.inflateJSXDeeply(subject) as never
-
     if (subject instanceof Events.Index) return this.inflateIndexed(subject) as never
-    if (subject instanceof Object && (subject.get != null || subject[Symbol.subscribe] != null)) return this.inflateObservable(subject) as never
+
+    const accessor = Accessor.extractObservable(subject)
+    if (accessor != null) return this.inflateAccessor(accessor) as never
 
     return super.inflate(subject) as never
   }
@@ -98,8 +95,7 @@ export class WebInflator extends Inflator {
     return document.createDocumentFragment()
   }
 
-  protected inflateJSX(value: ProtonJSX.Node | Primitive): HTMLElement | DocumentFragment | Node {
-    // if (value instanceof Proton.Shell) return evaluateComponentShell(value)
+  protected inflateJSX(value: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
     if (value instanceof ProtonJSX.Intrinsic) return this.inflateJSXIntrinsic(value)
     if (value instanceof ProtonJSX.Component) return this.inflateJSXComponent(value)
     if (value instanceof ProtonJSX._Fragment) return this.inflateFragment()
@@ -107,23 +103,20 @@ export class WebInflator extends Inflator {
     throw new TypeError("Unsupported type of `jsx`", { cause: { jsx: value } })
   }
 
-  protected inflateObservable(child: unknown) {
-    const get = child.get instanceof Function ? () => child.get() : null
-    const subscribe = child[Symbol.subscribe] instanceof Function ? next => child[Symbol.subscribe](next) : null
+  protected inflateAccessor<T>(accessor: Partial<Accessor<T> & Subscriptable<T>>) {
+    const textNode = document.createTextNode(String(accessor.get?.()))
 
-    const textNode = document.createTextNode(get?.() ?? "")
-
-    subscribe?.(value => textNode.textContent = get ? get() : value)
+    accessor.subscribe?.(value => textNode.textContent = String(accessor.get?.() ?? value))
 
     return textNode
   }
 
-  protected inflateIndexed(index: Events.Index<unknown>) {
-    const comment = document.createComment(index.constructor.name)
-    const inflateItem = (item: unknown) => item !== Null.OBJECT ? this.inflate(item) : item
+  protected inflateIndexed(indexObject: Proton.Index) {
+    const comment = document.createComment(indexObject.constructor.name)
+    const inflateItem = (item: unknown) => item !== indexObject.EMPTY ? this.inflate(item) : item
 
-    let inflatedItems = index.array.map((item: unknown, index: number) => {
-      const inflated = item !== Null.OBJECT ? this.inflate(item) : item
+    let inflatedItems = indexObject.array.map((item: unknown, index: number) => {
+      const inflated = item !== indexObject.EMPTY ? this.inflate(item) : item
       if (inflated instanceof Comment) {
         inflated.onReplace(view => inflatedItems[index] = view)
       }
@@ -135,21 +128,21 @@ export class WebInflator extends Inflator {
       // Probably, something went wrong and the Element was not added or removed finally.
       if (comment.parentElement == null) return
 
-      comment.before(...inflatedItems.filter(item => item !== Null.OBJECT))
+      comment.before(...inflatedItems.filter(item => item !== indexObject.EMPTY))
     })
 
-    index.on("push").subscribe?.(newItems => {
+    indexObject.on("push").subscribe?.(newItems => {
       const newInflatedItems = newItems.map(inflateItem)
 
       inflatedItems.push(...newInflatedItems)
       comment.before(...newInflatedItems)
     })
-    index.on("null").subscribe?.(i => {
+    indexObject.on("null").subscribe?.(i => {
       inflatedItems[i].remove()
-      inflatedItems[i] = Null.OBJECT
+      inflatedItems[i] = indexObject.EMPTY
     })
-    index.on("replace").subscribe?.(newItems => {
-      inflatedItems.forEach(item => item !== Null.OBJECT && item.remove())
+    indexObject.on("replace").subscribe?.(newItems => {
+      inflatedItems.forEach(item => item !== indexObject.EMPTY && item.remove())
 
       const newInflatedItems = newItems.map(inflateItem)
 
@@ -192,7 +185,7 @@ export class WebInflator extends Inflator {
 
   private inflateJSXDeeply(node: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
     const object = this.inflateJSX(node)
-    if (node instanceof ProtonJSX.Component) return object as never
+    if (node instanceof ProtonJSX.Component) return object
 
 
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
@@ -370,7 +363,7 @@ export class WebInflator extends Inflator {
     return intrinsicInflated
   }
 
-  protected bindProperty(key: string, source: unknown, target: Element): void {
+  protected bindProperty(key: keyof never, source: unknown, target: unknown): void {
     this.bindPropertyCallback(source, value => target[key] = value)
   }
 
@@ -389,7 +382,6 @@ export class WebInflator extends Inflator {
   }
 
   private getInitialView(view: unknown, comment: Comment): Node {
-    // if (view == null) return comment
     if (view instanceof DocumentFragment) return view
     if (view instanceof Node && "replaceWith" in view) return view
 
@@ -427,6 +419,10 @@ export class WebInflator extends Inflator {
         if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
           currentView.replaceWith(view)
           currentView = view
+
+          if (view instanceof DocumentFragment) {
+            currentViewChildren = [...view.childNodes]
+          }
 
           return
         }
