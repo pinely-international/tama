@@ -104,6 +104,8 @@ export class WebInflator extends Inflator {
 
     fragment.rewind = () => fragment.replaceChildren(...children)
     fragment.replaceWith = (...nodes: (Node | string)[]) => {
+      console.log(children, nodes)
+
       const firstChild = children.shift()
       if (firstChild == null) throw new Error("Can't replace live element of fragment")
 
@@ -120,7 +122,6 @@ export class WebInflator extends Inflator {
     const observer = new MutationObserver(() => {
       children = [...fragment.childNodes]
     })
-
     observer.observe(fragment, { childList: true })
 
     return fragment
