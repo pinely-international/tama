@@ -63,7 +63,9 @@ export default function Game() {
   const currentMove = new Events.State(0)
 
   const xIsNext = currentMove.to(it => it % 2 === 0)
-  const currentSquares = currentMove.to(it => history.get()[it])
+  const currentSquares = Events.State.compute([currentMove, history], (currentMove, history) => {
+    return history[currentMove]
+  })
 
   function onPlay(nextSquares) {
     const nextHistory = [...history.get().slice(0, currentMove.get() + 1), nextSquares]
