@@ -4,7 +4,7 @@ import { Act, Events, Proton } from "@denshya/proton"
 
 function Square({ value, onClick }) {
   return (
-    <button className="square" on={{ click: onClick }}>{value.to(it => it ?? "")}</button>
+    <button className="square" on={{ click: onClick }}>{value}</button>
   )
 }
 
@@ -25,15 +25,14 @@ function Board(props: { xIsNext, squares, onPlay }) {
   }
 
 
-  const status = props.xIsNext.to(it => {
-    const squares = props.squares.get()
+  const status = Events.State.compute([props.xIsNext, props.squares], (xIsNext, squares) => {
     const winner = calculateWinner(squares)
 
     if (winner) {
       return 'Winner: ' + winner
     }
 
-    return 'Next player: ' + (it ? 'X' : 'O')
+    return 'Next player: ' + (xIsNext ? 'X' : 'O')
   })
 
   return (
@@ -59,7 +58,7 @@ function Board(props: { xIsNext, squares, onPlay }) {
 }
 
 export default function Game() {
-  const history = new Events.State([Array(9).fill(null)])
+  const history = new Events.State([Array(9).fill("")])
   const currentMove = new Events.State(0)
 
   const xIsNext = currentMove.to(it => it % 2 === 0)
@@ -78,28 +77,31 @@ export default function Game() {
     currentMove.set(nextMove)
   }
 
-  // const moves = history.map((squares, move) => {
-  //   let description
-  //   if (move > 0) {
-  //     description = 'Go to move #' + move
-  //   } else {
-  //     description = 'Go to game start'
-  //   }
-  //   return (
-  //     <li>
-  //       <button on={{ click: () => jumpTo(move) }}>{description}</button>
-  //     </li>
-  //   )
-  // })
+  const historyIndex = new Events.StateIndex(history)
+  const moves = historyIndex.map((squares, move) => {
+    const description = new Events.State("Go to game start")
+
+    historyIndex.map(() => {
+      if (historyIndex.indexOf(squares) > 0) {
+        description.set('Go to move #' + move)
+      }
+      description.set('Go to game start')
+    })
+    return (
+      <li>
+        <button on={{ click: () => jumpTo(move) }}>{description}</button>
+      </li>
+    )
+  })
 
   return (
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={onPlay} />
       </div>
-      {/* <div className="game-info">
+      <div className="game-info">
         <ol>{moves}</ol>
-      </div> */}
+      </div>
     </div>
   );
 }
