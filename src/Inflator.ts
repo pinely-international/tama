@@ -104,8 +104,13 @@ class WebComponentPlaceholder extends Comment {
   }
 
   override get parentElement() {
-    const element = super.parentElement
-    if (element == null) return this.viewParent
+    const element = super.parentElement ?? this.viewParent
+    if (element == null) {
+      const shellView = this.shell.getView()
+      if (shellView instanceof Element === false) return null
+
+      return shellView.parentElement
+    }
 
     return element
   }
