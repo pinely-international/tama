@@ -70,7 +70,7 @@ export function NavRoute(this: Proton.Shell, props: { path: string; children: un
   // let timeout: number
 
   const switchView = (path: string) => {
-    if (children == null) {
+    if (children == null && path === props.path) {
       children = this.inflator.inflate(<>{props.children}</>)
     }
 
