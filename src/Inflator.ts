@@ -97,6 +97,7 @@ class WebComponentPlaceholder extends Comment {
 
     if (view == null) return this
     if (view instanceof Node === false) return null
+    if (view.parentElement == null) return this
 
     return view
   }
