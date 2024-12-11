@@ -76,22 +76,42 @@ export abstract class Inflator {
   }
 }
 
-class WebFragment {
-  static replaceWith(nodes: (Node | string)[], children: Node[]) {
-    const firstChild = children.shift()
-    if (firstChild == null) throw new Error("Can't replace live element of fragment")
+// class WebFragment {
+//   static replaceWith(nodes: (Node | string)[], children: Node[]) {
+//     const firstChild = children.shift()
+//     if (firstChild == null) throw new Error("Can't replace live element of fragment")
 
-    const firstChildParent = firstChild instanceof Node && firstChild.parentElement
-    if (!firstChildParent) throw new Error("Can't replace live element of fragment")
+//     const firstChildParent = firstChild instanceof Node && firstChild.parentElement
+//     if (!firstChildParent) throw new Error("Can't replace live element of fragment")
 
-    children.forEach(rest => firstChildParent.removeChild(rest as never))
+//     children.forEach(rest => firstChildParent.removeChild(rest as never))
 
-    tempFragment.replaceChildren(...nodes)
-    firstChildParent.replaceChild(tempFragment, firstChild)
+//     tempFragment.replaceChildren(...nodes)
+//     firstChildParent.replaceChild(tempFragment, firstChild)
+//   }
+// }
+
+class WebComponentPlaceholder extends Comment {
+  private viewParent: HTMLElement | null = null
+
+  constructor(public shell: Proton.Shell) {
+    super(shell.constructor.name)
+
+    shell.on("view").subscribe(view => {
+      if (view instanceof Element === false) return
+      this.viewParent = view.parentElement
+    })
+  }
+
+  override get parentElement() {
+    const element = super.parentElement
+    if (element == null) return this.viewParent
+
+    return element
   }
 }
 
-const tempFragment = document.createDocumentFragment()
+// const tempFragment = document.createDocumentFragment()
 
 export class WebInflator extends Inflator {
   private Fragment = class { }
@@ -162,8 +182,8 @@ export class WebInflator extends Inflator {
 
     let inflatedItems = indexObject.array.map((item: unknown, index: number) => {
       const inflated = item !== indexObject.EMPTY ? this.inflate(item) : item
-      if (inflated instanceof Comment) {
-        inflated.onReplace(view => inflatedItems[index] = view)
+      if (inflated instanceof WebComponentPlaceholder) {
+        inflated.shell.on("view").subscribe(view => inflatedItems[index] = view)
       }
 
       return inflated
@@ -437,8 +457,7 @@ export class WebInflator extends Inflator {
     const shell = this.inflateComponent(component.type as never, component.props)
     const view = shell.getView()
 
-    const comment = document.createComment(component.type.name)
-    comment.onReplace = shell.on("view").subscribe
+    const comment = new WebComponentPlaceholder(shell)
 
 
     let currentView: Node = this.getInitialView(view, comment)
