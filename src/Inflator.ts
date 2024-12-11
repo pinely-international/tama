@@ -94,8 +94,8 @@ export abstract class Inflator {
 class WebComponentPlaceholder extends Comment {
   private viewParent: HTMLElement | null = null
 
-  constructor(public shell: Proton.Shell) {
-    super(shell.constructor.name)
+  constructor(public shell: Proton.Shell, shellConstructor: Function) {
+    super(shellConstructor.name)
 
     shell.on("view").subscribe(view => {
       if (view instanceof Element === false) return
@@ -462,10 +462,10 @@ export class WebInflator extends Inflator {
     const shell = this.inflateComponent(component.type as never, component.props)
     const view = shell.getView()
 
-    const comment = new WebComponentPlaceholder(shell)
+    const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
 
 
-    let currentView: Node = this.getInitialView(view, comment)
+    let currentView: Node = this.getInitialView(view, componentPlaceholder)
     let currentViewChildren: Node[] = Null.ARRAY
 
     if (view instanceof DocumentFragment) {
@@ -483,7 +483,7 @@ export class WebInflator extends Inflator {
       const schedule = () => {
         console.debug(this.constructor.name, { view, anchor: currentView, anchorChildren: currentViewChildren })
 
-        if (view === null) view = comment
+        if (view === null) view = componentPlaceholder
         if (view instanceof Node === false) return
         if (view === currentView) return
 
