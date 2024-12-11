@@ -232,17 +232,21 @@ export class WebInflator extends Inflator {
     const object = this.inflateJSX(node)
     if (node instanceof ProtonJSX.Component) return object
 
+    if (tempFragment.childElementCount > 0) {
+      throw new Error("Temporary Fragment still has unused elements, this indicates a problem in the library code")
+    }
 
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
       const childInflated = this.inflate(child)
       if (childInflated == null) return
 
-      object.appendChild(childInflated)
+      tempFragment.appendChild(childInflated)
     }
 
     node.children?.forEach(appendChildObject)
     node.childrenExtrinsic?.forEach(appendChildObject)
 
+    object.appendChild(tempFragment)
     return object
   }
 
