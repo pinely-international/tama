@@ -508,7 +508,7 @@ export class WebInflator extends Inflator {
           if (!anchorFirstChildParent) throw new Error("Can't replace live element of fragment")
 
           const oldView = currentView
-          const oldViewChildren = currentViewChildren
+          const oldViewChildren = currentViewChildren.map(node => node instanceof WebComponentPlaceholder ? node.view ?? node : node)
 
           currentView = view
           currentViewChildren = [...view.childNodes]
