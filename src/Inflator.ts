@@ -476,19 +476,14 @@ export class WebInflator extends Inflator {
     }
 
 
-    console.debug(this.constructor.name, { view, anchor: currentView, anchorChildren: currentViewChildren })
-
     let lastAnimationFrame = -1
 
     shell.on("view").subscribe(view => {
-      // Assume that the anchor node was already connected.
+      if (view instanceof Node === false) return
+      if (view === null) view = componentPlaceholder
+      if (view === currentView) return
+
       const schedule = () => {
-        console.debug(this.constructor.name, { view, anchor: currentView, anchorChildren: currentViewChildren })
-
-        if (view === null) view = componentPlaceholder
-        if (view instanceof Node === false) return
-        if (view === currentView) return
-
         if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
           if (view instanceof DocumentFragment) {
             currentViewChildren = [...view.childNodes]
