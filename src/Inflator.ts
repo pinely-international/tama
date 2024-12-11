@@ -92,19 +92,19 @@ export abstract class Inflator {
 // }
 
 class WebComponentPlaceholder extends Comment {
-  private viewParent: HTMLElement | null = null
+  get view() {
+    const view = this.shell.getView()
+    if (view instanceof Node === false) return null
+
+    return view
+  }
 
   constructor(public shell: Proton.Shell, shellConstructor: Function) {
     super(shellConstructor.name)
-
-    shell.on("view").subscribe(view => {
-      if (view instanceof Element === false) return
-      this.viewParent = view.parentElement
-    })
   }
 
   override get parentElement() {
-    const element = super.parentElement ?? this.viewParent
+    const element = super.parentElement ?? this.view?.parentElement
     if (element == null) {
       const shellView = this.shell.getView()
       if (shellView instanceof Element === false) return null
@@ -469,7 +469,6 @@ export class WebInflator extends Inflator {
     let currentViewChildren: Node[] = Null.ARRAY
 
     if (view instanceof DocumentFragment) {
-      view.childrenRefs
       currentViewChildren = [...view.childNodes]
     }
 
@@ -500,10 +499,10 @@ export class WebInflator extends Inflator {
 
         if (currentView instanceof DocumentFragment) {
           const anchorFirstChild = currentViewChildren[0]
-          if (anchorFirstChild == null) return
+          if (anchorFirstChild == null) throw new Error("Can't replace live element of fragment")
 
           const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
-          if (!anchorFirstChildParent) return
+          if (!anchorFirstChildParent) throw new Error("Can't replace live element of fragment")
 
           const oldView = currentView
           const oldViewChildren = currentViewChildren
@@ -511,7 +510,12 @@ export class WebInflator extends Inflator {
           currentView = view
           currentViewChildren = [...view.childNodes]
 
-          anchorFirstChildParent.replaceChild(view, anchorFirstChild)
+          if (anchorFirstChild instanceof WebComponentPlaceholder) {
+            anchorFirstChildParent.replaceChild(view, anchorFirstChild.view!) // Meant to throw error if `null`.
+          } else {
+            anchorFirstChildParent.replaceChild(view, anchorFirstChild)
+          }
+
           oldView.replaceChildren(...oldViewChildren)
 
           return
