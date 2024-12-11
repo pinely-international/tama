@@ -92,8 +92,10 @@ export abstract class Inflator {
 // }
 
 class WebComponentPlaceholder extends Comment {
-  get view() {
+  get view(): Node | null {
     const view = this.shell.getView()
+
+    if (view == null) return this
     if (view instanceof Node === false) return null
 
     return view
