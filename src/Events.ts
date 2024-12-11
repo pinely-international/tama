@@ -266,6 +266,12 @@ namespace Events {
 
     on<K extends keyof Proton.IndexEvents>(event: K) { return this.events.observe(event) }
 
+    [Symbol.subscribe](next: () => void) {
+      this.on("push").subscribe(() => next())
+      this.on("null").subscribe(() => next())
+      this.on("replace").subscribe(() => next())
+    }
+
     readonly [Proton.Symbol.index] = this
     readonly EMPTY = Null.OBJECT
   }
