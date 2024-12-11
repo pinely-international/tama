@@ -94,16 +94,16 @@ namespace Events {
     static compute<const States extends State<any>[], U>(states: States, predicate: (...values: { [K in keyof States]: ReturnType<States[K]["get"]> }) => U): State<U> {
       const values = states.map(state => state.get())
 
-      const state = new State(predicate(...values))
+      const computed = new State(predicate(...values))
 
       states.forEach((state, index) => {
         state[Symbol.subscribe](value => {
           values[index] = value
-          state.set(predicate(...values))
+          computed.set(predicate(...values))
         })
       })
 
-      return state
+      return computed
     }
 
     private readonly callbacks = new Set<(value: T) => void>()
