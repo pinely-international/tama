@@ -2,9 +2,8 @@ import { Events, Proton } from "@denshya/proton"
 import { Unsubscribable } from "type-fest"
 
 
-abstract class Router<Path = string, Resource = unknown> {
+abstract class Navigation<Path = string> {
   abstract readonly path: Path
-  // abstract readonly resource: Resource | null
 
   abstract navigate(delta: number): void
   abstract navigate(path: Path): void
@@ -12,7 +11,7 @@ abstract class Router<Path = string, Resource = unknown> {
   abstract [Symbol.subscribe](next: (value: Path) => void): Unsubscribable
 }
 
-export default Router
+export default Navigation
 
 namespace WebRouter {
   export interface To extends Partial<Pick<Location, "pathname" | "search" | "hash">> {
@@ -20,7 +19,7 @@ namespace WebRouter {
   }
 }
 
-export class WebRouter extends Router {
+export class WebNavigation extends Navigation {
   private readonly current = new Events.State(new URL(window.location.href))
 
   get path() { return this.current.get().pathname }
@@ -63,30 +62,36 @@ export class WebRouter extends Router {
 
 
 
-export const router = new WebRouter
+export const navigation = new WebNavigation
 
 
-export function Route(this: Proton.Shell, props: { path: string; children: unknown }) {
+export function NavRoute(this: Proton.Shell, props: { path: string; children: unknown }) {
   let children: unknown
+  // let timeout: number
 
   const switchView = (path: string) => {
     if (children == null) {
       children = this.inflator.inflate(<>{props.children}</>)
     }
 
+    // clearTimeout(timeout)
+    // if (path !== props.path) {
+    //   timeout = setTimeout(() => children = undefined, 100 * 1000)
+    // }
+
     this.view.set(path === props.path ? children : null)
   }
 
-  router[Symbol.subscribe](switchView)
-  switchView(router.path)
+  navigation[Symbol.subscribe](switchView)
+  switchView(navigation.path)
 }
 
 
 
-export function Link(props: { to: string; className?: string; children?: unknown }) {
+export function NavLink(props: { to: string; className?: string; children?: unknown }) {
   function onClick(event: MouseEvent) {
     event.preventDefault()
-    router.navigate(props.to)
+    navigation.navigate(props.to)
   }
 
   return (
