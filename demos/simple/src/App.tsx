@@ -6,10 +6,10 @@ import Navbar from "./app/ui/Navbar/Navbar"
 import MiniProfile from "./app/ui/MiniProfile/MiniProfile"
 import User from "./app/user/User"
 import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
-import { router } from "./router"
+import { Route } from "./router"
 
 
-function App(this: Proton.Shell) {
+function App() {
   const user = new Events.State<User>({ email: "asd@as.com", firstName: "John", lastName: "Doe" })
 
   return (
@@ -32,13 +32,3 @@ function App(this: Proton.Shell) {
 }
 
 export default App
-
-function Route(this: Proton.Shell, props: { path: string; children: unknown }) {
-  let children: unknown
-
-  router[Symbol.subscribe](path => {
-    if (children == null) children = this.inflator.inflate(<>{props.children}</>)
-
-    this.view.set(path === props.path ? children : null)
-  })
-}

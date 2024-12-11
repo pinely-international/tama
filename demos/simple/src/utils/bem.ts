@@ -1,6 +1,4 @@
-import { castArray } from "lodash"
-
-import { isRecord } from "./common"
+import { castArray, isRecord } from "./common"
 import { Act, Events } from "@denshya/proton"
 
 class BEM {

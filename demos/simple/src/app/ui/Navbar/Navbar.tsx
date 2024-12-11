@@ -1,10 +1,10 @@
-import { router } from "@/router";
 import "./Navbar.scss"
 
 import { Proton } from "@denshya/proton"
+import { Link } from "@/router";
 
 
-function Navbar(this: Proton.Shell) {
+function Navbar() {
   return (
     <div className="navbar">
       <Link className="navbar__link" to="/">Home</Link>
@@ -15,15 +15,3 @@ function Navbar(this: Proton.Shell) {
 }
 
 export default Navbar
-
-
-function Link(this: Proton.Shell, props: { to: string; className?: string; children?: unknown }) {
-  function onClick(event: MouseEvent) {
-    event.preventDefault()
-    router.navigate(props.to)
-  }
-
-  return (
-    <a className={props.className} href={props.to} on={{ click: onClick }}>{props.children}</a>
-  )
-}
