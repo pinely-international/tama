@@ -1,14 +1,15 @@
 import "./tictactoe.scss"
 
-import { Act, Events, Proton } from "@denshya/proton"
+import { Events, Proton } from "@denshya/proton"
 
-function Square({ value, onClick }) {
+
+function Square(props: { value: Events.State<string>, onClick(): void }) {
   return (
-    <button className="square" on={{ click: onClick }}>{value}</button>
+    <button className="square" on={{ click: props.onClick }}>{props.value}</button>
   )
 }
 
-function Board(props: { xIsNext, squares, onPlay }) {
+function Board(props: { xIsNext: Events.State<boolean>, squares: Events.State<string[]>, onPlay(squares: string[]): void }) {
   function onClick(index: number) {
     const squares = props.squares.get()
 
@@ -58,7 +59,7 @@ function Board(props: { xIsNext, squares, onPlay }) {
 }
 
 export default function Game() {
-  const history = new Events.State([Array(9).fill("")])
+  const history = new Events.State<string[][]>([Array(9).fill("")])
   const currentMove = new Events.State(0)
 
   const xIsNext = currentMove.to(it => it % 2 === 0)
@@ -66,14 +67,14 @@ export default function Game() {
     return history[currentMove]
   })
 
-  function onPlay(nextSquares) {
+  function onPlay(nextSquares: string[]) {
     const nextHistory = [...history.get().slice(0, currentMove.get() + 1), nextSquares]
 
     history.set(nextHistory)
     currentMove.set(nextHistory.length - 1)
   }
 
-  function jumpTo(nextMove) {
+  function jumpTo(nextMove: number) {
     currentMove.set(nextMove)
   }
 
@@ -81,9 +82,11 @@ export default function Game() {
   const moves = historyIndex.map((squares, move) => {
     const description = new Events.State("Go to game start")
 
-    historyIndex.map(() => {
-      if (historyIndex.indexOf(squares) > 0) {
+    historyIndex.orderOf(squares)[Symbol.subscribe](move => {
+      console.log(move)
+      if (move > 0) {
         description.set('Go to move #' + move)
+        return
       }
       description.set('Go to game start')
     })
@@ -106,7 +109,7 @@ export default function Game() {
   );
 }
 
-function calculateWinner(squares) {
+function calculateWinner(squares: string[]) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
