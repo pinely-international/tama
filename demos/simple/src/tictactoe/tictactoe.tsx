@@ -80,16 +80,10 @@ export default function Game() {
 
   const historyIndex = new Events.StateIndex(history)
   const moves = historyIndex.map((squares, move) => {
-    const description = new Events.State("Go to game start")
-
-    historyIndex.orderOf(squares)[Symbol.subscribe](move => {
-      console.log(move)
-      if (move > 0) {
-        description.set('Go to move #' + move)
-        return
-      }
-      description.set('Go to game start')
-    })
+    let description = "Go to game start"
+    if (move > 0) {
+      description = "Go to move #" + move
+    }
     return (
       <li>
         <button on={{ click: () => jumpTo(move) }}>{description}</button>

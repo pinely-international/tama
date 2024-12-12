@@ -8,10 +8,18 @@ import User from "./app/user/User"
 import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
 import { NavRoute } from "./navigation"
 import Game from "./tictactoe/tictactoe"
+import UserContext from "./UserContext"
 
 
-function App() {
+
+
+
+
+function App(this: Proton.Shell) {
   const user = new Events.State<User>({ email: "asd@as.com", firstName: "John", lastName: "Doe" })
+  const userContext = new UserContext(user)
+
+  this.context.provide(userContext)
 
   return (
     <>
@@ -19,7 +27,7 @@ function App() {
         <Navbar />
       </header>
       <main>
-        <MiniProfile user={user} />
+        <MiniProfile />
         <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
 
         <section>

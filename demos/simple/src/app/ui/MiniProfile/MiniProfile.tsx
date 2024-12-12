@@ -1,17 +1,17 @@
 import "./MiniProfile.scss"
 
-import User from "@/app/user/User"
 import { Events, Proton } from "@denshya/proton"
 
 import ColoredLetter from "../ColoredLetter/ColoredLetter"
+import UserContext from "@/UserContext"
 
 
-interface MiniProfileProps {
-  user: User | Events.State<User>
-}
+interface MiniProfileProps { }
 
 function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
-  const user = Events.State.from(props.user)
+  const userContext = this.context.require(UserContext)
+
+  const user = userContext.user
   const userAvatar = user.$.avatar
 
   const inputValue = new Events.State("")
