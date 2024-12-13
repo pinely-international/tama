@@ -63,9 +63,7 @@ export default function Game() {
   const currentMove = new Events.State(0)
 
   const xIsNext = currentMove.to(it => it % 2 === 0)
-  const currentSquares = Events.State.compute([currentMove, history], (currentMove, history) => {
-    return history[currentMove]
-  })
+  const currentSquares = Events.State.compute([currentMove, history], (currentMove, history) => history[currentMove])
 
   function onPlay(nextSquares: string[]) {
     const nextHistory = [...history.get().slice(0, currentMove.get() + 1), nextSquares]
@@ -100,7 +98,7 @@ export default function Game() {
         <ol>{moves}</ol>
       </div>
     </div>
-  );
+  )
 }
 
 function calculateWinner(squares: string[]) {

@@ -1,4 +1,4 @@
-@use "@/assets/scss/bundle.scss";
+@use "@/assets/scss/bundle" as *;
 
 .navbar {
 	display: flex;
@@ -12,14 +12,20 @@
 	border: 1px solid #eaeaea;
 	border-radius: 0.25em;
 
+	color: $color-dark;
 	cursor: pointer;
+	text-decoration: none;
 	transition: 250ms ease background-color, 100ms ease opacity;
 
-	&:hover {
-		background: #e1e1e1;
+	&:hover:not(&--active) {
+		background: #eaeaea;
 	}
 
 	&:active {
 		opacity: 0.7;
+	}
+
+	&--active {
+		background: $color-blue-light;
 	}
 }

@@ -1,19 +1,18 @@
 import { Events, Proton } from "@denshya/proton"
 import { Unsubscribable } from "type-fest"
+import { bem } from "./utils/bem"
 
 
 abstract class Navigation<Path = string> {
-  abstract readonly path: Path
-
   abstract navigate(delta: number): void
-  abstract navigate(path: Path): void
+  abstract navigate(to: Path): void
 
-  abstract [Symbol.subscribe](next: (value: Path) => void): Unsubscribable
+  abstract [Symbol.subscribe](next: () => void): Unsubscribable
 }
 
 export default Navigation
 
-namespace WebRouter {
+namespace WebNavigation {
   export interface To extends Partial<Pick<Location, "pathname" | "search" | "hash">> {
     state?: unknown
   }
@@ -36,8 +35,8 @@ export class WebNavigation extends Navigation {
 
   navigate(delta: number): void
   navigate(path: string): void
-  navigate(to: WebRouter.To): void
-  navigate(to: string | number | WebRouter.To): void {
+  navigate(to: WebNavigation.To): void
+  navigate(to: string | number | WebNavigation.To): void {
     if (typeof to === "number") return void window.history.go(to)
     if (typeof to === "object") {
       this.current.set(this.push(to.pathname, to.state, to.hash, to.search))
@@ -57,7 +56,7 @@ export class WebNavigation extends Navigation {
     return url
   }
 
-  [Symbol.subscribe](next: (value: string) => void) { return this.current[Symbol.subscribe](url => next(url.pathname)) }
+  [Symbol.subscribe](next: () => void) { return this.current[Symbol.subscribe](() => next()) }
 }
 
 
@@ -65,36 +64,39 @@ export class WebNavigation extends Navigation {
 export const navigation = new WebNavigation
 
 
-export function NavRoute(this: Proton.Shell, props: { path: string; children: unknown }) {
+export function NavRoute(this: Proton.Shell, props: { path?: string; children: unknown }) {
   let children: unknown
-  // let timeout: number
 
-  const switchView = (path: string) => {
-    if (children == null && path === props.path) {
+  const switchView = () => {
+    if (navigation.path !== props.path) {
+      return this.view.set(null)
+    }
+
+    if (children == null) {
       children = this.inflator.inflate(<>{props.children}</>)
     }
 
-    // clearTimeout(timeout)
-    // if (path !== props.path) {
-    //   timeout = setTimeout(() => children = undefined, 100 * 1000)
-    // }
-
-    this.view.set(path === props.path ? children : null)
+    this.view.set(children)
   }
 
   navigation[Symbol.subscribe](switchView)
-  switchView(navigation.path)
+  switchView()
 }
 
 
 
 export function NavLink(props: { to: string; className?: string; children?: unknown }) {
+  const className = new Events.State(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))
+  navigation[Symbol.subscribe](() => {
+    className.set(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))
+  })
+
   function onClick(event: MouseEvent) {
     event.preventDefault()
     navigation.navigate(props.to)
   }
 
   return (
-    <a className={props.className} href={props.to} on={{ click: onClick }}>{props.children}</a>
+    <a className={className} href={props.to} on={{ click: onClick }}>{props.children}</a>
   )
 }

@@ -11,10 +11,6 @@ import Game from "./tictactoe/tictactoe"
 import UserContext from "./UserContext"
 
 
-
-
-
-
 function App(this: Proton.Shell) {
   const user = new Events.State<User>({ email: "asd@as.com", firstName: "John", lastName: "Doe" })
   const userContext = new UserContext(user)
@@ -27,15 +23,13 @@ function App(this: Proton.Shell) {
         <Navbar />
       </header>
       <main>
-        <MiniProfile />
-        <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
-
-        <section>
-          <NavRoute path="/"><span>123</span></NavRoute>
-          <NavRoute path="/terms">Terms</NavRoute>
-          <NavRoute path="/contacts">Contacts</NavRoute>
-          <NavRoute path="/tictactoe"><Game /></NavRoute>
-        </section>
+        <NavRoute path="/"><span>123</span></NavRoute>
+        <NavRoute path="/terms">Terms</NavRoute>
+        <NavRoute path="/profile">
+          <MiniProfile />
+          <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
+        </NavRoute>
+        <NavRoute path="/tictactoe"><Game /></NavRoute>
       </main>
     </>
   )
