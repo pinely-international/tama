@@ -1,3 +1,5 @@
+
+
 import { AccessorGet, AccessorSet } from "./Accessor"
 import Act from "./Act"
 import Guarded from "./Guarded"
@@ -7,8 +9,6 @@ import Proton from "./Proton"
 
 // @ts-expect-error it's ok.
 Symbol.subscribe = Symbol.for("subscribe")
-
-// type EventActionFrom<EventMap extends Record<keyof never, unknown>> = { [Type in keyof EventMap]: { type: EventMap, payload: EventMap[Type] } }
 
 const finalization = new FinalizationRegistry<() => void>(unsubscribe => unsubscribe())
 
@@ -56,8 +56,6 @@ class Events<EventMap extends Record<EventName, unknown>, EventName extends keyo
       }
     }
   }
-
-  // public toReadonly(): Observable<EventActionFrom<T>> {}
 }
 
 
@@ -91,15 +89,16 @@ namespace Events {
       return new State(item)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static compute<const States extends State<any>[], U>(states: States, predicate: (...values: { [K in keyof States]: ReturnType<States[K]["get"]> }) => U): State<U> {
       const values = states.map(state => state.get())
 
-      const computed = new State(predicate(...values))
+      const computed = new State(predicate(...values as never))
 
       states.forEach((state, index) => {
         state[Symbol.subscribe](value => {
           values[index] = value
-          computed.set(predicate(...values))
+          computed.set(predicate(...values as never))
         })
       })
 
@@ -297,9 +296,6 @@ namespace Events {
 }
 
 export default Events
-
-// export function signal(): PropertyDecorator | ParameterDecorator { return (target: Object, propertyKey: string | symbol) => { } }
-
 
 type StateReadonly<T> = Observable<T> & AccessorGet<T>
 type StateWriteonly<T> = { set(value: T | ((value: T) => T)): void }

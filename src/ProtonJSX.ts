@@ -33,6 +33,7 @@ namespace ProtonJSX {
       super(type, props, children, childrenExtrinsic)
 
       if (props != null && (children != null || childrenExtrinsic != null)) {
+        // @ts-expect-error it is actually type-safe since check are made in the super class.
         this.props.children = [...this.children ?? Null.ARRAY, ...childrenExtrinsic ?? Null.ARRAY]
       }
     }

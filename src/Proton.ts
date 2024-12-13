@@ -43,9 +43,36 @@ namespace Proton {
 
     private viewElement: unknown = null
 
+    private get inflatorCatchCallback() {
+      // @ts-expect-error this is correct by design.
+      return this.inflator.catchCallback
+    }
+    private set inflatorCatchCallback(newCallback) {
+      // @ts-expect-error this is correct by design.
+      this.inflator.catchCallback = newCallback
+    }
+
+    private get inflatorSuspenseCallback() {
+      // @ts-expect-error this is correct by design.
+      return this.inflator.suspenseCallback
+    }
+    private set inflatorSuspenseCallback(newCallback) {
+      // @ts-expect-error this is correct by design.
+      this.inflator.suspenseCallback = newCallback
+    }
+
+    private get inflatorUnsuspenseCallback() {
+      // @ts-expect-error this is correct by design.
+      return this.inflator.unsuspenseCallback
+    }
+    private set inflatorUnsuspenseCallback(newCallback) {
+      // @ts-expect-error this is correct by design.
+      this.inflator.unsuspenseCallback = newCallback
+    }
 
     constructor(inflator: Inflator, parent?: Shell) {
       this.inflator = cloneInstance(inflator)
+      // @ts-expect-error this is correct by design.
       this.inflator.parentShell = this
 
       this.context = new TreeContextAPI(parent?.context)
@@ -63,19 +90,19 @@ namespace Proton {
             this.viewElement = object
             this.events.dispatch("view", object)
           } catch (thrown) {
-            if (this.inflator.catchCallback != null) return void this.inflator.catchCallback(thrown)
+            if (this.inflatorCatchCallback != null) return void this.inflatorCatchCallback(thrown)
 
             throw thrown
           }
         },
         reset: () => this.view.set(previousView),
-        detach: () => this.events.dispatch("detach"),
+        detach: () => { },
         transit: subject => document.startViewTransition(() => this.view.set(subject)),
         default: null
       }
     }
 
-    catch<T>(catchCallback: (thrown: T) => void) { this.inflator.catchCallback = catchCallback }
+    catch<T>(catchCallback: (thrown: T) => void) { this.inflatorCatchCallback = catchCallback as never }
     /**
      * Calls passed `callback` just before the component is going to be suspended.
      * Batches any down tree suspensions together while there are some unresolved.
@@ -84,8 +111,8 @@ namespace Proton {
      *
      * When the component is unsuspended, all the effects applied in the `callback` are reverted by a built-in mechanism.
      */
-    suspense<T = void>(callback: (result: T) => void) { this.inflator.suspenseCallback = callback }
-    unsuspense<T = void>(callback: (result: T) => void) { this.inflator.unsuspenseCallback = callback }
+    suspense<T = void>(callback: (result: T) => void) { this.inflatorSuspenseCallback = callback as never }
+    unsuspense<T = void>(callback: (result: T) => void) { this.inflatorUnsuspenseCallback = callback as never }
 
     getView() { return this.viewElement }
     on(event: keyof ShellEvents) { return this.events.observe(event) }

@@ -8,4 +8,4 @@ interface Observable<T> {
 
 export default Observable
 
-export type Unsubscribe = { unsubscribe: () => void } | (() => void) | void
+export type Unsubscribe = { unsubscribe: () => void }

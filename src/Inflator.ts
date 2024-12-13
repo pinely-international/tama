@@ -2,7 +2,6 @@ import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "./Accessor"
 import ActBindings from "./ActBinding"
-import Events from "./Events"
 import Null from "./Null"
 import { Subscriptable } from "./Observable"
 import Proton from "./Proton"
@@ -37,7 +36,7 @@ export abstract class Inflator {
 
   private suspenses: Promise<unknown>[] = []
 
-  protected inflateComponent(constructor: <T extends Proton.Shell>(this: T, props: {}) => T, props: {}) {
+  protected inflateComponent(constructor: <T extends Proton.Shell>(this: T, props?: {}) => T, props?: {}) {
     const shell = new Proton.Shell(this, this.parentShell)
 
     const asyncTry = async () => {
@@ -76,30 +75,30 @@ export abstract class Inflator {
   }
 }
 
-// class WebFragment {
-//   static replaceWith(nodes: (Node | string)[], children: Node[]) {
-//     const firstChild = children.shift()
-//     if (firstChild == null) throw new Error("Can't replace live element of fragment")
-
-//     const firstChildParent = firstChild instanceof Node && firstChild.parentElement
-//     if (!firstChildParent) throw new Error("Can't replace live element of fragment")
-
-//     children.forEach(rest => firstChildParent.removeChild(rest as never))
-
-//     tempFragment.replaceChildren(...nodes)
-//     firstChildParent.replaceChild(tempFragment, firstChild)
-//   }
-// }
-
 class WebComponentPlaceholder extends Comment {
-  get view(): Node | null {
-    const view = this.shell.getView()
+  /**
+   * @returns actual node of `WebComponentPlaceholder` if `item` is of its instance.
+   * @returns `item` itself if `item` is instance of `Node`.
+   * @returns null if `item` is NOT instance of `Node`.
+   */
+  static actualOf(item: unknown): WebComponentPlaceholder | Node | null {
+    if (item instanceof WebComponentPlaceholder) return item.actual
+    if (item instanceof Node) item
 
-    if (view == null) return this
-    if (view instanceof Node === false) return null
-    if (view.parentElement == null) return this
+    return null
+  }
 
-    return view
+  /**
+   * The node that is supposed to be being used at current conditions.
+   */
+  get actual(): Node | null {
+    const shellView = this.shell.getView()
+
+    if (shellView == null) return this
+    if (shellView instanceof Node === false) return null
+    if (shellView.parentElement == null) return this
+
+    return shellView
   }
 
   constructor(public shell: Proton.Shell, shellConstructor: Function) {
@@ -107,10 +106,10 @@ class WebComponentPlaceholder extends Comment {
   }
 
   override get parentElement() {
-    const element = super.parentElement ?? this.view?.parentElement
+    const element = super.parentElement ?? this.actual?.parentElement
     if (element == null) {
       const shellView = this.shell.getView()
-      if (shellView instanceof Element === false) return null
+      if (shellView instanceof Node === false) return null
 
       return shellView.parentElement
     }
@@ -119,15 +118,19 @@ class WebComponentPlaceholder extends Comment {
   }
 }
 
-// const tempFragment = document.createDocumentFragment()
+const tempFragment = document.createDocumentFragment()
+
+const isNode = (value: unknown): value is Node => {
+  if (value instanceof Node) return true
+
+  return false
+}
 
 export class WebInflator extends Inflator {
-  private Fragment = class { }
-
   public inflate<T>(subject: T): T extends Node ? T : (T extends JSX.Element ? (Element | Comment) : unknown) {
     if (subject instanceof Node) return subject as never
     if (subject instanceof ProtonJSX.Node) return this.inflateJSXDeeply(subject) as never
-    if (subject instanceof Events.Index) return this.inflateIndexed(subject) as never
+    if (subject instanceof Object && subject[Proton.Symbol.index as keyof object] != null) return this.inflateIndexed(subject as never) as never
 
     const accessor = Accessor.extractObservable(subject)
     if (accessor != null) return this.inflateAccessor(accessor) as never
@@ -139,33 +142,7 @@ export class WebInflator extends Inflator {
   }
 
   protected inflateFragment(): DocumentFragment {
-    // let children: (Node | string)[] = []
-
-    const fragment = document.createDocumentFragment()
-
-    // fragment.rewind = () => fragment.replaceChildren(...children)
-    // fragment.replaceWith = (...nodes: (Node | string)[]) => {
-    //   console.log(children, nodes)
-
-    //   const firstChild = children.shift()
-    //   if (firstChild == null) throw new Error("Can't replace live element of fragment")
-
-    //   const firstChildParent = firstChild instanceof Node && firstChild.parentElement
-    //   if (!firstChildParent) throw new Error("Can't replace live element of fragment")
-
-    //   children.forEach(rest => firstChildParent.removeChild(rest as never))
-    //   children = [...nodes]
-
-    //   tempFragment.replaceChildren(...nodes)
-    //   firstChildParent.replaceChild(tempFragment, firstChild)
-    // }
-
-    // const observer = new MutationObserver(() => {
-    //   children = [...fragment.childNodes]
-    // })
-    // observer.observe(fragment, { childList: true })
-
-    return fragment
+    return document.createDocumentFragment()
   }
 
   protected inflateJSX(value: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
@@ -188,42 +165,43 @@ export class WebInflator extends Inflator {
     const comment = document.createComment(indexObject.constructor.name)
     const inflateItem = (item: unknown) => item !== indexObject.EMPTY ? this.inflate(item) : item
 
-    let inflatedItems = indexObject.array.map((item: unknown, index: number) => {
-      const inflated = item !== indexObject.EMPTY ? this.inflate(item) : item
-      if (inflated instanceof WebComponentPlaceholder) {
-        inflated.shell.on("view").subscribe(view => inflatedItems[index] = view)
-      }
+    let inflatedIndexedItems: unknown[] = indexObject.array.map(item => {
+      if (item === indexObject.EMPTY) return item
 
-      return inflated
+      return this.inflate(item)
     })
 
-    requestAnimationFrame(() => {
-      // Probably, something went wrong and the Element was not added or removed finally.
-      if (comment.parentElement == null) return
+    tempFragment.replaceChildren(...inflatedIndexedItems.filter(isNode))
+    tempFragment.append(comment)
 
-      comment.before(...inflatedItems.filter(item => item !== indexObject.EMPTY))
-    })
-
-    indexObject.on("push").subscribe?.(newItems => {
+    indexObject.on("push").subscribe(newItems => {
       const newInflatedItems = newItems.map(inflateItem)
+      inflatedIndexedItems.push(...newInflatedItems)
 
-      inflatedItems.push(...newInflatedItems)
-      comment.before(...newInflatedItems)
+      tempFragment.replaceChildren(...newInflatedItems.filter(isNode))
+      comment.before(tempFragment)
     })
-    indexObject.on("null").subscribe?.(i => {
-      inflatedItems[i].remove()
-      inflatedItems[i] = indexObject.EMPTY
+    indexObject.on("null").subscribe(i => {
+      const item = inflatedIndexedItems[i]
+      inflatedIndexedItems[i] = indexObject.EMPTY
+
+      const node = WebComponentPlaceholder.actualOf(item)
+      node?.parentNode?.removeChild(node)
     })
-    indexObject.on("replace").subscribe?.(newItems => {
-      inflatedItems.forEach(item => item !== indexObject.EMPTY && item.remove())
+    indexObject.on("replace").subscribe(newItems => {
+      inflatedIndexedItems.forEach(item => {
+        const node = WebComponentPlaceholder.actualOf(item)
+        node?.parentNode?.removeChild(node)
+      })
 
       const newInflatedItems = newItems.map(inflateItem)
+      inflatedIndexedItems = newInflatedItems
 
-      inflatedItems = newInflatedItems
-      comment.before(...newInflatedItems)
+      tempFragment.replaceChildren(...newInflatedItems.filter(isNode))
+      comment.before(tempFragment)
     })
 
-    return comment
+    return tempFragment
   }
 
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
@@ -263,7 +241,7 @@ export class WebInflator extends Inflator {
 
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
       const childInflated = this.inflate(child)
-      if (childInflated == null) return
+      if (!isNode(childInflated)) return
 
       object.appendChild(childInflated)
     }
@@ -297,7 +275,7 @@ export class WebInflator extends Inflator {
 
     if (intrinsicInflated instanceof SVGElement) {
       if (intrinsic.props.class != null) {
-        this.bindPropertyCallback(intrinsic.props.class, value => intrinsicInflated.setAttribute("class", value))
+        this.bindPropertyCallback(intrinsic.props.class, value => intrinsicInflated.setAttribute("class", String(value)))
       }
     }
 
@@ -307,8 +285,8 @@ export class WebInflator extends Inflator {
       if (typeof intrinsic.props.href === "object") {
         const accessor = Accessor.extractObservable(intrinsic.props.href)
         if (accessor != null) {
-          svgUse.href.baseVal = accessor.get?.() ?? ""
-          accessor.subscribe?.(value => svgUse.href.baseVal = accessor.get?.() ?? value)
+          svgUse.href.baseVal = String(accessor.get?.() ?? "")
+          accessor.subscribe?.(value => svgUse.href.baseVal = String(accessor.get?.() ?? value))
         } else {
           svgUse.href.baseVal = intrinsic.props.href.baseVal
         }
@@ -386,14 +364,16 @@ export class WebInflator extends Inflator {
     for (const [, property] of properties) {
       if (property instanceof Object === false) continue
       if ("valid" in property === false) continue
+      if (property.valid instanceof Function === false) continue
 
       const accessor = Accessor.extractObservable(property)
       if (accessor == null) continue
 
       guardAccessors.push(accessor as never)
       accessor.subscribe?.(value => {
-        value = accessor.get?.() ?? value
+        // @ts-expect-error should be fine actually.
         guards.set(accessor, property.valid(value))
+        value = accessor.get?.() ?? value
 
         if (guards.values().every(Boolean)) {
           if (!comment.isConnected) return
@@ -437,7 +417,8 @@ export class WebInflator extends Inflator {
   }
 
   protected bindProperty(key: keyof never, source: unknown, target: unknown): void {
-    this.bindPropertyCallback(source, value => target[key] = value)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.bindPropertyCallback(source, value => (target as any)[key] = value)
   }
 
   protected bindPropertyCallback(source: unknown, targetBindCallback: (value: unknown) => void): void {
@@ -503,17 +484,13 @@ export class WebInflator extends Inflator {
           if (!anchorFirstChildParent) throw new Error("Can't replace live element of fragment")
 
           const oldView = currentView
-          const oldViewChildren = currentViewChildren.map(node => node instanceof WebComponentPlaceholder ? node.view ?? node : node)
+          const oldViewChildren = currentViewChildren.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
 
           currentView = view
           currentViewChildren = [...view.childNodes]
 
-          if (anchorFirstChild instanceof WebComponentPlaceholder) {
-            anchorFirstChildParent.replaceChild(view, anchorFirstChild.view!) // Meant to throw error if `null`.
-          } else {
-            anchorFirstChildParent.replaceChild(view, anchorFirstChild)
-          }
-
+          // `anchorFirstChild` is meant to throw error if `null`.
+          anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
           oldView.replaceChildren(...oldViewChildren)
 
           return
@@ -526,7 +503,7 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(schedule)
     })
 
-    return currentView as never
+    return currentView
   }
 }
 
@@ -534,13 +511,3 @@ export class WebInflator extends Inflator {
 const HTMLInputNativeValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!
 const HTMLInputNativeSet = HTMLInputNativeValue.set!
 const HTMLInputNativeGet = HTMLInputNativeValue.get!
-
-// class HTMLElementComponent extends HTMLElement {
-//   constructor() {
-//     super()
-
-//     this.attachShadow({ mode: "open", delegatesFocus: true }).getRootNode()
-//   }
-// }
-
-// window.customElements.define("Component", HTMLElementComponent)
