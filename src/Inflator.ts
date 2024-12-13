@@ -83,7 +83,7 @@ class WebComponentPlaceholder extends Comment {
    */
   static actualOf(item: unknown): WebComponentPlaceholder | Node | null {
     if (item instanceof WebComponentPlaceholder) return item.actual
-    if (item instanceof Node) item
+    if (item instanceof Node) return item
 
     return null
   }
