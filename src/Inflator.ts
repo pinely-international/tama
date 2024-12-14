@@ -98,7 +98,7 @@ class WebComponentPlaceholder extends Comment {
     if (shellView instanceof Node === false) return null
     if (shellView.parentElement == null) return this
 
-    return shellView
+    return WebComponentPlaceholder.actualOf(shellView)
   }
 
   constructor(public shell: Proton.Shell, shellConstructor: Function) {
