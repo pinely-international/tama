@@ -75,6 +75,14 @@ export abstract class Inflator {
   }
 }
 
+class WebMountPlaceholder extends Comment {
+  constructor(private element: Node, name: string) { super(name) }
+
+  override appendChild<T extends Node>(node: T): T {
+    return this.element.appendChild(node)
+  }
+}
+
 class WebComponentPlaceholder extends Comment {
   /**
    * @returns actual node of `WebComponentPlaceholder` if `item` is of its instance.
@@ -369,7 +377,7 @@ export class WebInflator extends Inflator {
 
 
     // Guard Rendering.
-    const comment = document.createComment(intrinsic.type.toString())
+    const mountPlaceholder = new WebMountPlaceholder(intrinsicInflated, intrinsic.type.toString())
 
     const guards = new Map<object, boolean>()
     const guardAccessors: (AccessorGet<unknown> & Subscriptable<unknown>)[] = []
@@ -389,16 +397,16 @@ export class WebInflator extends Inflator {
         value = accessor.get?.() ?? value
 
         if (guards.values().every(Boolean)) {
-          if (!comment.isConnected) return
-          comment.replaceWith(intrinsicInflated)
+          if (!mountPlaceholder.isConnected) return
+          mountPlaceholder.replaceWith(intrinsicInflated)
         } else {
           if (!intrinsicInflated.isConnected) return
-          intrinsicInflated.replaceWith(comment)
+          intrinsicInflated.replaceWith(mountPlaceholder)
         }
       })
 
       const value = accessor.get?.()
-      if (property.valid(value) === false) return comment
+      if (property.valid(value) === false) return mountPlaceholder
     }
 
     // `Mounted` property.
@@ -412,16 +420,16 @@ export class WebInflator extends Inflator {
         mounted = accessor.get?.() ?? mounted
 
         if (mounted) {
-          if (!comment.isConnected) return
-          comment.replaceWith(intrinsicInflated)
+          if (!mountPlaceholder.isConnected) return
+          mountPlaceholder.replaceWith(intrinsicInflated)
         } else {
           if (!intrinsicInflated.isConnected) return
-          intrinsicInflated.replaceWith(comment)
+          intrinsicInflated.replaceWith(mountPlaceholder)
         }
       })
 
       if (accessor?.get == null) return intrinsicInflated
-      if (!accessor.get()) return comment
+      if (!accessor.get()) return mountPlaceholder
     }
 
 
