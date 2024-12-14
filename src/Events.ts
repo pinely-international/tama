@@ -1,5 +1,3 @@
-
-
 import { AccessorGet, AccessorSet } from "./Accessor"
 import Act from "./Act"
 import Guarded from "./Guarded"

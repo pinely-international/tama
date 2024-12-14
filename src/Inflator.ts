@@ -118,7 +118,24 @@ class WebComponentPlaceholder extends Comment {
   }
 }
 
-const tempFragment = document.createDocumentFragment()
+class WebPlaceholder extends Comment {
+  /**
+   * @returns actual node of `WebPlaceholder` if `item` is of its instance.
+   * @returns `item` itself if `item` is instance of `Node`.
+   * @returns null if `item` is NOT instance of `Node`.
+   */
+  static actualOf(item: unknown): WebPlaceholder | Node | null {
+    if (item instanceof WebPlaceholder) return item.actual
+    if (item instanceof Node) return item
+
+    return null
+  }
+
+  /**
+   * The node that is supposed to be being used at current conditions.
+   */
+  actual: Node | null = null
+}
 
 const isNode = (value: unknown): value is Node => {
   if (value instanceof Node) return true
@@ -162,24 +179,31 @@ export class WebInflator extends Inflator {
   }
 
   protected inflateIndexed(indexObject: Proton.Index) {
-    const comment = document.createComment(indexObject.constructor.name)
+    const comment = new Comment(indexObject.constructor.name)
+    const fragment = new DocumentFragment
+
     const inflateItem = (item: unknown) => item !== indexObject.EMPTY ? this.inflate(item) : item
+    let inflatedIndexedItems: unknown[] = indexObject.array.map(inflateItem)
+    const disconnectInflated = (item: unknown) => {
+      const node = WebComponentPlaceholder.actualOf(item)
+      if (node instanceof DocumentFragment) {
+        node.fixedNodes.forEach(disconnectInflated)
+        return
+      }
 
-    let inflatedIndexedItems: unknown[] = indexObject.array.map(item => {
-      if (item === indexObject.EMPTY) return item
+      node?.parentNode?.removeChild(node)
+    }
 
-      return this.inflate(item)
-    })
-
-    tempFragment.replaceChildren(...inflatedIndexedItems.filter(isNode))
-    tempFragment.append(comment)
+    fragment.indexed = inflatedIndexedItems
+    fragment.replaceChildren(...inflatedIndexedItems.filter(isNode))
+    fragment.append(comment)
 
     indexObject.on("push").subscribe(newItems => {
       const newInflatedItems = newItems.map(inflateItem)
       inflatedIndexedItems.push(...newInflatedItems)
 
-      tempFragment.replaceChildren(...newInflatedItems.filter(isNode))
-      comment.before(tempFragment)
+      fragment.replaceChildren(...newInflatedItems.filter(isNode))
+      comment.before(fragment)
     })
     indexObject.on("null").subscribe(i => {
       const item = inflatedIndexedItems[i]
@@ -189,19 +213,17 @@ export class WebInflator extends Inflator {
       node?.parentNode?.removeChild(node)
     })
     indexObject.on("replace").subscribe(newItems => {
-      inflatedIndexedItems.forEach(item => {
-        const node = WebComponentPlaceholder.actualOf(item)
-        node?.parentNode?.removeChild(node)
-      })
+      inflatedIndexedItems.forEach(disconnectInflated)
 
       const newInflatedItems = newItems.map(inflateItem)
       inflatedIndexedItems = newInflatedItems
+      fragment.indexed = inflatedIndexedItems
 
-      tempFragment.replaceChildren(...newInflatedItems.filter(isNode))
-      comment.before(tempFragment)
+      fragment.replaceChildren(...newInflatedItems.filter(isNode))
+      comment.before(fragment)
     })
 
-    return tempFragment
+    return fragment
   }
 
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
@@ -234,22 +256,26 @@ export class WebInflator extends Inflator {
     }
   }
 
-  private inflateJSXDeeply(node: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
-    const object = this.inflateJSX(node)
-    if (node instanceof ProtonJSX.Component) return object
+  private inflateJSXDeeply(jsx: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
+    const node = this.inflateJSX(jsx)
+    if (jsx instanceof ProtonJSX.Component) return node
 
 
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
       const childInflated = this.inflate(child)
       if (!isNode(childInflated)) return
 
-      object.appendChild(childInflated)
+      node.appendChild(childInflated)
     }
 
-    node.children?.forEach(appendChildObject)
-    node.childrenExtrinsic?.forEach(appendChildObject)
+    jsx.children?.forEach(appendChildObject)
+    jsx.childrenExtrinsic?.forEach(appendChildObject)
 
-    return object
+    if (node instanceof DocumentFragment) {
+      node.fixedNodes = [...node.childNodes]
+    }
+
+    return node
   }
 
   protected inflateDocumentElement(type: string) {
