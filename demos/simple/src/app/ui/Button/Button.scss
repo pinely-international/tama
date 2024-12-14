@@ -6,7 +6,7 @@
 	border-radius: 0.25em;
 
 	color: white;
-	transition: 200ms ease background-color;
+	transition: 250ms ease background-color, 250ms ease opacity;
 
 	&--green {
 		background: $color-green-new;
