@@ -11,7 +11,7 @@ interface ProductCardProps extends MarketProduct { }
 function ProductCard(this: Proton.Shell, props: ProductCardProps) {
   const context = this.context.require(ProductCard.Context)
 
-  const chosen = context.chosen.to(it => it.has(props.id))
+  const isChosen = context.chosen.to(it => it.has(props.id))
 
   return (
     <div className="product-card">
@@ -20,8 +20,8 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
       <AuthorPeek author={props.author} />
       <div className="product-card__bottom">
         <div className="product-card__price">{props.price}</div>
-        <Button>
-          {chosen.to(it => it ? "Buy" : "In cart")}
+        <Button onClick={() => context.chosen.set(it => it.add(props.id))}>
+          {isChosen.to(it => it ? "In cart" : "Buy")}
         </Button>
       </div>
     </div>

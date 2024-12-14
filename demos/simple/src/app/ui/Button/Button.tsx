@@ -5,13 +5,13 @@ import { Proton } from "@denshya/proton"
 
 interface ButtonProps {
   children: unknown
+
+  onClick?(): void | Promise<void>
 }
 
 function Button(props: ButtonProps) {
-  console.log(props)
-
   return (
-    <button type="button" className="button">{props.children}</button>
+    <button type="button" className="button" on={{ click: () => props.onClick?.() }}>{props.children}</button>
   )
 }
 
