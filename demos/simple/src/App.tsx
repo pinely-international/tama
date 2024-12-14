@@ -13,7 +13,7 @@ import ProductsTableApp from "./products-table/ProductsTable"
 
 
 function App(this: Proton.Shell) {
-  const user = new Events.State<User>({ email: "asd@as.com", firstName: "John", lastName: "Doe" })
+  const user = new Events.State<User>({ email: "my@penis.big", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
   const userContext = new UserContext(user)
 
   this.context.provide(userContext)
