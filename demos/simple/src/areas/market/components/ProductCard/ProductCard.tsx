@@ -4,6 +4,7 @@ import { MarketProduct } from "../../types"
 import { Events, Proton } from "@denshya/proton"
 import AuthorPeek from "@/app/ui/AuthorPeek/AuthorPeek"
 import Button from "@/app/ui/Button/Button"
+import Price from "@/utils/price"
 
 
 interface ProductCardProps extends MarketProduct { }
@@ -15,12 +16,12 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
 
   return (
     <div className="product-card">
-      <img className="product-card" src={props.preview} alt="Preview" />
+      <img className="product-card__image" src={props.preview} alt="Preview" />
       <div className="product-card__title">{props.title}</div>
       <AuthorPeek author={props.author} />
       <div className="product-card__bottom">
-        <div className="product-card__price">{props.price}</div>
-        <Button onClick={() => context.chosen.set(it => it.add(props.id))}>
+        <div className="product-card__price">{Price.format(props.price)}</div>
+        <Button color={isChosen.to<string>(it => it ? "green" : "")} onClick={() => context.chosen.set(it => it.add(props.id))}>
           {isChosen.to(it => it ? "In cart" : "Buy")}
         </Button>
       </div>

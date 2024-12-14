@@ -31,7 +31,7 @@ export const bemTil = new BEM
 
 type BEMElement = string | number | false | null | undefined
 
-export function bem(classNames: string | string[], ...modifiers: (Record<keyof never, boolean | undefined | null | "" | 0> | BEMElement)[]): string {
+export function bem(classNames: string | string[], ...modifiers: (Record<keyof never, boolean | undefined | null | "" | 0> | (BEMElement | BEMElement[]))[]): string {
   const mods = modifiers.flatMap(modifier => isRecord(modifier) ? Object.entries(modifier).reduce((result, [nextKey, nextValue]) => [...result, nextValue && nextKey], []) : modifier)
 
   return bemTil.merge(...castArray(classNames).map(className => bemTil.modify(className, ...mods)))

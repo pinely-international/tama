@@ -13,7 +13,7 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "dependencies": {
-    "@denshya/proton": "^0.1.86"
+    "@denshya/proton": "^0.1.88"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.16.0",

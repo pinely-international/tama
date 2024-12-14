@@ -1,3 +1,42 @@
 @use "@/assets/scss/bundle" as *;
 
-.product-card {}
+.product-card {
+	display: grid;
+	gap: 0.75em;
+
+	padding: 0.5em;
+	background: white;
+	border: 2px solid $color-blue-light;
+	border-radius: 0.5em;
+
+	transition: 250ms ease box-shadow;
+
+	&:hover {
+		box-shadow: 0 4px 8px 0px rgba(darken($color-blue, 30), 0.25);
+	}
+}
+
+.product-card__image {
+	width: 100%;
+
+	aspect-ratio: 1;
+
+	border-radius: inherit;
+	object-fit: cover;
+}
+
+.product-card__title {
+	font-weight: bold;
+}
+
+.product-card__bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 0 0.5em;
+}
+
+.product-card__price {
+	font-size: 1.125rem;
+}

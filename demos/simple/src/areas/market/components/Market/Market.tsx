@@ -12,28 +12,32 @@ function Market(this: Proton.Shell, props: MarketProps) {
 
   this.context.provide(new ProductCard.Context(chosenProducts))
 
+  const preview = () => `https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/200/300`
+  const avatar = () => `https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/200`
+  const price = () => Math.random() * 1000
+
   return (
     <div className="market">
       <div className="market__filters"></div>
       <div className="market__products">
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        {/* <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} />
-        <ProductCard id="1" price={249} title="NFT Art" preview="https://cdn.prod.website-files.com/6615636a03a6003b067c36dd/661ffd0dbe9673d914edca2d_6423fc9ca8b5e94da1681a70_Screenshot%25202023-03-29%2520at%252010.53.43.jpeg" author={{ username: "FrameMuse", avatar: "https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" }} /> */}
+        <ProductCard id="1" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="2" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="3" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="4" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="5" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="6" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="7" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="8" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="9" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="10" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="11" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="12" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="12" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="13" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="14" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="15" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="16" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        <ProductCard id="17" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
       </div>
       <div className="market__checkout"></div>
     </div>
