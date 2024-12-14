@@ -95,6 +95,8 @@ namespace Events {
 
       states.forEach((state, index) => {
         state[Symbol.subscribe](value => {
+          if (values[index] === value) return
+
           values[index] = value
           computed.set(predicate(...values as never))
         })
@@ -138,7 +140,10 @@ namespace Events {
 
     to<U>(predicate: (value: T) => U): State<U> {
       const fork = new State(predicate(this.value))
-      this[Symbol.subscribe](value => fork.set(predicate(value)))
+      this[Symbol.subscribe](value => {
+        const newValue = predicate(value)
+        newValue !== fork.value && fork.set(newValue)
+      })
       return fork
     }
 
