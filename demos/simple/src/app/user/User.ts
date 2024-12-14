@@ -1,4 +1,6 @@
 interface User {
+  username: string
+
   avatar?: string
   email: string
 
@@ -10,3 +12,9 @@ namespace User {
 }
 
 export default User
+
+
+export interface Author {
+  avatar?: string
+  username: string
+}

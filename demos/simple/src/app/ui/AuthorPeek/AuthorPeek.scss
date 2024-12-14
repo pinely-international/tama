@@ -1,0 +1,47 @@
+@use "@/assets/scss/bundle" as *;
+
+.author-peek {
+	position: relative;
+
+	display: flex;
+	align-items: center;
+
+	gap: 1em;
+
+	padding: 0.5em 0.875em;
+	border: 1px solid $color-blue-light;
+	border-radius: 0.5em;
+
+	cursor: pointer;
+	transition: 200ms ease background-color;
+
+	&:hover {
+		background: rgba(white, 0.2);
+	}
+
+	&:active {
+		opacity: 0.8;
+	}
+}
+
+.author-peek__avatar,
+.author-peek__letter {
+	height: 3rem;
+	aspect-ratio: 1;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.author-peek__letter {
+	overflow: hidden;
+
+	color: white;
+	text-shadow: 0 0 1px black;
+
+	font-size: 1.5rem;
+	font-weight: 600;
+}
+
+.author-peek__name {
+	font-size: 1.125rem;
+}

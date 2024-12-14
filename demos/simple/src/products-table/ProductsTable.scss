@@ -1,0 +1,16 @@
+@use "@/assets/scss/bundle" as *;
+
+
+label {
+	display: block;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+th {
+	padding: 4px;
+}
+
+td {
+	padding: 2px;
+}

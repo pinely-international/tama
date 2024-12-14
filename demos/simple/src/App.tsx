@@ -9,6 +9,7 @@ import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
 import { NavRoute } from "./navigation"
 import Game from "./tictactoe/tictactoe"
 import UserContext from "./UserContext"
+import ProductsTableApp from "./products-table/ProductsTable"
 
 
 function App(this: Proton.Shell) {
@@ -30,6 +31,7 @@ function App(this: Proton.Shell) {
           <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
         </NavRoute>
         <NavRoute path="/tictactoe"><Game /></NavRoute>
+        <NavRoute path="/products-table"><ProductsTableApp /></NavRoute>
       </main>
     </>
   )

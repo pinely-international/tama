@@ -16,6 +16,7 @@ function Navbar() {
       <NavLink className="navbar__link" to="/market">Market</NavLink>
       <NavLink className="navbar__link" to="/orders">Orders</NavLink>
 
+      <NavLink className="navbar__link" to="/products-table">Products Table</NavLink>
       <NavLink className="navbar__link" to="/tictactoe">Tic-Tac-Toe</NavLink>
       <NavLink className="navbar__link" to="/lobby">Lobby</NavLink>
       <NavLink className="navbar__link" to="/frostpunk">Frostpunk 1</NavLink>
