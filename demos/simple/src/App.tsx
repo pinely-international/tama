@@ -10,6 +10,7 @@ import { NavRoute } from "./navigation"
 import Game from "./tictactoe/tictactoe"
 import UserContext from "./UserContext"
 import ProductsTableApp from "./products-table/ProductsTable"
+import Market from "./areas/market/components/Market/Market"
 
 
 function App(this: Proton.Shell) {
@@ -32,6 +33,7 @@ function App(this: Proton.Shell) {
         </NavRoute>
         <NavRoute path="/tictactoe"><Game /></NavRoute>
         <NavRoute path="/products-table"><ProductsTableApp /></NavRoute>
+        <NavRoute path="/market"><Market /></NavRoute>
       </main>
     </>
   )
