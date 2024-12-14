@@ -118,25 +118,6 @@ class WebComponentPlaceholder extends Comment {
   }
 }
 
-class WebPlaceholder extends Comment {
-  /**
-   * @returns actual node of `WebPlaceholder` if `item` is of its instance.
-   * @returns `item` itself if `item` is instance of `Node`.
-   * @returns null if `item` is NOT instance of `Node`.
-   */
-  static actualOf(item: unknown): WebPlaceholder | Node | null {
-    if (item instanceof WebPlaceholder) return item.actual
-    if (item instanceof Node) return item
-
-    return null
-  }
-
-  /**
-   * The node that is supposed to be being used at current conditions.
-   */
-  actual: Node | null = null
-}
-
 const isNode = (value: unknown): value is Node => {
   if (value instanceof Node) return true
 
@@ -265,7 +246,13 @@ export class WebInflator extends Inflator {
       const childInflated = this.inflate(child)
       if (!isNode(childInflated)) return
 
-      node.appendChild(childInflated)
+      try {
+        node.appendChild(childInflated)
+      } catch (error) {
+        console.debug("appendChildObject -> ", child, childInflated)
+        console.trace(error)
+        throw error
+      }
     }
 
     jsx.children?.forEach(appendChildObject)
