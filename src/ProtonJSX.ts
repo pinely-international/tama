@@ -1,6 +1,5 @@
 import { Primitive } from "type-fest"
 
-import Null from "./Null"
 
 
 namespace ProtonJSX {
@@ -32,9 +31,13 @@ namespace ProtonJSX {
     constructor(type: keyof never | Function, props: unknown, children: unknown, childrenExtrinsic: unknown[]) {
       super(type, props, children, childrenExtrinsic)
 
-      if (props != null && (children != null || childrenExtrinsic != null)) {
-        // @ts-expect-error it is actually type-safe since check are made in the super class.
-        this.props.children = [...this.children ?? Null.ARRAY, ...childrenExtrinsic ?? Null.ARRAY]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.props ??= {} as any
+
+      if (children != null || childrenExtrinsic != null) {
+        this.props.children = []
+        this.children && this.props.children.push(...this.children)
+        childrenExtrinsic && this.props.children.push(...childrenExtrinsic)
       }
     }
 
