@@ -1,6 +1,7 @@
 @use "@/assets/scss/bundle" as *;
 
 .market {
+	display: flex;
 	gap: 2em;
 }
 

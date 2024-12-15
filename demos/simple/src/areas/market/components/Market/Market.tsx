@@ -3,45 +3,45 @@ import "./Market.scss"
 import ProductCard from "../ProductCard/ProductCard"
 import { Events, Proton } from "@denshya/proton"
 import { MarketProduct } from "../../types"
+import Cart from "../Cart/Cart"
+import CartContext from "../../context/CartContext"
 
 
 interface MarketProps { }
 
 function Market(this: Proton.Shell, props: MarketProps) {
-  const chosenProducts = new Events.State<Set<MarketProduct["id"]>>(new Set)
+  const cart = new Events.State<Set<MarketProduct["id"]>>(new Set)
 
-  this.context.provide(new ProductCard.Context(chosenProducts))
-
-  const preview = () => `https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/200/300`
-  const avatar = () => `https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/200`
-  const price = () => Math.random() * 1000
+  this.context.provide(new CartContext(cart))
 
   return (
     <div className="market">
       <div className="market__filters"></div>
       <div className="market__products">
-        <ProductCard id="1" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="2" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="3" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="4" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="5" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="6" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="7" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="8" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="9" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="10" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="11" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="12" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="12" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="13" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="14" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="15" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="16" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
-        <ProductCard id="17" price={price()} title="NFT Art" preview={preview()} author={{ username: "FrameMuse", avatar: avatar() }} />
+        {products.map(product => (
+          <ProductCard {...product} />
+        ))}
       </div>
-      <div className="market__checkout"></div>
+      <div className="market__checkout">
+        <Cart products={cart.to(cart => products.filter(product => cart.has(product.id)))} />
+      </div>
     </div>
   )
 }
 
 export default Market
+
+
+
+const preview = () => `https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/200/300`
+const avatar = () => `https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/200`
+const price = () => Math.random() * 1000
+
+
+const products: MarketProduct[] = Array(20).fill(0).map((_, i) => ({
+  id: i.toString(),
+  author: { username: "FrameMuse", avatar: avatar() },
+  preview: preview(),
+  price: price(),
+  title: "NFT Art - " + i
+}))

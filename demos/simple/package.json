@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "vite",
+    "dev:profile": "vite --profile",
     "build": "vite build",
     "preview": "vite preview",
     "stats": "bun stats:treemap && bun stats:sunburst",
