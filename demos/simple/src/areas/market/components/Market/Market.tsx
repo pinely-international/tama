@@ -7,12 +7,13 @@ import Cart from "../Cart/Cart"
 import CartContext from "../../context/CartContext"
 
 
-interface MarketProps { }
 
-function Market(this: Proton.Shell, props: MarketProps) {
+function Market(this: Proton.Shell) {
   const cart = new Events.State<Set<MarketProduct["id"]>>(new Set)
 
   this.context.provide(new CartContext(cart))
+
+  const productsResource = new ProductsResource()
 
   return (
     <div className="market">
@@ -24,6 +25,7 @@ function Market(this: Proton.Shell, props: MarketProps) {
       </div>
       <div className="market__checkout">
         <Cart products={cart.to(cart => products.filter(product => cart.has(product.id)))} />
+        <Cart products={products.$.filter(product => cart.$.has(product.$.id))} />
       </div>
     </div>
   )
