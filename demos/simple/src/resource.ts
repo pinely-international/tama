@@ -1,70 +1,39 @@
-type Company = {}
-type Hashable<K extends keyof never, T> = Record<K, T> | [K, T][]
+import { Events } from "@denshya/proton"
 
-interface ResourceState<T> extends Observable<T> {
+type Company = {
+  id: string
+  name: string
+  logo: string
+}
+class CompanyDAO { }
+
+interface CompanyUpdateDTO {
+  companyName: string
+  companyLogo: string
+}
+interface CompanyFiltersDTO { }
+
+
+
+class ResourceAccessError extends Error {
+  constructor(message: string, readonly timestamp: number) { super(message) }
+}
+interface ResourceAccess<T> {
   data: T | null
-  dataInitial: T | null
-
-  error: Error | null
-  errored: boolean
-  erroredAt: Date
-
-  updates: unknown[]
-  updated: boolean
-  updatedAt: Date
-
-  set(newData: T | null): void
-  reset(): void
-  recover(): void
+  error: ResourceAccessError | null
+  timestamp: number
+}
+interface ResourceAccessState<T> {
+  current: ResourceAccess<T>
+  initial: ResourceAccess<T>
+  accesses: ResourceAccess<T>[]
 }
 
 
-class StateGit<T> {
-  readonly current: StateCommit<T>
-  readonly initial: StateCommit<T>
-  readonly commits: StateCommit<T>[] = []
-
-  constructor(initial: StateCommit<T>) {
-    this.initial = initial
-    this.current = initial
-  }
-
-  protected pushCommit(commit: StateCommit<T>): void {
-    this.commits.push(commit)
-  }
-
-  public commit(newData: Partial<T> | null): void {
-    this.pushCommit({ date: new Date, data: newData, error: null })
-  }
-
-  public async optimistic(scope: () => void | Promise<void>): Promise<void> {
-    const branch = this.branches
-
-    try {
-      await scope()
-    } catch (error) {
+const NULL_RESOURCE_ACCESS: ResourceAccess<never> = { data: null, error: null, timestamp: Date.now() }
 
 
-      throw error
-    }
-  }
-
-  public async transact(operations: AsyncIterable<Operation<T>> | (Operation<T | Promise<void>>)[]): Promise<void> { }
-}
-
-type Operation<T> = Partial<T> | null | void
-
-interface StateCommit<T> {
-  date: Date
-  data: T | null
-  error: Error | null
-}
-
-
-interface ResourceStateIterable<T> extends ResourceState<Iterable<T>>, Set<T> { }
-interface ResourceStateHashable<K extends keyof never, T> extends ResourceState<Hashable<K, T>>, ReadonlyMap<string, T> { }
-
-interface ResourcePersist { }
+interface ResourcePersistor { }
 
 abstract class ResourceReference {
   private static instances: Map<string, unknown> = new Map
@@ -81,96 +50,170 @@ abstract class ResourceReference {
   protected hashing(value: unknown): string { return JSON.stringify(value) }
 }
 
-class ResourceRetrier {
-  public accounts(observable: Observable<boolean>) { }
+class ResourceCache {
+  stale: number
+
+  set() { }
+  get() { }
+
+  invalidate() { }
+}
+
+class Retrier {
+  /** Max amount of retry attempts. */
+  public max = 0
+  /** Current amount of retry attempts. */
+  public count = 0
+
+  /** Interval delay until the next retry attempt. */
+  public interval = 0
+  /** Can be used for progressive interval. */
+  public intervalInterpolation = () => 1
+
+  constructor(readonly retryCallback: () => void) { }
+
+  public get finished() { return this.count >= this.max }
+  public readonly required = new Set<StateReadonly<boolean>>()
+
+  private readonly callbacks = new Set<() => void>()
+  protected schedule() {
+    if (this.finished) return
+
+    setTimeout(() => {
+      this.retryCallback()
+      this.schedule()
+    }, this.interval * this.intervalInterpolation())
+  }
+
+  [Symbol.subscribe](next: () => void) {
+    this.callbacks.add(next)
+    return { unsubscribe: () => this.callbacks.delete(next) }
+  }
 }
 
 /**
  * @Singleton
  */
-export abstract class ExternalResource<T> extends ResourceReference implements Observable<T> {
-  static from<C extends { prototype: unknown, constructor: unknown } = never>(resource: C) { throw new Error("Method is not implemented") }
+export abstract class ResourceGateway<T> extends ResourceReference {
+  // static from(other: unknown) { throw new Error("`from` method is not implemented") }
 
-  protected readonly keys: readonly string[]
-  protected readonly state: StateGit<T>
+  protected readonly state = new Events.State<T | null>(null)
+  protected readonly accessState: ResourceAccessState<T> = { accesses: [], current: NULL_RESOURCE_ACCESS, initial: NULL_RESOURCE_ACCESS }
 
-  protected readonly persistor: ResourcePersist | null = null
-  protected readonly retrier = new ResourceRetrier
+  protected readonly persistor: ResourcePersistor | null = null
+  protected readonly retrier = new Retrier
+  protected readonly cache = new ResourceCache
 
-  protected abstract subscriptions(): Iterable<Subscription | (() => void)>
+  constructor(...keys: unknown[]) {
+    super(...keys)
 
-  subscribe(next?: ((value: T) => void) | undefined): Subscription {
-    throw new Error("Method not implemented.")
-  }
-  when<S extends T>(predicate: (value: T) => unknown): Observable<S> {
-    throw new Error("Method not implemented.")
-  }
-
-  supplies<U>(resource: new (...keys: never[]) => ExternalResource<U | T>): void { }
-
-
-  protected optimistic(attempt: () => void | Promise<void>): Observable<void> {
 
   }
 
-  abstract get(): Promise<T>
+  // protected supplies<U>(other: { from(other: unknown): ResourceGateway<U> }): void { }
+  // protected optimistic(attempt: () => void | Promise<void>): Observable<void> { }
 
 
-  public dispatch(event: ResourceEvent) { }
-  public broadcast(event: ResourceEvent) { }
+  // public $: ResourceProxy<T>
+  // public it: T | null
 
-  public refetch() { }
-  public invalidate() { }
+
+  protected abstract access(): Promise<T>
+
+  private async accessData(): Promise<T> {
+    const data = await this.access()
+    const access = { data, error: null, timestamp: Date.now() }
+
+    this.accessState.accesses.push(access)
+    this.accessState.current = access
+
+    if (this.accessState.initial === NULL_RESOURCE_ACCESS) {
+      this.accessState.initial = access
+    }
+
+
+    this.state.set(data)
+    return data
+  }
+
+  public async get(): Promise<T> {
+    const data = await this.accessData()
+
+
+
+    return data
+  }
+
+  public async preload() { return await this.accessData() }
+  public async refresh() { }
 }
 
-export interface ExternalResourceIterable<T> {
-  readonly keys: readonly string[]
-  readonly state: ResourceStateIterable<T>
-  readonly persist: ResourcePersist
 
-  get(): Promise<T>
-  put(newData: T): Promise<T>
 
-  delete(): Promise<void>
-  deleteItem(item: T): Promise<null>
+class StateReadonly<T> {
+  private value: T
+  private readonly callbacks = new Set<(value: T) => void>()
+
+  protected dispatch(value: T) {
+    this.value = value
+    this.callbacks.forEach(callback => callback(value))
+  }
+
+  constructor(initialValue: T) {
+    this.value = initialValue
+  }
+
+  get() { return this.value }
+  [Symbol.subscribe](next: (value: T) => void) {
+    this.callbacks.add(next)
+    return { unsubscribe: () => this.callbacks.delete(next) }
+  }
 }
 
-export abstract class ExternalResourceHashable<K extends keyof never, T> extends ResourceReference implements Observable<T>, ObservableRecord<K, T> {
-  [Symbol.dispose](): void {
-    throw new Error("Method not implemented.")
-  }
-  subscribe(next?: ((value: T) => void) | undefined): Subscription {
-    throw new Error("Method not implemented.")
-  }
-  when<S extends T>(predicate: (value: T) => unknown): Observable<S> {
-    throw new Error("Method not implemented.")
-  }
-  /**
-   * Shorthand for `when(item => item.key === key)`
-  */
-  at(key: K): Observable<T> {
-    throw new Error("Method not implemented.")
+abstract class WebResourceGateway<T> extends ResourceGateway<T> {
+  constructor(...keys: unknown[]) {
+    super(...keys)
+
+    this.cache.stale = 30_000
+
+    this.retrier.max = 10
+    this.retrier.interval = 3_000
+    this.retrier.intervalInterpolation = () => this.quad(1, 8, 10, this.retrier.count / this.retrier.max)
+
+    this.retrier.required.add(WebResourceGateway.WindowFocused)
+    this.retrier.required.add(WebResourceGateway.NetworkConnected)
   }
 
-  shares(observableState: Observable<StateCommit<T>>): Observable<T> {
-    throw new Error("Method not implemented.")
+  private quad(p0: number, p1: number, p2: number, t: number) {
+    return (1 - t) ** 2 * p0 + 2 * (1 - t) * t * p1 + t ** 2 * p2
+  }
+}
+namespace WebResourceGateway {
+  export const NetworkConnected = new class extends StateReadonly<boolean> {
+    constructor() {
+      super(window.navigator.onLine)
+
+      window.addEventListener("online", () => this.dispatch(true))
+      window.addEventListener("offline", () => this.dispatch(false))
+    }
   }
 
-  abstract readonly keys: readonly string[]
-  abstract readonly state: ResourceStateHashable<K, T>
-  abstract readonly persist: ResourcePersist
+  export const WindowFocused = new class extends StateReadonly<boolean> {
+    constructor() {
+      const determine = () => window.document.visibilityState !== "hidden" && !document.hidden
+      super(determine())
 
-  abstract get(): Promise<ReadonlyMap<K, T>>
+      window.addEventListener("visibilitychange", () => this.dispatch(determine()))
+    }
+  }
 }
 
-class NetworkObserver {
-  static readonly state: Observable<boolean>
-}
 
-export class CompanyResource extends ExternalResource<Company> {
-  static from(company: Company) { return new CompanyResource(company.id) }
 
-  private dao = new CompanyDAO(this.id)
+export class CompanyResource extends WebResourceGateway<Company> {
+  // static from(company: Company) { return new CompanyResource(company.id) }
+
+  private dao = new CompanyDAO
 
   private companies = new CompaniesResource
   private companyEvents = new CompanyEvents
@@ -178,94 +221,37 @@ export class CompanyResource extends ExternalResource<Company> {
   constructor(protected id: string) {
     super(id)
 
-    this.retrier.requires(NetworkObserver.state, true)
+    this.companies.at(this.id).subscribe(this.state.commit)
+    this.companyEvents.on("UPDATE", event => this.state.commit(event.company))
   }
-
-  protected *subscriptions() {
-    yield this.companies.at(this.id).subscribe(this.state.commit)
-    yield this.companyEvents.on("UPDATE", event => this.state.commit(event.company))
-  }
-
   //#region Controls
 
-  public async get() {
-    const company = await this.dao.find(this.id)
-    this.state.commit(company)
-    return company
+  protected async access() {
+    return await this.dao.find(this.id)
   }
 
   public async update(dto: CompanyUpdateDTO) {
-    await this.state.conduct(this.optimisticUpdate(dto))
-    await this.state.conduct(async transaction => {
-      // transaction.setup({ abortTime: Infinity })
-      await new Promise(() => { })
-
-      transaction.yield({ title: dto.companyName, logo: dto.companyLogo })
-      transaction.trial(this.dao.update(this.id, dto))
-
-      await new Promise(() => { })
-
-      transaction.yield({ title: dto.companyName, logo: dto.companyLogo })
-      transaction.trial(this.dao.update(this.id, dto))
-    })
-
-    await this.state.optimistic(() => {
-      this.onUpdate(dto)
-      return this.dao.update(this.id, dto)
-    })
+    const index = this.state.commit({ logo: dto.companyLogo, name: dto.companyName })
+    try {
+      await this.dao.update(this.id, dto)
+    } catch (error) {
+      this.state.checkout(index)
+    }
   }
-  private *optimisticUpdate(dto: CompanyUpdateDTO) {
-    yield { title: dto.companyName, logo: dto.companyLogo }
-    yield this.dao.update(this.id, dto)
-  }
-
   public async delete() {
     await this.state.transact([null, this.dao.delete(this.id)])
   }
-
-  //#region Events
-
-  @InjectEvent(CompanyUpdateEvent)
-  protected onUpdate(@EventSelect("dto") dto: CompanyUpdateDTO) {
-    this.state.commit({
-      logo: dto.companyLogo && URL.createObjectURL(dto.companyLogo),
-      title: dto.companyName,
-    })
-  }
 }
 
 
 
-export class CompaniesResource extends ExternalResource<Record<string, Company>> {
+export class CompaniesResource extends WebResourceGateway<Record<string, Company>> {
+  private readonly dao = new CompanyDAO
+
   constructor(protected filters?: CompanyFiltersDTO) {
-    super()
+    super(filters)
 
-    this.supplies(CompanyResource)
+    // this.supplies(CompanyResource)
   }
-}
-
-
-interface Subscription {
-  unsubscribe(): void
-}
-
-
-
-export interface Observable<T> extends Disposable {
-  subscribe(next?: (value: T) => void): Subscription
-
-  when<S extends T>(predicate: (value: T) => unknown): Observable<S>
-}
-
-interface ObservableInterop<T> {
-  [Symbol.observable](): {
-    subscribe(next?: (value: T) => void): Subscription
-  }
-}
-
-/**
- * Can be a plain record or a
- */
-export interface ObservableRecord<K extends keyof never, T> {
-  at(key: K): Observable<T>
+  protected async access() { return this.dao.findAll(this.filters) }
 }
