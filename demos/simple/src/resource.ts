@@ -50,13 +50,40 @@ abstract class ResourceReference {
   protected hashing(value: unknown): string { return JSON.stringify(value) }
 }
 
-class ResourceCache {
-  stale: number
 
-  set() { }
-  get() { }
+interface ResourceCacheEvents<T> {
+  change: T | null
+  invalidate: void
+}
 
-  invalidate() { }
+class ResourceCache<T> {
+  /** Time after which the cached value is treated invalidated. */
+  stale = -1
+  /** Time after which the value  */
+  lastChangeAt = -1
+
+  get expired() { return Date.now() > (this.lastChangeAt + this.stale) }
+  get valid() { return !this.invalidated && !this.expired }
+
+  private value: T | null = null
+
+  set(value: T | null) {
+    this.value = value
+    this.events.dispatch("change", value)
+  }
+  get(): T | null { return this.value }
+
+  private invalidated = false
+  /** Sends signal that current cache value is not supposed */
+  invalidate() {
+    this.invalidated = true
+    this.events.dispatch("invalidate", void 0)
+  }
+
+  private readonly events = new Events<ResourceCacheEvents<T>>
+  on<Name extends keyof ResourceCacheEvents<T>>(event: Name) {
+    return this.events.observe(event)
+  }
 }
 
 class Retrier {
@@ -64,30 +91,32 @@ class Retrier {
   public max = 0
   /** Current amount of retry attempts. */
   public count = 0
+  public get finished() { return this.count >= this.max }
 
   /** Interval delay until the next retry attempt. */
   public interval = 0
   /** Can be used for progressive interval. */
   public intervalInterpolation = () => 1
 
-  constructor(readonly retryCallback: () => void) { }
-
-  public get finished() { return this.count >= this.max }
   public readonly required = new Set<StateReadonly<boolean>>()
 
-  private readonly callbacks = new Set<() => void>()
-  protected schedule() {
+  constructor(private mediator: {}) { }
+
+  private timeout = -1
+  protected schedule(callback: () => void) {
     if (this.finished) return
+    if (this.required.values().some(item => item.get() === false)) {
+      // Promise
+      //   .all(this.required.values().map(StateReadonly.updateFrom))
+      //   .then(() => )
+      return
+    }
 
-    setTimeout(() => {
-      this.retryCallback()
-      this.schedule()
-    }, this.interval * this.intervalInterpolation())
+    this.timeout = setTimeout(callback, this.interval * this.intervalInterpolation())
   }
-
-  [Symbol.subscribe](next: () => void) {
-    this.callbacks.add(next)
-    return { unsubscribe: () => this.callbacks.delete(next) }
+  protected cancel() {
+    clearTimeout(this.timeout)
+    this.timeout = -1
   }
 }
 
@@ -102,7 +131,7 @@ export abstract class ResourceGateway<T> extends ResourceReference {
 
   protected readonly persistor: ResourcePersistor | null = null
   protected readonly retrier = new Retrier
-  protected readonly cache = new ResourceCache
+  protected readonly cache = new ResourceCache<T>
 
   constructor(...keys: unknown[]) {
     super(...keys)
@@ -133,6 +162,8 @@ export abstract class ResourceGateway<T> extends ResourceReference {
 
 
     this.state.set(data)
+    this.cache.set(data)
+
     return data
   }
 
@@ -152,21 +183,16 @@ export abstract class ResourceGateway<T> extends ResourceReference {
 
 class StateReadonly<T> {
   private value: T
-  private readonly callbacks = new Set<(value: T) => void>()
+  private messager = new Events.Messager<T>
 
-  protected dispatch(value: T) {
-    this.value = value
-    this.callbacks.forEach(callback => callback(value))
-  }
-
-  constructor(initialValue: T) {
-    this.value = initialValue
-  }
+  constructor(initialValue: T) { this.value = initialValue }
 
   get() { return this.value }
-  [Symbol.subscribe](next: (value: T) => void) {
-    this.callbacks.add(next)
-    return { unsubscribe: () => this.callbacks.delete(next) }
+  protected set(value: T) { this.messager.dispatch(value) }
+  [Symbol.subscribe](next: (value: T) => void) { return this.messager.subscribe(next) }
+
+  static updateFrom<T>(state: StateReadonly<T>): Promise<T> {
+    return new Promise(resolve => state[Symbol.subscribe](resolve))
   }
 }
 
@@ -193,8 +219,8 @@ namespace WebResourceGateway {
     constructor() {
       super(window.navigator.onLine)
 
-      window.addEventListener("online", () => this.dispatch(true))
-      window.addEventListener("offline", () => this.dispatch(false))
+      window.addEventListener("online", () => this.set(true))
+      window.addEventListener("offline", () => this.set(false))
     }
   }
 
@@ -203,7 +229,7 @@ namespace WebResourceGateway {
       const determine = () => window.document.visibilityState !== "hidden" && !document.hidden
       super(determine())
 
-      window.addEventListener("visibilitychange", () => this.dispatch(determine()))
+      window.addEventListener("visibilitychange", () => this.set(determine()))
     }
   }
 }
