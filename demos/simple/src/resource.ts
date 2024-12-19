@@ -57,18 +57,18 @@ interface ResourceCacheEvents<T> {
 }
 
 class ResourceCache<T> {
-  /** Time after which the cached value is treated invalidated. */
-  stale = -1
-  /** Time after which the value  */
+  /** Time after which the cached value is treated invalid. */
+  lifespan = -1
   lastChangeAt = -1
 
-  get expired() { return Date.now() > (this.lastChangeAt + this.stale) }
+  get expired() { return Date.now() > (this.lastChangeAt + this.lifespan) }
   get valid() { return !this.invalidated && !this.expired }
 
   private value: T | null = null
 
   set(value: T | null) {
     this.value = value
+    this.lastChangeAt = Date.now()
     this.events.dispatch("change", value)
   }
   get(): T | null { return this.value }
@@ -100,16 +100,18 @@ class Retrier {
 
   public readonly required = new Set<StateReadonly<boolean>>()
 
-  constructor(private mediator: {}) { }
+  constructor() { }
 
   private timeout = -1
-  protected schedule(callback: () => void) {
+  protected async schedule(callback: () => void) {
+    const required = this.required
+      .values()
+      .map(state => state.get() === false && new Promise(resolve => state[Symbol.subscribe](resolve)))
+      .map(async value => value && (await value) === false)
+
     if (this.finished) return
     if (this.required.values().some(item => item.get() === false)) {
-      // Promise
-      //   .all(this.required.values().map(StateReadonly.updateFrom))
-      //   .then(() => )
-      return
+      await Promise.all(required)
     }
 
     this.timeout = setTimeout(callback, this.interval * this.intervalInterpolation())
@@ -128,6 +130,7 @@ export abstract class ResourceGateway<T> extends ResourceReference {
 
   protected readonly state = new Events.State<T | null>(null)
   protected readonly accessState: ResourceAccessState<T> = { accesses: [], current: NULL_RESOURCE_ACCESS, initial: NULL_RESOURCE_ACCESS }
+  protected readonly mutations = []
 
   protected readonly persistor: ResourcePersistor | null = null
   protected readonly retrier = new Retrier
@@ -138,14 +141,6 @@ export abstract class ResourceGateway<T> extends ResourceReference {
 
 
   }
-
-  // protected supplies<U>(other: { from(other: unknown): ResourceGateway<U> }): void { }
-  // protected optimistic(attempt: () => void | Promise<void>): Observable<void> { }
-
-
-  // public $: ResourceProxy<T>
-  // public it: T | null
-
 
   protected abstract access(): Promise<T>
 
@@ -190,17 +185,13 @@ class StateReadonly<T> {
   get() { return this.value }
   protected set(value: T) { this.messager.dispatch(value) }
   [Symbol.subscribe](next: (value: T) => void) { return this.messager.subscribe(next) }
-
-  static updateFrom<T>(state: StateReadonly<T>): Promise<T> {
-    return new Promise(resolve => state[Symbol.subscribe](resolve))
-  }
 }
 
 abstract class WebResourceGateway<T> extends ResourceGateway<T> {
   constructor(...keys: unknown[]) {
     super(...keys)
 
-    this.cache.stale = 30_000
+    this.cache.lifespan = 30_000
 
     this.retrier.max = 10
     this.retrier.interval = 3_000
@@ -252,8 +243,8 @@ export class CompanyResource extends WebResourceGateway<Company> {
   }
   //#region Controls
 
-  protected async access() {
-    return await this.dao.find(this.id)
+  protected access() {
+    return this.dao.find(this.id)
   }
 
   public async update(dto: CompanyUpdateDTO) {
