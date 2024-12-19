@@ -5,5 +5,7 @@ export interface MarketProduct {
   preview: string
   title: string
   price: number
+  /** In percent. */
+  discount: number
   author: Author
 }

@@ -25,6 +25,7 @@ export type IconName =
   | "google"
   | "facebook"
   | "timer"
+  | "heart"
   // | "asd"
   // eslint-disable-next-line @typescript-eslint/ban-types
   | (string & {})

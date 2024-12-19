@@ -238,7 +238,7 @@ export class CompanyResource extends WebResourceGateway<Company> {
   constructor(protected id: string) {
     super(id)
 
-    this.companies.at(this.id).subscribe(this.state.commit)
+    this.companies.at(this.id) |> this.state.commit
     this.companyEvents.on("UPDATE", event => this.state.commit(event.company))
   }
   //#region Controls
