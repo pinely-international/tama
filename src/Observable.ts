@@ -3,7 +3,12 @@ export interface Subscriptable<T> {
 }
 
 interface Observable<T> {
-  [Symbol.subscribe]: (listener: (value: T) => void) => Unsubscribe
+  [Symbol.subscribe](listener: (value: T) => void): Unsubscribe
+}
+
+
+namespace Observable {
+  export function all<T extends Observable<unknown>[]>(values: T): Observable<T> { }
 }
 
 export default Observable
