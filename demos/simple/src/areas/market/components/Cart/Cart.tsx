@@ -14,7 +14,7 @@ interface CartProps { }
 function Cart(this: Proton.Shell, props: CartProps) {
   const market = this.context.require(MarketContext)
 
-  const total = Events.State.compute([new Events.State(STATIC_PRODUCTS), market.cart], cartTotal)
+  const total = market.cart.to(cart => cartTotal(STATIC_PRODUCTS, cart))
 
   return (
     <div className="cart">

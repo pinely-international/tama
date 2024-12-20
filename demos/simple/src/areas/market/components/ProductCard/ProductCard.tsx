@@ -6,7 +6,7 @@ import Price from "@/utils/price"
 import MarketContext from "../../context/MarketContext"
 import Icon from "@/app/ui/Icon/Icon"
 import { bem } from "@/utils/bem"
-import ProductCardBuyButton from "./ProductCardBuyButton"
+import ProductCardBuy from "./ProductCardBuyButton"
 import { NavLink } from "@/navigation"
 
 
@@ -15,9 +15,10 @@ interface ProductCardProps extends MarketProduct { }
 function ProductCard(this: Proton.Shell, props: ProductCardProps) {
   const market = this.context.require(MarketContext)
 
-  const amount = market.cart.$.get(props.id).to(it => it ?? -1)
+  const amount = market.cart.$.get(props.id).to(it => it ?? -1).from(it => it < 0 ? 0 : it)
   const liked = market.liked.$.has(props.id)
 
+  amount[Symbol.subscribe](it => market.cart.set(cart => cart.set(props.id, it)))
   amount[Symbol.subscribe](it => market.cart.set(cart => cart.set(props.id, it)))
 
   return (
@@ -42,7 +43,7 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
         <div className="product-card__price-old">{Price.format(props.price * (1 - (props.discount / 100)))}</div>
         <div className="product-card__discount">{props.discount}%</div>
       </div>
-      <ProductCardBuyButton amount={amount} onClick={() => market.cart.set(it => it.set(props.id, 1))} />
+      <ProductCardBuy amount={amount} onClick={() => market.cart.set(it => it.set(props.id, 1))} />
     </div>
   )
 }
