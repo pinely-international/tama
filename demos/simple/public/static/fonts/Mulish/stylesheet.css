@@ -1,0 +1,17 @@
+@font-face {
+  font-family: "Mulish";
+  src: local("Mulish Variable Weight"), local("Mulish-Variable-Weight"),
+    url("Mulish-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: local("Mulish Italic Variable Weight"), local("Mulish-Italic-Variable-Weight"),
+    url("Mulish-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 1000;
+  font-style: italic;
+  font-display: swap;
+}
