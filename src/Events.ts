@@ -164,6 +164,14 @@ namespace Events {
       return fork
     }
 
+    from(predicate: (value: T) => T): State<T> {
+      const fork = new State(this.value)
+      const set = fork.set
+      fork.set = value => set.call(fork, value instanceof Function ? predicate(value(fork.value)) : predicate(value))
+      this.sets(fork)
+      return fork
+    }
+
     fork() { new State(this.get()) }
     clone() {
       const cloned = new State(this.get())
