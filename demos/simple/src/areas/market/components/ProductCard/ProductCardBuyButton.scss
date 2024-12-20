@@ -5,7 +5,6 @@
 	align-items: center;
 	justify-content: space-between;
 
-	padding: 0.5em 0.75em;
 	user-select: none;
 
 	span {
@@ -13,7 +12,14 @@
 	}
 }
 
-.product-card-buy-button {
+.product-card-buy__icon {
+	padding: 0.5em;
+
+	background: rgba(black, 0.1);
+	border-radius: 0.25em;
+}
+
+.product-card-buy__button {
 	padding: 0.5em;
 	background: $color-dark;
 	border-radius: 0.375em;

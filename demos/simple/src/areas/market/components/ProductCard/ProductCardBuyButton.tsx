@@ -24,7 +24,7 @@ function ProductCardBuy(this: Proton.Shell, props: ProductCardBuyProps) {
   )
 
   return (
-    <button className="product-card-buy-button" type="button" on={{ click: props.onClick }}>Add to cart</button>
+    <button className="product-card-buy__button" type="button" on={{ click: props.onClick }}>Add to cart</button>
   )
 }
 
