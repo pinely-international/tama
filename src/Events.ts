@@ -131,21 +131,24 @@ namespace Events {
     copy(other: AccessorGet<T>) { this.set(other.get()) }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private readonly $ProxyCache: Partial<Record<keyof T, State<any>>> = {}
+    private readonly $ProxyCache: Partial<Record<keyof T, unknown>> = {}
     readonly $ = new Proxy(this, {
       get: (target, key) => {
-        const state = this.$ProxyCache[key as keyof T]
-        if (state != null) return state
+        const cached = this.$ProxyCache[key as keyof T]
+        if (cached != null) return cached
 
-        const newState = target.to(value => {
-          const targetValueItem = value[key as keyof T]
-          if (targetValueItem instanceof Function) return targetValueItem()
+        const targetValueItem = target.value[key as keyof T]
+        if (targetValueItem instanceof Function) {
+          const method = (...args: unknown[]) => target.to(value => targetValueItem.apply(value, args))
+          this.$ProxyCache[key as keyof T] = method
 
-          return targetValueItem
-        })
-        this.$ProxyCache[key as keyof T] = newState
+          return method
+        }
 
-        return newState
+        const property = target.to(value => value[key as keyof T])
+        this.$ProxyCache[key as keyof T] = property
+
+        return property
       }
     }) as unknown as { [K in keyof T]-?: T[K] extends (...args: infer Args) => infer Return ? (...args: Args) => State<Return> : State<T[K]> }
 
