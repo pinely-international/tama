@@ -1,12 +1,13 @@
 import "./ProductCard.scss"
 
 import { MarketProduct } from "../../types"
-import { Events, Proton } from "@denshya/proton"
-import Button from "@/app/ui/Button/Button"
+import { Proton } from "@denshya/proton"
 import Price from "@/utils/price"
 import MarketContext from "../../context/MarketContext"
 import Icon from "@/app/ui/Icon/Icon"
 import { bem } from "@/utils/bem"
+import ProductCardBuyButton from "./ProductCardBuyButton"
+import { NavLink } from "@/navigation"
 
 
 interface ProductCardProps extends MarketProduct { }
@@ -14,33 +15,36 @@ interface ProductCardProps extends MarketProduct { }
 function ProductCard(this: Proton.Shell, props: ProductCardProps) {
   const market = this.context.require(MarketContext)
 
-  const chosen = market.cart.to(it => it.has(props.id))
-  const liked = market.liked.to(it => it.has(props.id))
+  const amount = market.cart.to(it => it.get(props.id) ?? -1)
+  // const liked = market.liked.to(it => it.has(props.id))
+  const liked = market.liked.$.has(props.id)
 
-  const likeButtonClassName = new Events.State(bem("product-card__like", { active: liked.get() }))
-  liked[Symbol.subscribe](active => likeButtonClassName.set(bem("product-card__like", { active })))
+  amount[Symbol.subscribe](it => market.cart.set(cart => cart.set(props.id, it)))
 
   return (
     <div className="product-card">
-      <img className="product-card__image" src={props.preview} alt="Preview" />
-      <button className={likeButtonClassName} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
-        <Icon name="heart" />
-      </button>
-      <div className="product-card__title">{props.title}</div>
+      <div>
+        <button className={liked.to(active => bem("product-card__like", { active }))} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
+          <Icon name="heart" />
+        </button>
+      </div>
+      <div className="product-card__banner">
+        <img className="product-card__image" src={props.preview} alt="Preview" />
+        <div className="product-card__title">{props.title}</div>
+        <NavLink className="ghost" to={"/product/" + props.id} />
+      </div>
       <div className="product-card__reviews">
         <Icon name="star" />
         <strong>{4.8}</strong>
         <span>(452 reviews)</span>
       </div>
-      <div className="product-card__bottom">
+      <div className="product-card__pricing">
         <div className="product-card__price">{Price.format(props.price)}</div>
-        <div className="product-card__price-old">{Price.format(props.price * props.discount / 100)}</div>
+        <div className="product-card__price-old">{Price.format(props.price * (1 - (props.discount / 100)))}</div>
         <div className="product-card__discount">{props.discount}%</div>
       </div>
-      <Button color={chosen.to<string>(it => it ? "green" : "")} onClick={() => market.cart.set(it => it.add(props.id))}>
-        {chosen.to(it => it ? "In cart" : "Buy")}
-      </Button>
-    </div >
+      <ProductCardBuyButton amount={amount} onClick={() => market.cart.set(it => it.set(props.id, 1))} />
+    </div>
   )
 }
 

@@ -9,7 +9,7 @@ import { STATIC_PRODUCTS } from "../../mock"
 
 
 function Market(this: Proton.Shell) {
-  const market = this.context.provide(new MarketContext)
+  this.context.provide(new MarketContext)
 
   return (
     <div className="market">
@@ -24,7 +24,7 @@ function Market(this: Proton.Shell) {
         ))}
       </div>
       <div className="market__checkout">
-        <Cart products={market.cart.to(cart => STATIC_PRODUCTS.filter(product => cart.has(product.id)))} />
+        <Cart />
         {/* <Cart products={products.$.filter(product => cart.$.has(product.$.id))} /> */}
       </div>
     </div>

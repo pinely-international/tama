@@ -4,17 +4,39 @@
 	position: relative;
 
 	display: grid;
-	gap: 0.75em;
+	gap: 0.25em;
 
 	padding: 0.5em;
 	background: white;
-	border: 2px solid $color-blue-light;
+	border: 1px solid rgba(black, 0.1);
 	border-radius: 0.5em;
 
 	transition: 250ms ease box-shadow;
 
 	&:hover {
 		box-shadow: 0 4px 8px 0px rgba(darken($color-blue, 30), 0.25);
+	}
+}
+
+.product-card__like {
+	--icon-size: 1.25rem;
+
+	display: grid;
+
+	padding: 0.25em;
+	background: rgba(black, 0.325);
+	border-radius: 0.25em;
+
+	transition: 150ms ease background-color, 250ms ease color;
+
+	&:hover:not(&--active) {
+		color: rgba($color-red, 0.5);
+		background: rgba(black, 0.1);
+	}
+
+	&--active {
+		color: $color-red;
+		background: rgba(black, 0.1);
 	}
 }
 
@@ -27,42 +49,40 @@
 	object-fit: cover;
 }
 
-.product-card__like {
-	--icon-size: 1.5rem;
-
-	position: absolute;
-	top: 1em;
-	right: 1em;
-
-	padding: 0.5em;
-	background: rgba(black, 0.325);
-	border-radius: 0.75em;
-
-	color: transparent;
-	transition: 150ms ease background-color, 250ms ease color;
-
-	&:hover {
-		background: rgba($color-red, 0.325);
-	}
-
-	&--active {
-		color: $color-red;
-		background: rgba(black, 0.1);
-	}
-}
-
 .product-card__title {
+	margin-top: 0.75em;
 	font-weight: bold;
 }
 
-.product-card__bottom {
+.product-card__banner {
+	position: relative;
+
+	display: grid;
+	gap: 0.25em
+}
+
+.product-card__pricing {
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.5em;
+
+	font-weight: bolder;
 }
 
 .product-card__price {
-	font-size: 1.125rem;
+	font-size: 1.25rem;
+	font-weight: bold;
+}
+
+.product-card__price-old {
+	color: rgba(black, 0.5);
+	text-decoration: line-through;
+	font-size: $font-size-text-small;
+}
+
+.product-card__discount {
+	color: #f91155;
+	font-size: $font-size-text-small;
 }
 
 .product-card__reviews {
@@ -71,6 +91,8 @@
 	display: flex;
 	align-items: center;
 	gap: 0.25em;
+
+	margin-bottom: 0.75em;
 
 	strong {
 		font-size: 0.875rem;

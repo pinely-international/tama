@@ -1,0 +1,19 @@
+@use "@/assets/scss/bundle" as *;
+
+.product-card-buy {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 0.5em 0.75em;
+	// border: 1px solid $color-dark;
+	// border-radius: 0.5em;
+}
+
+.product-card-buy-button {
+	padding: 0.5em;
+	background: $color-dark;
+	border-radius: 0.375em;
+
+	color: white;
+}

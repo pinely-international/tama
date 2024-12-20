@@ -7,5 +7,5 @@ export const STATIC_PRODUCTS: MarketProduct[] = Array(20).fill(0).map((_, index)
   preview: `https://picsum.photos/id/${index + 50}/200/300`,
   price: Math.random() * 1000,
   discount: Math.floor(Math.random() * 100),
-  title: "NFT Art - " + index
+  title: "Кофемолка ручная жерновая - " + index
 }))
