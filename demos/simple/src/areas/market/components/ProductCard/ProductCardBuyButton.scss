@@ -6,8 +6,11 @@
 	justify-content: space-between;
 
 	padding: 0.5em 0.75em;
-	// border: 1px solid $color-dark;
-	// border-radius: 0.5em;
+	user-select: none;
+
+	span {
+		user-select: initial;
+	}
 }
 
 .product-card-buy-button {
