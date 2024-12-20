@@ -41,6 +41,7 @@ namespace Proton {
 
     private readonly events = new Events<ShellEvents>
 
+    private lastSubject: unknown = {} // Ensures first subject to be different.
     private viewElement: unknown = null
 
     private get inflatorCatchCallback() {
@@ -80,7 +81,10 @@ namespace Proton {
       let previousView: unknown
       this.view = {
         set: subject => {
-          if (this.viewElement === subject) return
+          if (subject === this.lastSubject) return
+          if (subject === this.viewElement) return
+
+          this.lastSubject = subject
 
           try {
             const object = this.inflator.inflate(subject)
