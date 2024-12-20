@@ -80,6 +80,8 @@ namespace Proton {
       let previousView: unknown
       this.view = {
         set: subject => {
+          if (this.viewElement === subject) return
+
           try {
             const object = this.inflator.inflate(subject)
 
