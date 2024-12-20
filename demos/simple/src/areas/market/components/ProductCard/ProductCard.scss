@@ -40,6 +40,15 @@
 	}
 }
 
+.product-card__banner {
+	position: relative;
+
+	display: grid;
+	gap: 0.25em;
+
+	border-radius: inherit;
+}
+
 .product-card__image {
 	width: 100%;
 
@@ -54,17 +63,12 @@
 	font-weight: bold;
 }
 
-.product-card__banner {
-	position: relative;
-
-	display: grid;
-	gap: 0.25em
-}
-
 .product-card__pricing {
 	display: flex;
 	align-items: baseline;
 	gap: 0.5em;
+
+	margin-bottom: 0.5em;
 
 	font-weight: bolder;
 }

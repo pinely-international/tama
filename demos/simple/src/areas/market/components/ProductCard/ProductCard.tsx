@@ -15,8 +15,7 @@ interface ProductCardProps extends MarketProduct { }
 function ProductCard(this: Proton.Shell, props: ProductCardProps) {
   const market = this.context.require(MarketContext)
 
-  const amount = market.cart.to(it => it.get(props.id) ?? -1)
-  // const liked = market.liked.to(it => it.has(props.id))
+  const amount = market.cart.$.get(props.id).to(it => it ?? -1)
   const liked = market.liked.$.has(props.id)
 
   amount[Symbol.subscribe](it => market.cart.set(cart => cart.set(props.id, it)))
@@ -31,7 +30,7 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
       <div className="product-card__banner">
         <img className="product-card__image" src={props.preview} alt="Preview" />
         <div className="product-card__title">{props.title}</div>
-        <NavLink className="ghost" to={"/product/" + props.id} />
+        <NavLink className="ghost" to={"/market/product/" + props.id} />
       </div>
       <div className="product-card__reviews">
         <Icon name="star" />
