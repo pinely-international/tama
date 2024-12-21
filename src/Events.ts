@@ -5,9 +5,6 @@ import Null from "./Null"
 import Observable, { Subscriptable, Unsubscribe } from "./Observable"
 import Proton from "./Proton"
 
-// @ts-expect-error it's ok.
-Symbol.subscribe = Symbol.for("subscribe")
-
 const finalization = new FinalizationRegistry<() => void>(unsubscribe => unsubscribe())
 
 class Events<EventMap extends Record<EventName, unknown>, EventName extends keyof EventMap = keyof EventMap> {
