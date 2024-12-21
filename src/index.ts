@@ -1,5 +1,4 @@
-// @ts-expect-error it's ok.
-Symbol.subscribe = Symbol.for("subscribe")
+import "./REQUIRED_SYMBOLS"
 
 import Act from "./Act"
 import Events from "./Events"
