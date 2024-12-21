@@ -143,7 +143,7 @@ namespace Events {
           const method = (...args: unknown[]) => target.to(value => {
             const result = targetValueItem.apply(value, args)
             // Method resulting with itself usually means it was updated.
-            if (result === targetValueItem) target.dispatch(target.value)
+            if (result === value) target.dispatch(value)
 
             return result
           })
