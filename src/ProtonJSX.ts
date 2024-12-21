@@ -49,6 +49,8 @@ namespace ProtonJSX {
   export interface ElementProps { }
 
   export function Element(type: keyof never | Function, props: ElementProps | null, children: Element | Element[] | null, ...childrenExtrinsic: Element[]) {
+    if (props?.children != null && children == null) children = props.children
+
     if (type === Fragment) return new _Fragment(type, props, children, childrenExtrinsic)
     if (typeof type === "string" || type instanceof Symbol) return new Intrinsic(type, props, children, childrenExtrinsic)
 
