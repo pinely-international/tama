@@ -11,7 +11,7 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
-    modulePreload: false
+    modulePreload: false,
   },
   esbuild: {
     jsxDev: false,
