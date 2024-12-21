@@ -11,8 +11,9 @@
   "types": "build/index.d.ts",
   "files": [
     "build",
+    "globals.d.ts",
     "jsx-runtime.js",
-    "globals.d.ts"
+    "jsx-runtime.d.ts"
   ],
   "scripts": {
     "dev": "vite",
