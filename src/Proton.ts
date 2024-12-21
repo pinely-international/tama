@@ -37,11 +37,13 @@ namespace Proton {
     guard: globalThis.Symbol.for("Proton.Guard") as never,
   }
 
-  export async function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise<{ default: T } | T>) {
-    const module = await importFactory()
-    if ("default" in module) return ProtonJSX.Element(module.default, null, null)
+  export function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise<{ default: T } | T>) {
+    return async () => {
+      const module = await importFactory()
+      if ("default" in module) return ProtonJSX.Element(module.default, null, null)
 
-    return ProtonJSX.Element(module, null, null)
+      return ProtonJSX.Element(module, null, null)
+    }
   }
 
   export class Shell {
