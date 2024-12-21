@@ -3,6 +3,7 @@ import { Unsubscribable } from "type-fest"
 import { bem } from "./utils/bem"
 
 
+
 abstract class Navigation<Path = string> {
   abstract navigate(delta: number): void
   abstract navigate(to: Path): void
@@ -87,6 +88,7 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
 
 export function NavLink(props: { to: string; className?: string; children?: unknown }) {
   const className = new Events.State(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))
+
   navigation[Symbol.subscribe](() => {
     className.set(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))
   })
