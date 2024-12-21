@@ -1,5 +1,5 @@
 // @ts-expect-error it's ok.
-Global.Symbol.subscribe = Global.Symbol.for("subscribe")
+Symbol.subscribe = Symbol.for("subscribe")
 
 import Todos from "./Todos/Todos"
 

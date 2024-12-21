@@ -6,7 +6,7 @@ import Observable, { Subscriptable, Unsubscribe } from "./Observable"
 import Proton from "./Proton"
 
 // @ts-expect-error it's ok.
-Global.Symbol.subscribe = Global.Symbol.for("subscribe")
+Symbol.subscribe = Symbol.for("subscribe")
 
 const finalization = new FinalizationRegistry<() => void>(unsubscribe => unsubscribe())
 

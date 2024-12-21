@@ -74,7 +74,7 @@ async function Circle(this: Proton.Shell & { counter: number }, props: { offset?
   // this.act.define({ counter })
   // this.define({ counter })
 
-  // Object.defineProperty(this, "counter", counter[Global.Symbol.for("descriptor")]())
+  // Object.defineProperty(this, "counter", counter[Symbol.for("descriptor")]())
   // Act.define(this, { counter })
 
   // setInterval(() => this.counter++)
