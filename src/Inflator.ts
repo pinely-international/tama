@@ -1,7 +1,7 @@
 import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "./Accessor"
-import ActBindings from "./ActBinding"
+import { isRecord } from "./helpers"
 import Null from "./Null"
 import { Subscriptable } from "./Observable"
 import Proton from "./Proton"
@@ -219,33 +219,15 @@ export class WebInflator extends Inflator {
   }
 
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
-    if (style == null) return
-    if (typeof style === "string") {
-      element.style.cssText = style
-    }
-
-    const styleAccessor = Accessor.extractObservable<string>(style)
-    if (styleAccessor != null) {
-      element.style.cssText = styleAccessor.get?.() ?? ""
-      styleAccessor.subscribe?.(value => element.style.cssText = styleAccessor.get?.() ?? value)
+    if (isRecord(style)) {
+      for (const property in style) {
+        this.bindProperty(property, style, element.style)
+      }
 
       return
     }
 
-    const reactions = new ActBindings(element.style)
-
-    for (const _property in style) {
-      const property = _property as keyof typeof style
-
-      const value = style[property]
-      if (value[Symbol.subscribe] != null) {
-        reactions.set(style, property)
-
-        continue
-      }
-
-      element.style[property] = value
-    }
+    this.bindPropertyCallback(style, value => element.style.cssText = String(value))
   }
 
   private inflateJSXDeeply(jsx: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
