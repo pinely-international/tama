@@ -2,6 +2,7 @@ import Events from "./Events"
 import { Inflator } from "./Inflator"
 import Null from "./Null"
 import { Subscriptable } from "./Observable"
+import ProtonJSX from "./ProtonJSX"
 import ProtonViewAPI from "./ProtonTreeAPI"
 import TreeContextAPI from "./TreeContextAPI"
 
@@ -36,7 +37,12 @@ namespace Proton {
     guard: globalThis.Symbol.for("Proton.Guard") as never,
   }
 
-  export interface ShellConstructor { }
+  export async function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise<{ default: T } | T>) {
+    const module = await importFactory()
+    if ("default" in module) return ProtonJSX.Element(module.default, null, null)
+
+    return ProtonJSX.Element(module, null, null)
+  }
 
   export class Shell {
     public readonly view: ProtonViewAPI
