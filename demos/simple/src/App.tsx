@@ -7,11 +7,11 @@ import MiniProfile from "./app/ui/MiniProfile/MiniProfile"
 import User from "./app/user/User"
 import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
 import { NavRoute } from "./navigation"
-import Game from "./tictactoe/tictactoe"
 import UserContext from "./UserContext"
-import ProductsTableApp from "./products-table/ProductsTable"
 
-const Market = import("./areas/market/components/Market/Market")
+const TictactoeGame = import("./tictactoe/tictactoe") as any
+const ProductsTableApp = import("./products-table/ProductsTable") as any
+const Market = import("./areas/market/components/Market/Market") as any
 
 function App(this: Proton.Shell) {
   const user = new Events.State<User>({ email: "my@penis.big", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
@@ -31,7 +31,7 @@ function App(this: Proton.Shell) {
           <MiniProfile />
           <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
         </NavRoute>
-        <NavRoute path="/tictactoe"><Game /></NavRoute>
+        <NavRoute path="/tictactoe"><TictactoeGame /></NavRoute>
         <NavRoute path="/products-table"><ProductsTableApp /></NavRoute>
         <NavRoute path="/market"><Market /></NavRoute>
       </main>
