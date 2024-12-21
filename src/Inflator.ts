@@ -40,6 +40,9 @@ export abstract class Inflator {
     const shell = new Proton.Shell(this, this.parentShell)
 
     const asyncTry = async () => {
+      constructor = constructor instanceof Promise ? await constructor : constructor
+      constructor = constructor.default instanceof Function ? constructor.default : constructor
+
       try {
         shell.view.default = await constructor.call(shell, props)
       } catch (thrown) {
