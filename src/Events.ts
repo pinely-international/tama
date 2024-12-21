@@ -140,7 +140,13 @@ namespace Events {
 
         const targetValueItem = target.value[key as keyof T]
         if (targetValueItem instanceof Function) {
-          const method = (...args: unknown[]) => target.to(value => targetValueItem.apply(value, args))
+          const method = (...args: unknown[]) => target.to(value => {
+            const result = targetValueItem.apply(value, args)
+            // Method resulting with itself usually means it was updated.
+            if (result === targetValueItem) target.dispatch(target.value)
+
+            return result
+          })
           this.$ProxyCache[key as keyof T] = method
 
           return method
