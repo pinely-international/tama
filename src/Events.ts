@@ -140,13 +140,23 @@ namespace Events {
 
         const targetValueItem = target.value[key as keyof T]
         if (targetValueItem instanceof Function) {
-          const method = (...args: unknown[]) => target.to(value => {
-            const result = targetValueItem.apply(value, args)
+          const method = (...args: unknown[]) => {
+            const result = targetValueItem.apply(target.value, args)
             // Method resulting with itself usually means it was updated.
-            if (result === value) target.dispatch(value)
+            if (result === target.value) {
+              target.dispatch(target.value)
+              return target
+            }
 
-            return result
-          })
+            const predicate = (value: T) => targetValueItem.apply(value, args)
+            const fork = new State(result)
+            // Follows `this.to` method implementation from here.
+            this[Symbol.subscribe](value => {
+              const newValue = predicate(value)
+              newValue !== fork.value && fork.set(newValue)
+            })
+            return fork
+          }
           this.$ProxyCache[key as keyof T] = method
 
           return method
