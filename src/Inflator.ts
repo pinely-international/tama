@@ -221,7 +221,7 @@ export class WebInflator extends Inflator {
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
     if (isRecord(style)) {
       for (const property in style) {
-        this.bindProperty(property, style, element.style)
+        this.bindProperty(property, style[property], element.style)
       }
 
       return
