@@ -10,8 +10,8 @@ import { NavRoute } from "./navigation"
 import Game from "./tictactoe/tictactoe"
 import UserContext from "./UserContext"
 import ProductsTableApp from "./products-table/ProductsTable"
-import Market from "./areas/market/components/Market/Market"
 
+const Market = import("./areas/market/components/Market/Market")
 
 function App(this: Proton.Shell) {
   const user = new Events.State<User>({ email: "my@penis.big", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })

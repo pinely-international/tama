@@ -39,8 +39,8 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
         <span>(452 reviews)</span>
       </div>
       <div className="product-card__pricing">
-        <div className="product-card__price">{Price.format(props.price)}</div>
-        <div className="product-card__price-old">{Price.format(props.price * (1 - (props.discount / 100)))}</div>
+        <div className="product-card__price">{Price.format(props.price * (1 - (props.discount / 100)))}</div>
+        <div className="product-card__price-old">{Price.format(props.price)}</div>
         <div className="product-card__discount">{props.discount}%</div>
       </div>
       <ProductCardBuy amount={amount} onClick={() => market.cart.set(it => it.set(props.id, 1))} />

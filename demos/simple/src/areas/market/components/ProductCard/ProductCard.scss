@@ -65,7 +65,10 @@
 
 .product-card__title {
 	margin-top: 0.75em;
-	font-weight: bold;
+	font-weight: 500;
+	line-height: 1.25;
+
+	@include line-clamp(2);
 }
 
 .product-card__pricing {
@@ -90,7 +93,7 @@
 }
 
 .product-card__discount {
-	color: #f91155;
+	color: $color-red-pale;
 	font-size: $font-size-text-small;
 }
 

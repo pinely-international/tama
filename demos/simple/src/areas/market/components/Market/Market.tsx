@@ -11,13 +11,18 @@ import { STATIC_PRODUCTS } from "../../mock"
 function Market(this: Proton.Shell) {
   this.context.provide(new MarketContext)
 
+  const points = (
+    <>
+      <p>Show popover for failed optimistic updates</p>
+      <p>Dedicate space for sync progress, may contain a count of <b>pending</b> requests</p>
+    </>
+  )
+
   return (
     <div className="market">
-      <ul>
-        <li>Show popover for failed optimistic updates</li>
-        <li>Dedicate space for sync progress, may contain a count of <b>pending</b> requests</li>
-      </ul>
-      <div className="market__filters"></div>
+      <div className="market__filters">
+
+      </div>
       <div className="market__products">
         {STATIC_PRODUCTS.map(product => (
           <ProductCard {...product} />
@@ -25,7 +30,6 @@ function Market(this: Proton.Shell) {
       </div>
       <div className="market__checkout">
         <Cart />
-        {/* <Cart products={products.$.filter(product => cart.$.has(product.$.id))} /> */}
       </div>
     </div>
   )

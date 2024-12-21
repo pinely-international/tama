@@ -1,6 +1,6 @@
 import "./Cart.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
 import Price from "@/utils/price"
 
 import MarketContext from "../../context/MarketContext"
