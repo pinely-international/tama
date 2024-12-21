@@ -18,9 +18,7 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
   const amount = market.cart.$.get(props.id).to(it => it ?? -1).from(it => it < 0 ? 0 : it)
   const liked = market.liked.$.has(props.id)
 
-  amount[Symbol.subscribe](it => market.cart.set(cart => cart.set(props.id, it)))
   amount.sets(it => market.cart.$.set(props.id, it))
-
 
   return (
     <div className="product-card">
@@ -42,7 +40,7 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
       </div>
       <div className="product-card__asd">
         <div className="product-card__buy">
-          <ProductCardBuy amount={amount} onClick={() => market.cart.set(it => it.set(props.id, 1))} />
+          <ProductCardBuy amount={amount} onClick={() => market.cart.$.set(props.id, 1)} />
         </div>
         <button className={liked.to(active => bem("product-card__like", { active }))} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
           <Icon name="heart" />
