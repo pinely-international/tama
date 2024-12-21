@@ -122,8 +122,12 @@ namespace Events {
     }
 
 
-    sets<U>(other: AccessorSet<T | U>): Unsubscribe {
-      return this[Symbol.subscribe](value => other.set(value))
+    sets<U>(other: AccessorSet<T | U>): Unsubscribe
+    sets(callback: (value: T) => void): Unsubscribe
+    sets<U>(arg: AccessorSet<T | U> | ((value: T) => void)): Unsubscribe {
+      const set = arg instanceof Function ? arg : arg.set
+
+      return this[Symbol.subscribe](value => set(value))
     }
     copy(other: AccessorGet<T>) { this.set(other.get()) }
 
