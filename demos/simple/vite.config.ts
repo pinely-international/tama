@@ -14,9 +14,7 @@ export default defineConfig({
     modulePreload: false
   },
   esbuild: {
-    jsxDev: false
+    jsxDev: false,
+    minifySyntax: true
   },
-  optimizeDeps: {
-    exclude: ["@denshya/proton"]
-  }
 })
