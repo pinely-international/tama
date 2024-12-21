@@ -1,6 +1,3 @@
-// @ts-expect-error it's ok.
-Symbol.subscribe = Symbol.for("subscribe")
-
 import Act from "../src/Act"
 import ActBindings from "../src/ActBinding"
 import Events from "../src/Events"
@@ -77,7 +74,7 @@ async function Circle(this: Proton.Shell & { counter: number }, props: { offset?
   // this.act.define({ counter })
   // this.define({ counter })
 
-  // Object.defineProperty(this, "counter", counter[Symbol.for("descriptor")]())
+  // Object.defineProperty(this, "counter", counter[Global.Symbol.for("descriptor")]())
   // Act.define(this, { counter })
 
   // setInterval(() => this.counter++)

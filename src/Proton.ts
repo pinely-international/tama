@@ -33,8 +33,8 @@ namespace Proton {
     readonly index: unique symbol
     readonly guard: unique symbol
   } = {
-    index: window.Symbol.for("Proton.Index") as never,
-    guard: window.Symbol.for("Proton.Guard") as never,
+    index: globalThis.Symbol.for("Proton.Index") as never,
+    guard: globalThis.Symbol.for("Proton.Guard") as never,
   }
 
   export interface ShellConstructor { }

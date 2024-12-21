@@ -10,6 +10,7 @@ export interface AccessorSet<T> { set(value: T): void }
 
 export type Accessible<T> = Partial<Accessor<T>>
 
+/** @internal */
 namespace Accessor {
   // export class ProxyRecord {
   //   constructor(private readonly object: object) { }

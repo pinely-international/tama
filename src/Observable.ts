@@ -7,9 +7,9 @@ interface Observable<T> {
 }
 
 
-namespace Observable {
-  export function all<T extends Observable<unknown>[]>(values: T): Observable<T> { }
-}
+// namespace Observable {
+//   export function all<T extends Observable<unknown>[]>(values: T): Observable<T> { }
+// }
 
 export default Observable
 

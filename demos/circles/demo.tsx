@@ -1,5 +1,5 @@
 // @ts-expect-error it's ok.
-Symbol.subscribe = Symbol.for("subscribe")
+Global.Symbol.subscribe = Global.Symbol.for("subscribe")
 
 import "./demo.scss"
 
