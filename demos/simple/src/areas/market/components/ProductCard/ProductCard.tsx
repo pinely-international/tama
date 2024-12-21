@@ -19,15 +19,11 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
   const liked = market.liked.$.has(props.id)
 
   amount[Symbol.subscribe](it => market.cart.set(cart => cart.set(props.id, it)))
-  amount[Symbol.subscribe](it => market.cart.set(cart => cart.set(props.id, it)))
+  amount.sets(it => market.cart.$.set(props.id, it))
+
 
   return (
     <div className="product-card">
-      <div>
-        <button className={liked.to(active => bem("product-card__like", { active }))} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
-          <Icon name="heart" />
-        </button>
-      </div>
       <div className="product-card__banner">
         <img className="product-card__image" src={props.preview} alt="Preview" />
         <div className="product-card__title">{props.title}</div>
@@ -37,13 +33,21 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
         <Icon name="star" />
         <strong>{4.8}</strong>
         <span>(452 reviews)</span>
+        <NavLink className="ghost" to={"/market/product/" + props.id + "/reviews"} />
       </div>
       <div className="product-card__pricing">
         <div className="product-card__price">{Price.format(props.price * (1 - (props.discount / 100)))}</div>
         <div className="product-card__price-old">{Price.format(props.price)}</div>
         <div className="product-card__discount">{props.discount}%</div>
       </div>
-      <ProductCardBuy amount={amount} onClick={() => market.cart.set(it => it.set(props.id, 1))} />
+      <div className="product-card__asd">
+        <div className="product-card__buy">
+          <ProductCardBuy amount={amount} onClick={() => market.cart.set(it => it.set(props.id, 1))} />
+        </div>
+        <button className={liked.to(active => bem("product-card__like", { active }))} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
+          <Icon name="heart" />
+        </button>
+      </div>
     </div>
   )
 }

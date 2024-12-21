@@ -1,6 +1,5 @@
 import "./Navbar.scss"
 
-import { Proton } from "@denshya/proton"
 import { NavLink } from "@/navigation"
 
 

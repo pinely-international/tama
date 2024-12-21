@@ -1,5 +1,4 @@
 import { bem } from "@/utils/bem"
-import { Proton } from "@denshya/proton"
 
 export type IconName =
   | "chevron-left"
@@ -46,7 +45,7 @@ interface IconProps extends Partial<JSX.AttributesOf<SVGElement>> {
  * Example: `"icon mentor-search__icon mentor-search__icon--chevron mentor-search__icon mentor-search__icon--chevron--up"`
  *
  */
-function Icon(this: Proton.Shell, props: IconProps) {
+function Icon(props: IconProps) {
   if (props.href) {
     return (
       // <img src={props.href} className={classMerge("icon", props.className && classWithModifiers(props.className, ...props.modifiers || []))} />

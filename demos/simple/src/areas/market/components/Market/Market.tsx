@@ -5,6 +5,7 @@ import { Proton } from "@denshya/proton"
 import Cart from "../Cart/Cart"
 import MarketContext from "../../context/MarketContext"
 import { STATIC_PRODUCTS } from "../../mock"
+import ProductFilters from "../ProductFilters/ProductFilters"
 
 
 
@@ -20,17 +21,13 @@ function Market(this: Proton.Shell) {
 
   return (
     <div className="market">
-      <div className="market__filters">
-
-      </div>
+      <div className="market__filters"><ProductFilters /></div>
       <div className="market__products">
         {STATIC_PRODUCTS.map(product => (
           <ProductCard {...product} />
         ))}
       </div>
-      <div className="market__checkout">
-        <Cart />
-      </div>
+      <div className="market__cart"><Cart /></div>
     </div>
   )
 }

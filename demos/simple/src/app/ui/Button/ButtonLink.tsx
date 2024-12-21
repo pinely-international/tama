@@ -1,17 +1,22 @@
-import { bem } from "@/utils/bem"
 import "./Button.scss"
+
+import { NavLink } from "@/navigation"
+
+import { bem } from "@/utils/bem"
 
 import { Events } from "@denshya/proton"
 
 
-interface ButtonProps {
+interface ButtonLinkProps {
   children: unknown
+  to: string
+
   color?: string | Events.State<string>
 
   onClick?(): void | Promise<void>
 }
 
-function Button(props: ButtonProps) {
+function ButtonLink(props: ButtonLinkProps) {
   const color = Events.State.from(props.color ?? new Events.State(""))
   const className = new Events.State(bem("button", [color.get()]))
 
@@ -20,8 +25,8 @@ function Button(props: ButtonProps) {
   })
 
   return (
-    <button type="button" className={className} on={{ click: () => props.onClick?.() }}>{props.children}</button>
+    <NavLink to={props.to} className="button">{props.children}</NavLink>
   )
 }
 
-export default Button
+export default ButtonLink

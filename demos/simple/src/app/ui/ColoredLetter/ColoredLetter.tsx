@@ -1,6 +1,6 @@
 import "./ColoredLetter.scss"
 
-import { Act, Events, Proton } from "@denshya/proton"
+import { Events, Proton } from "@denshya/proton"
 
 
 interface ColoredLetterProps {

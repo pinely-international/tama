@@ -1,6 +1,6 @@
 import "./tictactoe.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Events } from "@denshya/proton"
 
 
 function Square(props: { value: Events.State<string>, onClick(): void }) {

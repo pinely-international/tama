@@ -96,6 +96,14 @@ button {
 	}
 }
 
+hr {
+	width: 100%;
+	height: 1px;
+
+	border: unset;
+	background: rgba(black, 0.15);
+}
+
 pre {
 	padding: 1em;
 	border: 1px solid #bdbdbd;

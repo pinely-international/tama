@@ -9,9 +9,11 @@ import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
 import { NavRoute } from "./navigation"
 import UserContext from "./UserContext"
 
+
 const TictactoeGame = Proton.Lazy(() => import("./tictactoe/tictactoe"))
 const ProductsTableApp = Proton.Lazy(() => import("./products-table/ProductsTable"))
 const Market = Proton.Lazy(() => import("./areas/market/components/Market/Market"))
+
 
 function App(this: Proton.Shell) {
   const user = new Events.State<User>({ email: "my@penis.big", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })

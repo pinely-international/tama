@@ -18,14 +18,13 @@
 }
 
 .product-card__like {
-	--icon-size: 1.25rem;
+	--icon-size: 1.375rem;
 
 	display: grid;
+	width: fit-content;
 
-	padding: 0.25em;
+	padding: 0.375em;
 	border-radius: 0.25em;
-
-	margin-left: auto;
 
 	transition: 150ms ease background-color, 250ms ease color;
 
@@ -98,6 +97,8 @@
 }
 
 .product-card__reviews {
+	position: relative;
+
 	--icon-color: #{$color-orange};
 
 	display: flex;
@@ -114,4 +115,15 @@
 	span {
 		font-size: 0.875rem;
 	}
+}
+
+.product-card__asd {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.product-card__buy {
+	flex: 1;
+	display: grid;
 }

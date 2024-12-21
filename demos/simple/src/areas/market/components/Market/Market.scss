@@ -5,10 +5,26 @@
 	gap: 2em;
 }
 
+.market__filters {
+	position: sticky;
+	top: 0;
+
+	height: 100%;
+	min-width: 20em;
+}
+
 .market__products {
 	display: grid;
 	gap: 0.75em;
-	grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(12em, 1fr));
 
 	flex: 1;
+}
+
+.market__cart {
+	position: sticky;
+	top: 0;
+
+	height: 100%;
+	min-width: 15em;
 }

@@ -1,6 +1,6 @@
 import "./ProductsTable.scss"
 
-import { Proton, Events, Act } from '@denshya/proton'
+import { Events, Act } from '@denshya/proton'
 
 
 function FilterableProductTable(props: { products: Product[] }) {
