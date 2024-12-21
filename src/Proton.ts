@@ -2,7 +2,6 @@ import Events from "./Events"
 import { Inflator } from "./Inflator"
 import Null from "./Null"
 import { Subscriptable } from "./Observable"
-import ProtonJSX from "./ProtonJSX"
 import ProtonViewAPI from "./ProtonTreeAPI"
 import TreeContextAPI from "./TreeContextAPI"
 
@@ -38,9 +37,6 @@ namespace Proton {
   }
 
   export interface ShellConstructor { }
-
-  export const JSX = ProtonJSX
-  export function Componentus(this: Shell) { return this }
 
   export class Shell {
     public readonly view: ProtonViewAPI

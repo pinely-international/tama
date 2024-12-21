@@ -1,7 +1,7 @@
 import { Primitive } from "type-fest"
 
 
-
+/** @isolated */
 namespace ProtonJSX {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
   export interface Node {

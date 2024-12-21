@@ -15,13 +15,17 @@ export default defineConfig({
     sourcemap: true,
     emptyOutDir: true,
     lib: {
-      entry: path.resolve(__dirname, "./src/index.ts"),
+      entry: [path.resolve(__dirname, "./src/index.ts"), path.resolve(__dirname, "./src/jsx-runtime.ts")],
       formats: ["es"],
-      fileName: "index"
+      fileName: (format, entry) => {
+        if (entry.includes("jsx-runtime")) return "jsx-runtime.js"
+
+        return "index.js"
+      }
     }
   },
   esbuild: {
     treeShaking: true,
-    keepNames: true,
+    keepNames: true
   },
 })
