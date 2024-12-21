@@ -344,6 +344,7 @@ export class WebInflator extends Inflator {
       if (key === "style") continue
       if (key === "on") continue
       if (key === "mounted") continue
+      if (key === "children") continue
 
       if (intrinsic.type === "input") {
         if (key === "value") continue
