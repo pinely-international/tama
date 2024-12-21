@@ -11,12 +11,10 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
+    modulePreload: false
   },
   esbuild: {
-    treeShaking: true,
-    minifyIdentifiers: false,
-    minifyWhitespace: true,
-    ignoreAnnotations: false,
+    jsxDev: false
   },
   optimizeDeps: {
     exclude: ["@denshya/proton"]
