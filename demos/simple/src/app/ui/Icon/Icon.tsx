@@ -7,6 +7,8 @@ export type IconName =
   | "gear"
   | "arrow-right"
   | "arrow-left"
+  | "arrow-up"
+  | "arrow-down"
   | "question-mark"
   | "exclamation-mark"
   | "play-circle"
@@ -25,6 +27,10 @@ export type IconName =
   | "facebook"
   | "timer"
   | "heart"
+  | "star"
+  | "funnel"
+  | "loupe"
+  | "dots"
   // | "asd"
   // eslint-disable-next-line @typescript-eslint/ban-types
   | (string & {})

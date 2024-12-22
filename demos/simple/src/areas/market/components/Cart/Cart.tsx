@@ -1,10 +1,10 @@
 import "./Cart.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
 import Price from "@/utils/price"
 
-import MarketContext from "../../context/MarketContext"
-import { cartDiscountTotal, cartPriceTotal } from "../../processes"
+import MarketModel from "../../models/MarketModel"
+import { cartTotals } from "../../processes"
 import { STATIC_PRODUCTS } from "../../mock"
 import ButtonLink from "@/app/ui/Button/ButtonLink"
 import Icon from "@/app/ui/Icon/Icon"
@@ -14,15 +14,10 @@ import Icon from "@/app/ui/Icon/Icon"
 interface CartProps { }
 
 function Cart(this: Proton.Shell, props: CartProps) {
-  const market = this.context.require(MarketContext)
+  const market = this.context.require(MarketModel)
 
-  const size = market.cart.to(cart => cart.values().reduce((result, next) => result + (next && 1), 0))
-
-  const rawTotal = market.cart.to(cart => cartPriceTotal(STATIC_PRODUCTS, cart))
-
-  const discountTotal = market.cart.to(cart => cartDiscountTotal(STATIC_PRODUCTS, cart))
-  const discount = Events.State.compute([rawTotal, discountTotal], (price, discount) => price * (discount / 100))
-  const subtotal = Events.State.compute([rawTotal, discountTotal], (price, discount) => price * (1 - (discount / 100)))
+  const size = market.cart.to(cart => cart.values().reduce((result, next) => result + next, 0))
+  const totals = market.cart.to(cart => cartTotals(STATIC_PRODUCTS, cart))
 
   return (
     <div className="cart">
@@ -34,16 +29,16 @@ function Cart(this: Proton.Shell, props: CartProps) {
         </div>
         <div className="cart__property">
           <span>Raw total:</span>
-          <b>{rawTotal.to(Price.format)}</b>
+          <b>{totals.$.raw.to(Price.format)}</b>
         </div>
         <div className="cart__property">
           <span>Discount:</span>
-          <em>- {discount.to(Price.format)}</em>
+          <em>- {totals.$.discount.to(Price.format)} ({totals.$.discountPercent}%)</em>
         </div>
         <hr />
         <div className="cart__property">
           <span>Subtotal:</span>
-          <b>{subtotal.to(Price.format)}</b>
+          <b>{totals.$.subtotal.to(Price.format)}</b>
         </div>
       </div>
       <ButtonLink to="/market/cart">

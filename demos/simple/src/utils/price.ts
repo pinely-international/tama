@@ -1,8 +1,8 @@
-class Price {
+namespace Price {
   /**
    * @argument locale default `"EN"`
    */
-  static format(value: number, locale = "EN", options?: Intl.NumberFormatOptions): string {
+  export function format(value: number, locale = "EN", options?: Intl.NumberFormatOptions): string {
     try {
       return value.toLocaleString(locale, { ...DEFAULT_PRICE_OPTIONS, ...options })
     } catch (error) {
@@ -23,7 +23,7 @@ class Price {
   /**
    * @returns price value without currency sign
    */
-  static parseValue(value: string): number {
+  export function parseValue(value: string): number {
     return Number(value.replace(/[^\d.,]/g, "").replace(",", "."))
   }
 }

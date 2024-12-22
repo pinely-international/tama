@@ -3,7 +3,7 @@ import "./ProductCard.scss"
 import { MarketProduct } from "../../types"
 import { Proton } from "@denshya/proton"
 import Price from "@/utils/price"
-import MarketContext from "../../context/MarketContext"
+import MarketModel from "../../models/MarketModel"
 import Icon from "@/app/ui/Icon/Icon"
 import { bem } from "@/utils/bem"
 import ProductCardBuy from "./ProductCardBuyButton"
@@ -13,7 +13,7 @@ import { NavLink } from "@/navigation"
 interface ProductCardProps extends MarketProduct { }
 
 function ProductCard(this: Proton.Shell, props: ProductCardProps) {
-  const market = this.context.require(MarketContext)
+  const market = this.context.require(MarketModel)
 
   const amount = market.cart.$.get(props.id).to(it => it ?? -1).from(it => it < 0 ? 0 : it)
   const liked = market.liked.$.has(props.id)

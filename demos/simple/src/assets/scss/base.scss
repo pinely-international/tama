@@ -9,6 +9,8 @@ body {
 	margin: unset;
 	color: $color-gray-dark;
 	background: white;
+
+	overflow-y: scroll;
 }
 
 /* Text */
@@ -69,6 +71,10 @@ textarea {
 
 input {
 	cursor: revert;
+}
+
+input::placeholder {
+	color: inherit;
 }
 
 button,

@@ -1,0 +1,110 @@
+@import "@/assets/scss/bundle.scss";
+
+.selector {
+	position: relative;
+
+	display: grid;
+	align-items: center;
+
+	gap: 0.5em;
+
+	width: var(--selector-width, 100%);
+	min-width: 15em;
+}
+
+.selector__label {
+	font-size: 1rem;
+}
+
+.selector__appearance {
+	position: relative;
+
+	display: flex;
+	align-items: center;
+	gap: 1em;
+
+	@include InputAppearance(0.75em 1em);
+	border-radius: unset;
+
+	cursor: pointer;
+
+	&--multiple {
+		padding: 0.5em 0.5em;
+	}
+
+	&--expanded:not(:disabled):active {
+		opacity: 1;
+	}
+}
+
+.selector__current,
+.selector__placeholder {
+	width: 100%;
+
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	font-size: 1rem;
+
+	&:has(+input) {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+input.selector__search {
+	min-width: 4em;
+
+	:is(.selector__current, .selector__placeholder)+& {
+		position: absolute;
+	}
+}
+
+.selector__options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25em;
+}
+
+.selector__option {
+	position: relative;
+
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+
+	padding: 0.125em 0.25em;
+	border: 1px solid $color-split-line;
+	border-radius: 0.25em;
+
+	text-wrap: nowrap;
+}
+
+button.selector__unselect {
+	--icon-size: 0.75rem;
+
+	display: flex;
+	align-items: center;
+
+	.icon:hover {
+		color: $color-red;
+	}
+
+	.selector__option:has(& .icon:hover) {
+		text-decoration: line-through;
+	}
+}
+
+.selector__icon {
+	--icon-size: 0.75em;
+
+	margin-left: auto;
+
+	flex-shrink: 0;
+	transition: 200ms ease transform;
+
+	&--up {
+		transform: rotateX(180deg);
+	}
+}

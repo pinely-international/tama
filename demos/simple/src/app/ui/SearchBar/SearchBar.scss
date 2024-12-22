@@ -1,0 +1,52 @@
+@use "@/assets/scss/bundle" as *;
+
+.search-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+
+	padding: 0.5em 0.75em;
+	border: 1px solid rgba(black, 0.1);
+	border-radius: 0.375em;
+
+	color: rgba(black, 0.35);
+	transition: 200ms ease border-color, 200ms ease color;
+
+	&:hover {
+		border-color: rgba(black, 0.25);
+	}
+
+	&:focus-within,
+	&:has(input:invalid) {
+		color: rgba(black, 0.75);
+		border-color: rgba(black, 0.5);
+	}
+
+	&>* {
+		transition: 200ms ease opacity;
+	}
+
+	&>[hidden] {
+		display: initial;
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+.search-bar__input {
+	&::placeholder {
+		transition: 100ms ease color;
+	}
+
+	&:focus::placeholder {
+		color: transparent;
+	}
+}
+
+.search-bar__empty {
+	transition: 200ms ease opacity;
+}
+
+.search-bar__debounce {
+	--icon-size: 1.25rem;
+}
