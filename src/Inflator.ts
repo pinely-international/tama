@@ -170,7 +170,7 @@ export class WebInflator extends Inflator {
     return textNode
   }
 
-  protected inflateIndexed(indexObject: Proton.Index) {
+  protected inflateIndexed<T>(indexObject: Proton.Index<T>) {
     const comment = new Comment(indexObject.constructor.name)
     const fragment = new DocumentFragment
 

@@ -1,7 +1,7 @@
-import Events from "./Events"
+import { Emitter, Signal } from "@denshya/flow"
 import { Inflator } from "./Inflator"
 import Null from "./Null"
-import { Subscriptable } from "./Observable"
+import Observable, { Subscriptable } from "./Observable"
 import ProtonJSX from "./ProtonJSX"
 import ProtonViewAPI from "./ProtonTreeAPI"
 import TreeContextAPI from "./TreeContextAPI"
@@ -52,7 +52,7 @@ namespace Proton {
     public readonly context: TreeContextAPI
 
     private readonly inflatorProtected: ProtectedInflator
-    private readonly events = new Events<ShellEvents>
+    private readonly events = new Emitter<ShellEvents>
 
     private lastSubject: unknown = {} // Ensures first subject to be different.
     private viewElement: unknown = null
@@ -107,21 +107,77 @@ namespace Proton {
     unsuspense<T = void>(callback: (result: T) => void) { this.inflatorProtected.unsuspenseCallback = callback as never }
 
     getView() { return this.viewElement }
-    on(event: keyof ShellEvents) { return this.events.observe(event) }
+    on<K extends keyof ShellEvents>(event: K): Subscriptable<ShellEvents[K]> { return this.events.observe(event) }
   }
 
-  export abstract class Index {
-    abstract array: unknown[]
-    abstract on<K extends keyof IndexEvents>(event: K): Subscriptable<IndexEvents[K]>
+  export class Index<T> {
+    private array: T[]
+    private readonly events = new Emitter<ProtonIndexEvents<T>>
+
+    constructor(init: Iterable<T>) { this.array = [...init] }
+
+    get length() { return this.array.length }
+
+    private nonNullableArray() { return this.array.filter(item => item !== Null.OBJECT) }
+
+    at(index: number): T {
+      return this.array[index]
+    }
+
+    nullAt(index: number): void {
+      // @ts-expect-error Null is ok.
+      this.array[index] = Null.OBJECT
+      this.events.dispatch("null", index)
+    }
+
+    push(...items: T[]): number {
+      this.array.push(...items)
+      this.events.dispatch("push", items)
+
+      return this.array.length
+    }
+
+    map<U>(predicate: (value: T, index: number, array: T[]) => U) {
+      const map = (items: T[]) => items.map((item, i) => predicate(item, i + index.array.length, items))
+      const map2 = (items: T[]) => items.map((item, i) => predicate(item, i, items))
+
+      const index = new Index(this.array.map((item, i, arr) => item !== Null.OBJECT ? predicate(item, i, arr) : item))
+      this.on("push").subscribe(items => index.push(...map(items)))
+      this.on("replace").subscribe(items => index.replace(map2(items)))
+      this.on("null").subscribe(i => index.nullAt(i))
+      return index
+    }
+
+    indexOf(item: T): number { return this.array.indexOf(item) }
+    orderOf(item: T): Observable<number> {
+      const next = () => this.nonNullableArray().indexOf(item)
+
+      const indexState = new Signal(next())
+      this.on("null").subscribe(() => indexState.set(next))
+      this.on("replace").subscribe(() => indexState.set(next))
+      return indexState
+    }
+
+    replace(items: T[]) {
+      this.array.length = 0
+      this.array.push(...items)
+      this.events.dispatch("replace", items)
+    }
+
+    rebase() {
+      this.replace(this.nonNullableArray())
+    }
+
+    on<K extends keyof ProtonIndexEvents<T>>(event: K): Subscriptable<ProtonIndexEvents<T>[K]> { return this.events.observe(event) }
+
+    [globalThis.Symbol.subscribe](next: () => void) {
+      this.on("push").subscribe(() => next())
+      this.on("null").subscribe(() => next())
+      this.on("replace").subscribe(() => next())
+    }
 
     readonly [Proton.Symbol.index] = this
     readonly EMPTY = Null.OBJECT
-  }
-
-  export interface IndexEvents<T = unknown> {
-    push: T[]
-    null: number
-    replace: T[]
   }
 }
 
@@ -129,4 +185,19 @@ export default Proton
 
 function cloneInstance<T>(origin: T): T {
   return Object.assign(Object.create(Object.getPrototypeOf(origin)), origin)
+}
+
+
+
+// abstract class ProtonIndex {
+//   abstract array: unknown[]
+//   abstract on<K extends keyof ProtonIndexEvents>(event: K): Subscriptable<ProtonIndexEvents[K]>
+
+//   readonly [Proton.Symbol.index] = this
+//   readonly EMPTY = Null.OBJECT
+// }
+interface ProtonIndexEvents<T = unknown> {
+  push: T[]
+  null: number
+  replace: T[]
 }

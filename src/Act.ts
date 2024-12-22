@@ -1,9 +1,6 @@
 import Accessor from "./Accessor"
 import Observable from "./Observable"
 
-interface Act<T = never> {
-  [Symbol.subscribe](next: (value: T) => void): () => void
-}
 
 namespace Act {
   export const descriptor = Symbol.for("descriptor")

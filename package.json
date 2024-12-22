@@ -26,9 +26,9 @@
     "stats:sunburst": "vite-bundle-visualizer -o ./stats/sunburst.html -t sunburst",
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
-  "dependencies": {},
   "peerDependencies": {
-    "type-fest": "4.x.x"
+    "type-fest": "4.x.x",
+    "@denshya/flow": "*"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.13.1",
