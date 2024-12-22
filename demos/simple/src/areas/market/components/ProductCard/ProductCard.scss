@@ -68,6 +68,7 @@
 	line-height: 1.25;
 
 	@include line-clamp(2);
+	@include Highlightable;
 }
 
 .product-card__pricing {

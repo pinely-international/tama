@@ -3,8 +3,17 @@
 
 /* Helpers */
 
+@mixin Highlightable {
+	em {
+		font-style: normal;
+		text-decoration: underline;
+
+		background: rgba($color-violet-pale, 0.5);
+	}
+}
+
 @mixin Outline {
-	outline: 4px solid rgba($color-blue, 0.25);
+	outline: 3px solid rgba(black, 0.25);
 }
 
 // Input, Select, Textarea label.
@@ -17,46 +26,25 @@
 	}
 }
 
-// Input, Select, Textarea appearance.
-@mixin InputAppearance($padding: 0.75em 0.875em) {
-	flex: 1;
-
+@mixin InputAppearance($padding: 0.675em 1em) {
 	padding: $padding;
-	border: 1px solid $color-gray-light;
+
+	background: white;
+	border: 1px solid rgba(black, 0.1);
 	border-radius: 0.5em;
 
-	color: $color-dark;
-	transition: 200ms ease background-color, 200ms ease border-color, 200ms ease color;
+	transition: 200ms ease background-color, 200ms ease border-color;
 
-	&--dark {
-		color: white;
-	}
-
-	&:focus:not(&--invalid),
-	&:focus-within:not(&--invalid),
-	&--focused:not(&--invalid) {
-		border-color: $color-green-pale;
-	}
-
-	&--invalid {
+	&:focus,
+	&--focused {
 		background: white;
-		border-color: $color-red-pale;
-		color: $color-red;
-
-		input:-webkit-autofill {
-			color-scheme: light;
-		}
-	}
-
-	input:-webkit-autofill {
-		-webkit-background-clip: text;
+		border-color: $color-blue;
+		box-shadow: 0 0 0 4px rgba($color-blue, 0.25);
 	}
 
 	&:disabled,
 	&--disabled {
-		background: white;
-		color: $color-dark;
-
+		background: $color-gray;
 		cursor: not-allowed;
 	}
 }
@@ -69,6 +57,7 @@
 	}
 
 	padding: $size / 2;
+	background: $color-red;
 	border-radius: 50%;
 }
 

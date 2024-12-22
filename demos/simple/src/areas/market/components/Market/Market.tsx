@@ -32,12 +32,7 @@ function Market(this: Proton.Shell) {
           <div className="market-ground__aside">
             <SearchBar value={market.filters.search} />
             <Button><Icon name="funnel" /></Button>
-            <Button>
-              <Icon name="arrow-down" />
-              Sorting
-              <Icon name="chevron-down" />
-            </Button>
-            <Selector placeholder="Sorting">
+            <Selector placeholder={<Icon name="sort" />}>
               <option value="1">1</option>
               <option value="2">2</option>
             </Selector>

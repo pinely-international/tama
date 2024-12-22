@@ -1,4 +1,5 @@
 import { bem } from "@/utils/bem"
+import { Flow, Flowable } from "@denshya/flow"
 
 export type IconName =
   | "chevron-left"
@@ -37,7 +38,7 @@ export type IconName =
 
 interface IconProps extends Partial<JSX.AttributesOf<SVGElement>> {
   href?: string
-  className?: string
+  className?: Flowable<string>
   name?: IconName
   modifiers?: Array<string | number | false | null | undefined>
 }
@@ -61,7 +62,7 @@ function Icon(props: IconProps) {
 
   return (
     // <svg {...props} className={classMerge("icon", props.className && classWithModifiers(classWithModifiers(props.className, props.name), ...props.modifiers || []))}>
-    <svg {...props} className={undefined} class={bem("icon", bem(bem(props.className, props.name), props.modifiers ?? []))}>
+    <svg {...props} className={undefined} class={Flow.from(props.className).to(it => bem(["icon", it]))}>
       <use href={`/static/icons.svg#${props.name}`} />
     </svg>
   )

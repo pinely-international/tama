@@ -8,6 +8,7 @@ import Icon from "@/app/ui/Icon/Icon"
 import { bem } from "@/utils/bem"
 import ProductCardBuy from "./ProductCardBuyButton"
 import { NavLink } from "@/navigation"
+import { Flow, Flowable, FlowRead } from "@denshya/flow"
 
 
 interface ProductCardProps extends MarketProduct { }
@@ -24,7 +25,7 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
     <div className="product-card">
       <div className="product-card__banner">
         <img className="product-card__image" src={props.preview} alt="Preview" />
-        <div className="product-card__title">{props.title}</div>
+        <div className="product-card__title">{useSearch(market.filters.search).highlight(props.title)}</div>
         <NavLink className="ghost" to={"/market/product/" + props.id} />
       </div>
       <div className="product-card__reviews">
@@ -51,3 +52,43 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
 }
 
 export default ProductCard
+
+function useSearch(value: FlowRead<string | null | undefined>) {
+  const valueNormalized = Flow.from(value).to(it => it?.toLowerCase() ?? "")
+
+  function search(searchable: string | null | undefined, value: string): number {
+    console.log(searchable, value)
+    if (searchable == null) return -1
+
+    return searchable.toLowerCase().search(value)
+  }
+
+  function highlight(searchable: Flowable<string | null | undefined>) {
+    function HighlightComponent(this: Proton.Shell) {
+      const range = Flow.compute((searchable, value) => {
+
+        const index = search(searchable, value)
+
+        return {
+          start: searchable?.slice(0, index),
+          highlight: searchable?.slice(index, index + value.length),
+          end: searchable?.slice(index + value.length)
+        }
+      }, [Flow.from(searchable), valueNormalized])
+
+      return (
+        <>
+          {range.$.start}
+          <em>{range.$.highlight.guard(it => !!it)}</em>
+          {range.$.end}
+        </>
+      )
+    }
+
+    return <HighlightComponent />
+  }
+
+  return {
+    highlight
+  }
+}

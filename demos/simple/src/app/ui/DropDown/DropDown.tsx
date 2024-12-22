@@ -9,25 +9,28 @@ import { Proton } from "@denshya/proton"
 
 export type DropDownOption<V = unknown> = { type: "option", props: JSX.HTMLElements["option"] & { value?: V }, children: unknown }
 
-interface DropDownProps<V> {
+interface DropDownProps<T> {
   expanded: Flow<boolean>
-  selected: Flow<boolean>
+  selected: Flow<DropDownOption<T> | null>
 
-  value?: V | V[]
+  value?: T | T[]
 
-  children: DropDownOption<V> | DropDownOption<V>[]
+  children: DropDownOption<T> | DropDownOption<T>[]
 }
 
-function DropDown<V>(props: DropDownProps<V>) {
+function DropDown<T>(props: DropDownProps<T>) {
   const options = castArray(props.children)
   const optionsIndex = new Proton.Index(options)
 
 
-  function onSelect(option: DropDownOption<V>, index: number) { }
+  function onSelect(option: DropDownOption<T>, index: number) {
+    props.selected.set(option)
+    props.expanded.set(false)
+  }
 
-  function dispatchSelection(option: DropDownOption<V>) { }
+  function dispatchSelection(option: DropDownOption<T>) { }
 
-  function isSelected(option: DropDownOption<V>): boolean {
+  function isSelected(option: DropDownOption<T>): boolean {
     return false
   }
 
@@ -35,7 +38,7 @@ function DropDown<V>(props: DropDownProps<V>) {
     <div className={props.expanded.to(expanded => bem("drop-down", { expanded }))} role="listbox" aria-expanded={props.expanded}>
       {optionsIndex.map((option, index) => (
         <button
-          className={bem("drop-down__option", isSelected(option) && "selected")}
+          className={props.selected.to(it => bem("drop-down__option", { selected: it === option }))}
           on={{ click: () => onSelect(option, index) }}
           role="option"
           type="button"

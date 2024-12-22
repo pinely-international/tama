@@ -9,7 +9,6 @@
 	gap: 0.5em;
 
 	width: var(--selector-width, 100%);
-	min-width: 15em;
 }
 
 .selector__label {
@@ -23,8 +22,7 @@
 	align-items: center;
 	gap: 1em;
 
-	@include InputAppearance(0.75em 1em);
-	border-radius: unset;
+	@include InputAppearance;
 
 	cursor: pointer;
 

@@ -1,12 +1,8 @@
 @use "@/assets/scss/bundle" as *;
 
-$page-indent: 1em;
-$scrollbar-width: 0.675rem;
-$option-padding-inline: 0.675rem;
 
 .drop-down {
 	--translate: 0.25em;
-	--transition-width: 300ms ease;
 
 	position: absolute;
 	top: 100%;
@@ -14,51 +10,48 @@ $option-padding-inline: 0.675rem;
 
 	display: grid;
 
-	width: calc(var(--max-option-width) * 1px + $scrollbar-width);
-	max-width: calc(var(--max-visible-width) * 1px - $page-indent);
-	min-width: 100%;
-	max-height: 80vh;
+	max-height: 35vh;
 	overflow: auto;
-	overscroll-behavior: contain;
 
-	@include Scrollbar(0.675em);
-
-	padding: 0.25em 0;
-	background: $color-white;
-	border-radius: 0.25em;
-	box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35);
+	min-width: 100%;
+	background: white;
+	border: 1px solid $color-gray;
+	border-radius: 0.5em;
+	box-shadow: 0px 0px 4px -5px rgba(39, 45, 58, 0.12);
 
 	color: $color-dark;
 
 	transform: translateY(var(--translate));
-	transition: 200ms ease opacity, 200ms ease transform, 200ms ease display, var(--transition-width) width;
-	transition-behavior: allow-discrete;
+	transition: 200ms ease opacity, 200ms ease transform;
 	z-index: 1;
 
-	contain: paint;
-
-	@starting-style {
+	&:not(&--expanded) {
 		--translate: 0em;
 
 		opacity: 0;
-	}
-
-	&:not(&--expanded) {
-		--translate: 0.5em;
-
-		opacity: 0;
-		display: none;
+		pointer-events: none;
 	}
 
 	&--upwards {
-		--translate: -0.25em;
+		--translate: calc(-100% - 0.25em);
 
-		top: unset;
-		bottom: 100%;
+		top: 0%;
+	}
+
+	&--upwards:not(&--expanded) {
+		--translate: calc(-100% - 0em);
+	}
+
+	&--small {}
+
+	&--big {
+		.drop-down__option {
+			padding: 0.75rem 1.25rem;
+		}
 	}
 
 	&--dark {
-		background: $color-dark;
+		background: $color-gray-dark;
 		border-color: rgba(white, 0.25);
 
 		color: white;
@@ -66,51 +59,22 @@ $option-padding-inline: 0.675rem;
 }
 
 .drop-down__option {
-	--icon-color: currentColor;
-	--icon-size: 1rem;
+	padding: 0.5rem 1rem;
 
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
-	padding: 0.5rem $option-padding-inline;
-	background: white;
-
-	font-size: $font-size-h3;
-
-	overflow: hidden;
-	text-overflow: ellipsis;
+	font-size: $font-size-h5;
 
 	transition: 100ms ease font-weight, 200ms ease background-color, 200ms ease color;
 	cursor: pointer;
 
+	&:not(:last-child) {
+		// border-bottom: 1px solid $color-gray;
+	}
+
 	&:hover {
-		background: $color-green-light;
-		color: $color-green-new;
+		background: rgba($color-gray, 0.5);
 	}
 
 	&--selected {
-		background: $color-green-light;
-		color: $color-green-new;
-
-		font-weight: 500;
+		font-weight: 700;
 	}
-
-	.drop-down--dark & {
-		&:hover {
-			background: rgba($color-gray, 0.1);
-		}
-	}
-}
-
-.drop-down__empty {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5em;
-
-	padding: 0.5rem 0;
-
-	font-size: 0.875rem;
-	text-align: center;
 }
