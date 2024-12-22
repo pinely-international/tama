@@ -14,7 +14,6 @@ export default defineConfig({
     modulePreload: false,
   },
   esbuild: {
-    jsxDev: false,
-    minifySyntax: true
+    jsxDev: false
   },
 })

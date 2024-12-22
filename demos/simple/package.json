@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@denshya/flow": "^0.1.3",
+    "@denshya/observable": "^0.1.1",
     "@denshya/proton": "^0.1.115"
   },
   "devDependencies": {
