@@ -4,7 +4,7 @@ import { MarketProduct } from "../types"
 class MarketModel {
   /** User's products cart with duplicates amount. */
   readonly cart = new Events.State<Map<MarketProduct["id"], number>>(new Map)
-  /** User's favourites products. */
+  /** User's favourite products. */
   readonly liked = new Events.State<Set<MarketProduct["id"]>>(new Set)
 
   readonly filters = {

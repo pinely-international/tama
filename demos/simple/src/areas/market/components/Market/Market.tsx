@@ -8,6 +8,7 @@ import { STATIC_PRODUCTS } from "../../mock"
 import Icon from "@/app/ui/Icon/Icon"
 import Button from "@/app/ui/Button/Button"
 import SearchBar from "@/app/ui/SearchBar/SearchBar"
+import Selector from "@/app/ui/Selector/Selector"
 
 
 
@@ -36,6 +37,10 @@ function Market(this: Proton.Shell) {
               Sorting
               <Icon name="chevron-down" />
             </Button>
+            <Selector placeholder="Sorting">
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </Selector>
           </div>
         </div>
         <div className="market__products">

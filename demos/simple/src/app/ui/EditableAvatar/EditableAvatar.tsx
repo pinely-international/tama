@@ -2,7 +2,7 @@ import "./EditableAvatar.scss"
 
 import { Events, Proton } from "@denshya/proton"
 
-import { bem, bemState } from "@/utils/bem"
+import { bem } from "@/utils/bem"
 import Icon from "../Icon/Icon"
 
 

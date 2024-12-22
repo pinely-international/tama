@@ -1,4 +1,4 @@
-@import "@/assets/scss/bundle.scss";
+@use "@/assets/scss/bundle" as *;
 
 .selector {
 	position: relative;
@@ -75,7 +75,7 @@ input.selector__search {
 	gap: 0.5em;
 
 	padding: 0.125em 0.25em;
-	border: 1px solid $color-split-line;
+	border: 1px solid $color-green-light;
 	border-radius: 0.25em;
 
 	text-wrap: nowrap;

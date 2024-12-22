@@ -37,18 +37,6 @@ export function bem(classNames: string | string[], ...modifiers: (Record<keyof n
   return bemTil.merge(...castArray(classNames).map(className => bemTil.modify(className, ...mods)))
 }
 
-export function bemState(classNames: string | string[], ...modifiers: (Record<keyof never, boolean | undefined | null | "" | 0 | Events.State<unknown>> | BEMElement)[]) {
-  const asd = () => Object.fromEntries(Object.entries(modifiers[0]).map(([key, value]) => ({ [key]: value instanceof Events.State ? value.get() : value })))
-  const state = new Events.State(bem(classNames, asd()))
-
-
-  Act.on(Object.values(modifiers[0]), () => {
-    console.log(123)
-    state.set(bem(classNames, asd()))
-  })
-
-  return state
-}
 
 // type Statable<T> = T | Events.State<T>
 // const bemSs = Events.State.for(bem, (classNames: Statable<string> | Statable<string[]>, ...mods) => [classNames, ...mods])
