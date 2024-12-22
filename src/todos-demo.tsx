@@ -3,7 +3,7 @@ Symbol.subscribe = Symbol.for("subscribe")
 
 import { WebInflator } from "./Inflator"
 import Proton from "./Proton"
-import Todos from "./Todos/Todos"
+import Todos from "../demos/Todos/Todos"
 
 Proton
 

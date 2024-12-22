@@ -3,9 +3,9 @@ Symbol.subscribe = Symbol.for("subscribe")
 
 import "./demo.scss"
 
-import Events from "./Events"
-import { WebInflator } from "./Inflator"
-import Proton from "./Proton"
+import Events from "../../src/Events"
+import { WebInflator } from "../../src/Inflator"
+import Proton from "../../src/Proton"
 
 
 const inflator = new WebInflator
