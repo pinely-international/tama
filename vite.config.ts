@@ -1,9 +1,11 @@
 import path from "path"
 import { defineConfig } from "vite"
+import { externalizeDeps } from "vite-plugin-externalize-deps"
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [],
+  plugins: [externalizeDeps({ peerDeps: true })],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
