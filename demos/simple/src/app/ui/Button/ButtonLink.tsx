@@ -3,22 +3,22 @@ import "./Button.scss"
 import { NavLink } from "@/navigation"
 
 import { bem } from "@/utils/bem"
+import { Flow, Flowable } from "@denshya/flow"
 
-import { Events } from "@denshya/proton"
 
 
 interface ButtonLinkProps {
   children: unknown
   to: string
 
-  color?: string | Events.State<string>
+  color?: Flowable<string>
 
   onClick?(): void | Promise<void>
 }
 
 function ButtonLink(props: ButtonLinkProps) {
-  const color = Events.State.from(props.color ?? new Events.State(""))
-  const className = new Events.State(bem("button", [color.get()]))
+  const color = Flow.from(props.color ?? new Flow(""))
+  const className = new Flow(bem("button", [color.get()]))
 
   color[Symbol.subscribe](() => {
     className.set(bem("button", [color.get()]))

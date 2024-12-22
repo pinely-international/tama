@@ -1,11 +1,13 @@
 import "./ProductsTable.scss"
 
-import { Events, Act } from '@denshya/proton'
+import { Flow } from "@denshya/flow"
+
+import { Proton } from '@denshya/proton'
 
 
 function FilterableProductTable(props: { products: Product[] }) {
-  const searchValue = new Events.State("")
-  const inStockOnly = new Events.State(false)
+  const searchValue = new Flow("")
+  const inStockOnly = new Flow(false)
 
   return (
     <div>
@@ -36,14 +38,14 @@ function ProductRow(props: { product: Product }) {
   )
 }
 
-function ProductTable(props: { products: Product[], filterText: Events.State<string>, inStockOnly: Events.State<boolean> }) {
+function ProductTable(props: { products: Product[], filterText: Flow<string>, inStockOnly: Flow<boolean> }) {
   let lastCategory: string | null = null
-  const productsIndex = new Events.Index(props.products)
+  const productsIndex = new Proton.Index(props.products)
 
-  Act.on([props.filterText, props.inStockOnly], () => {
+  Flow.compute(() => {
     lastCategory = null
     productsIndex.rebase()
-  })
+  }, [props.filterText, props.inStockOnly])
 
   const rows = productsIndex.map(product => {
     if (product.name.toLowerCase().indexOf(props.filterText.get().toLowerCase()) === -1) return
@@ -76,7 +78,7 @@ function ProductTable(props: { products: Product[], filterText: Events.State<str
   )
 }
 
-function SearchBar(props: { value: Events.State<string>, inStockOnly: Events.State<boolean> }) {
+function SearchBar(props: { value: Flow<string>, inStockOnly: Flow<boolean> }) {
   return (
     <form>
       <input value={props.value} placeholder="Search..." />

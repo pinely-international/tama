@@ -1,4 +1,4 @@
-import { Events } from "@denshya/proton"
+import { Emitter, Flow, Messager } from "@denshya/flow"
 
 type Company = {
   id: string
@@ -80,7 +80,7 @@ class ResourceCache<T> {
     this.events.dispatch("invalidate", void 0)
   }
 
-  private readonly events = new Events<ResourceCacheEvents<T>>
+  private readonly events = new Emitter<ResourceCacheEvents<T>>
   on<Name extends keyof ResourceCacheEvents<T>>(event: Name) {
     return this.events.observe(event)
   }
@@ -128,7 +128,7 @@ class Retrier {
 export abstract class ResourceGateway<T> extends ResourceReference {
   // static from(other: unknown) { throw new Error("`from` method is not implemented") }
 
-  protected readonly state = new Events.State<T | null>(null)
+  protected readonly state = new Flow<T | null>(null)
   protected readonly accessState: ResourceAccessState<T> = { accesses: [], current: NULL_RESOURCE_ACCESS, initial: NULL_RESOURCE_ACCESS }
   protected readonly mutations = []
 
@@ -178,7 +178,7 @@ export abstract class ResourceGateway<T> extends ResourceReference {
 
 class StateReadonly<T> {
   private value: T
-  private messager = new Events.Messager<T>
+  private messager = new Messager<T>
 
   constructor(initialValue: T) { this.value = initialValue }
 

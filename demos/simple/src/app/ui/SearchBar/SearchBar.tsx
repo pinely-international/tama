@@ -1,15 +1,16 @@
 import "./SearchBar.scss"
 
 import Icon from "../Icon/Icon"
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
+import { Flow } from "@denshya/flow"
 
 
 interface SearchBarProps {
-  value: Events.State<string>
+  value: Flow<string>
 }
 
 function SearchBar(this: Proton.Shell, props: SearchBarProps) {
-  const value = Events.State.from(props.value)
+  const value = Flow.from(props.value)
   const valueFilled = value.is(it => it === "")
 
   const LoupeIcon = this.inflator.inflate(<div><Icon name="loupe" /></div>) as HTMLElement

@@ -1,15 +1,16 @@
+import { Flow } from "@denshya/flow"
 import "./tictactoe.scss"
+import { Proton } from "@denshya/proton"
 
-import { Events } from "@denshya/proton"
 
 
-function Square(props: { value: Events.State<string>, onClick(): void }) {
+function Square(props: { value: Flow<string>, onClick(): void }) {
   return (
     <button className="square" on={{ click: props.onClick }}>{props.value}</button>
   )
 }
 
-function Board(props: { xIsNext: Events.State<boolean>, squares: Events.State<string[]>, onPlay(squares: string[]): void }) {
+function Board(props: { xIsNext: Flow<boolean>, squares: Flow<string[]>, onPlay(squares: string[]): void }) {
   function onClick(index: number) {
     const squares = props.squares.get()
 
@@ -26,7 +27,7 @@ function Board(props: { xIsNext: Events.State<boolean>, squares: Events.State<st
   }
 
 
-  const status = Events.State.compute([props.xIsNext, props.squares], (xIsNext, squares) => {
+  const status = Flow.compute((xIsNext, squares) => {
     const winner = calculateWinner(squares)
 
     if (winner) {
@@ -34,7 +35,7 @@ function Board(props: { xIsNext: Events.State<boolean>, squares: Events.State<st
     }
 
     return 'Next player: ' + (xIsNext ? 'X' : 'O')
-  })
+  }, [props.xIsNext, props.squares])
 
   return (
     <>
@@ -59,11 +60,11 @@ function Board(props: { xIsNext: Events.State<boolean>, squares: Events.State<st
 }
 
 export default function Game() {
-  const history = new Events.State<string[][]>([Array(9).fill("")])
-  const currentMove = new Events.State(0)
+  const history = new Flow<string[][]>([Array(9).fill("")])
+  const currentMove = new Flow(0)
 
   const xIsNext = currentMove.to(it => it % 2 === 0)
-  const currentSquares = Events.State.compute([currentMove, history], (currentMove, history) => history[currentMove])
+  const currentSquares = Flow.compute((currentMove, history) => history[currentMove], [currentMove, history])
 
   function onPlay(nextSquares: string[]) {
     const nextHistory = [...history.get().slice(0, currentMove.get() + 1), nextSquares]
@@ -76,7 +77,9 @@ export default function Game() {
     currentMove.set(nextMove)
   }
 
-  const historyIndex = new Events.StateIndex(history)
+  const historyIndex = new Proton.Index(history.get())
+  history.sets(it => historyIndex.replace(it))
+
   const moves = historyIndex.map((squares, move) => {
     let description = "Go to game start"
     if (move > 0) {

@@ -1,14 +1,14 @@
-import { Events } from "@denshya/proton"
+import { Flow } from "@denshya/flow"
 import { MarketProduct } from "../types"
 
 class MarketModel {
   /** User's products cart with duplicates amount. */
-  readonly cart = new Events.State<Map<MarketProduct["id"], number>>(new Map)
+  readonly cart = new Flow<Map<MarketProduct["id"], number>>(new Map)
   /** User's favourite products. */
-  readonly liked = new Events.State<Set<MarketProduct["id"]>>(new Set)
+  readonly liked = new Flow<Set<MarketProduct["id"]>>(new Set)
 
   readonly filters = {
-    search: new Events.State(""),
+    search: new Flow(""),
   } as const
   readonly sorting = {}
 }

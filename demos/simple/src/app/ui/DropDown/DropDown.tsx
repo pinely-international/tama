@@ -1,16 +1,17 @@
 import "./DropDown.scss"
 
-import { Events } from "@denshya/proton"
 
 import { bem } from "@/utils/bem"
 import { castArray } from "@/utils/common"
+import { Flow } from "@denshya/flow"
+import { Proton } from "@denshya/proton"
 
 
 export type DropDownOption<V = unknown> = { type: "option", props: JSX.HTMLElements["option"] & { value?: V }, children: unknown }
 
 interface DropDownProps<V> {
-  expanded: Events.State<boolean>
-  selected: Events.State<boolean>
+  expanded: Flow<boolean>
+  selected: Flow<boolean>
 
   value?: V | V[]
 
@@ -19,7 +20,7 @@ interface DropDownProps<V> {
 
 function DropDown<V>(props: DropDownProps<V>) {
   const options = castArray(props.children)
-  const optionsIndex = new Events.Index(options)
+  const optionsIndex = new Proton.Index(options)
 
 
   function onSelect(option: DropDownOption<V>, index: number) { }

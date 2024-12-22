@@ -2,7 +2,8 @@ import "./Selector.scss"
 
 import DropDown, { DropDownOption } from "../DropDown/DropDown"
 import Icon from "../Icon/Icon"
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
+import { Flow } from "@denshya/flow"
 
 
 interface SelectorProps<V> {
@@ -15,8 +16,8 @@ interface SelectorProps<V> {
 }
 
 function Selector<V = string | undefined>(this: Proton.Shell, props: SelectorProps<V>) {
-  const expanded = new Events.State(false)
-  const selected = new Events.State([])
+  const expanded = new Flow(false)
+  const selected = new Flow([])
 
 
   const layout = this.inflator.inflate(

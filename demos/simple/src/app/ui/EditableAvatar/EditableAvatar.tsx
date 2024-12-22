@@ -1,9 +1,10 @@
 import "./EditableAvatar.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
 
 import { bem } from "@/utils/bem"
 import Icon from "../Icon/Icon"
+import { Flow } from "@denshya/flow"
 
 
 interface EditableAvatarProps {
@@ -14,8 +15,8 @@ interface EditableAvatarProps {
 }
 
 function EditableAvatar(this: Proton.Shell, props: EditableAvatarProps) {
-  const image = new Events.State(props.image)
-  const pending = new Events.State(false)
+  const image = new Flow(props.image)
+  const pending = new Flow(false)
 
   async function onChange(event: Event) {
     const target = event.currentTarget as HTMLInputElement
@@ -38,7 +39,7 @@ function EditableAvatar(this: Proton.Shell, props: EditableAvatarProps) {
     image.set(URL.createObjectURL(file))
   }
 
-  const asd = new Events.State(bem("editable-avatar", { pending: pending.get() }))
+  const asd = new Flow(bem("editable-avatar", { pending: pending.get() }))
   pending[Symbol.subscribe](() => asd.set(bem("editable-avatar", { pending: pending.get() })))
 
   return (

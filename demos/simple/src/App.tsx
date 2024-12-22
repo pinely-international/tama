@@ -1,6 +1,6 @@
 import "@/assets/scss/base.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
 
 import Navbar from "./app/ui/Navbar/Navbar"
 import MiniProfile from "./app/ui/MiniProfile/MiniProfile"
@@ -8,6 +8,7 @@ import User from "./app/user/User"
 import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
 import { NavRoute } from "./navigation"
 import UserContext from "./UserContext"
+import { Flow } from "@denshya/flow"
 
 
 const TictactoeGame = Proton.Lazy(() => import("./tictactoe/tictactoe"))
@@ -16,7 +17,7 @@ const Market = Proton.Lazy(() => import("./areas/market/components/Market/Market
 
 
 function App(this: Proton.Shell) {
-  const user = new Events.State<User>({ email: "my@penis.big", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
+  const user = new Flow<User>({ email: "my@penis.big", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
   const userContext = new UserContext(user)
 
   this.context.provide(userContext)

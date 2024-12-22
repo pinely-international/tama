@@ -1,17 +1,18 @@
 import "./AuthorPeek.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
 
 import ColoredLetter from "../ColoredLetter/ColoredLetter"
 import { Author } from "@/app/user/User"
+import { Flow, Flowable } from "@denshya/flow"
 
 
 interface AuthorPeekProps {
-  author: Author | Events.State<Author>
+  author: Flowable<Author>
 }
 
 function AuthorPeek(this: Proton.Shell, props: AuthorPeekProps) {
-  const author = Events.State.from(props.author)
+  const author = Flow.from(props.author)
 
   return (
     <div className="author-peek">

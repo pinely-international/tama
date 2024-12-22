@@ -1,9 +1,10 @@
 import "./MiniProfile.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
 
 import ColoredLetter from "../ColoredLetter/ColoredLetter"
 import UserContext from "@/UserContext"
+import { Flow } from "@denshya/flow"
 
 
 interface MiniProfileProps { }
@@ -14,8 +15,8 @@ function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
   const user = userContext.user
   const userAvatar = user.$.avatar
 
-  const inputValue = new Events.State("")
-  const inputMounted = new Events.State(false)
+  const inputValue = new Flow("")
+  const inputMounted = new Flow(false)
 
   inputValue.sets(userAvatar)
 

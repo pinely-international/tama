@@ -1,19 +1,19 @@
 import { bem } from "@/utils/bem"
 import "./Button.scss"
 
-import { Events } from "@denshya/proton"
+import { Flow, Flowable } from "@denshya/flow"
 
 
 interface ButtonProps {
   children: unknown
-  color?: string | Events.State<string>
+  color?: Flowable<string>
 
   onClick?(): void | Promise<void>
 }
 
 function Button(props: ButtonProps) {
-  const color = Events.State.from(props.color ?? new Events.State(""))
-  const className = new Events.State(bem("button", [color.get()]))
+  const color = Flow.from(props.color ?? new Flow(""))
+  const className = new Flow(bem("button", [color.get()]))
 
   color[Symbol.subscribe](() => {
     className.set(bem("button", [color.get()]))

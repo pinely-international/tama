@@ -1,6 +1,7 @@
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
 import { Unsubscribable } from "type-fest"
 import { bem } from "./utils/bem"
+import { Flow } from "@denshya/flow"
 
 
 
@@ -20,7 +21,7 @@ namespace WebNavigation {
 }
 
 export class WebNavigation extends Navigation {
-  private readonly current = new Events.State(new URL(window.location.href))
+  private readonly current = new Flow(new URL(window.location.href))
 
   get path() { return this.current.get().pathname }
   get url() { return this.current.get() }
@@ -87,7 +88,7 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
 
 
 export function NavLink(props: { to: string; className?: string; children?: unknown }) {
-  const className = new Events.State(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))
+  const className = new Flow(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))
 
   navigation[Symbol.subscribe](() => {
     className.set(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))

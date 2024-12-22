@@ -1,16 +1,17 @@
 import "./ProductCardBuyButton.scss"
 
-import { Events, Proton } from "@denshya/proton"
+import { Proton } from "@denshya/proton"
 import Icon from "@/app/ui/Icon/Icon"
+import { Flow } from "@denshya/flow"
 
 
 interface ProductCardBuyProps {
-  amount: Events.State<number>
+  amount: Flow<number>
   onClick?(): void
 }
 
 function ProductCardBuy(this: Proton.Shell, props: ProductCardBuyProps) {
-  props.amount[Symbol.subscribe](amount => {
+  props.amount.sets(amount => {
     if (amount === 0) this.view.set(this.view.default)
     if (amount > 0) this.view.set(LAYOUT_AMOUNT)
   })

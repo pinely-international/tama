@@ -1,5 +1,4 @@
 import { castArray, isRecord } from "./common"
-import { Act, Events } from "@denshya/proton"
 
 class BEM {
   /**
@@ -38,5 +37,5 @@ export function bem(classNames: string | string[], ...modifiers: (Record<keyof n
 }
 
 
-// type Statable<T> = T | Events.State<T>
-// const bemSs = Events.State.for(bem, (classNames: Statable<string> | Statable<string[]>, ...mods) => [classNames, ...mods])
+// type Statable<T> = T | Flow<T>
+// const bemSs = Flow.for(bem, (classNames: Statable<string> | Statable<string[]>, ...mods) => [classNames, ...mods])
