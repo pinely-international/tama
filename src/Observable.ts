@@ -1,3 +1,7 @@
+export interface Subscribe<T> {
+  (listener: (value: T) => void): Unsubscribe
+}
+
 export interface Subscriptable<T> {
   subscribe: (listener: (value: T) => void) => Unsubscribe
 }

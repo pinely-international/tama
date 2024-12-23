@@ -69,6 +69,10 @@ export abstract class Inflator {
         throw thrown
       } finally {
         shell.view.default && shell.view.set(shell.view.default)
+
+        requestAnimationFrame(() => {
+          shell.events.dispatch("mount", shell.getView())
+        })
       }
     }
 
@@ -456,12 +460,8 @@ export class WebInflator extends Inflator {
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
 
 
-    let currentView: Node = this.getInitialView(view, componentPlaceholder)
+    let currentView: Node = componentPlaceholder
     let currentViewChildren: Node[] = Null.ARRAY
-
-    if (view instanceof DocumentFragment) {
-      currentViewChildren = [...view.childNodes]
-    }
 
 
     let lastAnimationFrame = -1
@@ -500,6 +500,10 @@ export class WebInflator extends Inflator {
           anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
           oldView.replaceChildren(...oldViewChildren)
 
+          if (anchorFirstChild instanceof WebComponentPlaceholder) {
+            anchorFirstChild.shell.events.dispatch("unmount")
+          }
+
           return
         }
 
@@ -510,7 +514,7 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(schedule)
     })
 
-    return currentView
+    return componentPlaceholder
   }
 }
 
