@@ -1,7 +1,7 @@
 import { Emitter, Signal } from "@denshya/flow"
 import { Inflator } from "./Inflator"
 import Null from "./Null"
-import Observable, { Subscribe, Subscriptable } from "./Observable"
+import Observable, { Subscriptable } from "./Observable"
 import ProtonJSX from "./ProtonJSX"
 import ProtonViewAPI from "./ProtonTreeAPI"
 import TreeContextAPI from "./TreeContextAPI"
@@ -109,10 +109,10 @@ namespace Proton {
     getView() { return this.viewElement }
     on<K extends keyof ShellEvents>(event: K): Subscriptable<ShellEvents[K]> { return this.events.observe(event) }
 
-    use(subscribe: Subscribe<unknown>) {
+    use(subscribe: (view: unknown) => () => void) {
       this.events.observe("mount").subscribe(() => {
-        const unsubscribe = subscribe(this.viewElement).unsubscribe
-        this.events.once("unmount", () => unsubscribe())
+        const unsubscribe = subscribe(this.viewElement)
+        this.events.once("unmount", unsubscribe)
       })
     }
   }
