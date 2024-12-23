@@ -459,10 +459,12 @@ export class WebInflator extends Inflator {
 
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
 
-
-    let currentView: Node = componentPlaceholder
+    let currentView: Node = this.getInitialView(view, componentPlaceholder)
     let currentViewChildren: Node[] = Null.ARRAY
 
+    if (view instanceof DocumentFragment) {
+      currentViewChildren = [...view.childNodes]
+    }
 
     let lastAnimationFrame = -1
 
@@ -514,7 +516,7 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(schedule)
     })
 
-    return componentPlaceholder
+    return currentView
   }
 }
 
