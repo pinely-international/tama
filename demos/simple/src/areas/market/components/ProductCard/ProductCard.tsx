@@ -64,7 +64,7 @@ function useSearch(value: FlowRead<string | null | undefined>) {
   }
 
   function highlight(searchable: Flowable<string | null | undefined>) {
-    function HighlightComponent(this: Proton.Shell) {
+    function HighlightComponent() {
       const range = Flow.compute((searchable, value) => {
 
         const index = search(searchable, value)

@@ -39,7 +39,7 @@ export type IconName =
 interface IconProps extends Partial<JSX.AttributesOf<SVGElement>> {
   href?: string
   className?: Flowable<string>
-  name?: IconName
+  name?: Flowable<IconName>
   modifiers?: Array<string | number | false | null | undefined>
 }
 
@@ -63,7 +63,7 @@ function Icon(props: IconProps) {
   return (
     // <svg {...props} className={classMerge("icon", props.className && classWithModifiers(classWithModifiers(props.className, props.name), ...props.modifiers || []))}>
     <svg {...props} className={undefined} class={Flow.from(props.className).to(it => bem(["icon", it]))}>
-      <use href={`/static/icons.svg#${props.name}`} />
+      <use href={Flow.from(props.name).to(it => `/static/icons.svg#${it}`)} />
     </svg>
   )
 }

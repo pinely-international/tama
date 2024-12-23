@@ -1,9 +1,9 @@
 import "./Selector.scss"
 
 import DropDown, { DropDownOption } from "../DropDown/DropDown"
-import Icon from "../Icon/Icon"
+import Icon, { IconName } from "../Icon/Icon"
 import { Proton } from "@denshya/proton"
-import { Flow } from "@denshya/flow"
+import { Flow, Flowable } from "@denshya/flow"
 import { bem } from "@/utils/bem"
 
 
@@ -13,6 +13,8 @@ interface SelectorProps<T> {
   placeholder?: unknown
   createPending?: boolean
 
+  iconName?: Flowable<IconName>
+
   children: DropDownOption<T> | DropDownOption<T>[]
 }
 
@@ -20,13 +22,17 @@ function Selector<T = string | undefined>(this: Proton.Shell, props: SelectorPro
   const expanded = new Flow(false)
   const selected = new Flow<DropDownOption<T> | null>(null)
 
+  this.on("view").subscribe(view => {
+    onClickAway(view).subscribe(() => expanded.set(false))
+  })
 
-  const layout = this.inflator.inflate(
+  return (
     <div className="selector">
       {props.label && (
         <div className="selector__label">{props.label}</div>
       )}
       <button className="selector__appearance" type="button" on={{ click: () => expanded.set(it => !it) }}>
+        <Icon className="selector__icon" name={Flow.from(props.iconName).required} />
         <div className="selector__placeholder" mounted={selected.isNullish}>{props.placeholder}</div>
         <div className="selector__current">{selected.to(it => it?.children).required}</div>
         <Icon className={expanded.to(up => bem("selector__icon", { up }))} name="chevron-down" />
@@ -36,9 +42,6 @@ function Selector<T = string | undefined>(this: Proton.Shell, props: SelectorPro
       </DropDown>
     </div>
   )
-  onClickAway(layout).subscribe(() => expanded.set(false))
-
-  return layout
 }
 
 export default Selector
