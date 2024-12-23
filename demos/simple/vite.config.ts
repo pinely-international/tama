@@ -15,5 +15,6 @@ export default defineConfig({
   },
   esbuild: {
     jsxDev: false,
+    keepNames: true,
   },
 })

@@ -14,9 +14,9 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "dependencies": {
-    "@denshya/flow": "^0.1.9",
+    "@denshya/flow": "^0.1.16",
     "@denshya/observable": "^0.1.0",
-    "@denshya/proton": "^0.1.118"
+    "@denshya/proton": "^0.1.119"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.16.0",

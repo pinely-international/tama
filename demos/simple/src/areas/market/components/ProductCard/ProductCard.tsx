@@ -57,7 +57,6 @@ function useSearch(value: FlowRead<string | null | undefined>) {
   const valueNormalized = Flow.from(value).to(it => it?.toLowerCase() ?? "")
 
   function search(searchable: string | null | undefined, value: string): number {
-    console.log(searchable, value)
     if (searchable == null) return -1
 
     return searchable.toLowerCase().search(value)

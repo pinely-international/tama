@@ -1,7 +1,7 @@
 import "./DropDown.scss"
 
 
-import { bem, bemFlow } from "@/utils/bem"
+import { bemFlow } from "@/utils/bem"
 import { castArray } from "@/utils/common"
 import { Flow } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
@@ -13,22 +13,27 @@ interface DropDownProps<T> {
   expanded: Flow<boolean>
   selected: Flow<DropDownOption<T> | null>
 
-  value?: T | T[]
-
-  children: DropDownOption<T> | DropDownOption<T>[]
+  children: DropDownOption<T> | DropDownOption<T>[] | (Proton.Index<DropDownOption<T> | DropDownOption<T>[]>)
 }
 
 function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
-  const options = castArray(props.children)
+  const options = props.children instanceof Proton.Index ? props.children : castArray(props.children)
   const optionsIndex = new Proton.Index(options)
 
-  function onSelect(option: DropDownOption<T>, index: number) {
+  function onSelect(option: DropDownOption<T>) {
     props.selected.set(option)
     props.expanded.set(false)
   }
 
+  function isSelect(option: DropDownOption<T>) {
+    return props.selected.to(it => it === option || it?.props.value === option?.props.value)
+  }
+
+  const mutation = new MutationObserver(() => contain(this.getView()))
+
   this.use(view => {
-    const mutation = new MutationObserver(contain)
+    if (view instanceof HTMLElement === false) return
+
     props.expanded.sets(it => {
       if (it === false) return
 
@@ -39,17 +44,17 @@ function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
     return { unsubscribe: () => mutation.disconnect() }
   })
 
-  function contain(view: unknown) {
+  function contain(view: HTMLElement) {
     containByWidth(view)
     containByHeight(view, document.body)
   }
 
   return (
     <div className={bemFlow("drop-down", { expanded: props.expanded })} role="listbox" aria-expanded={props.expanded}>
-      {optionsIndex.map((option, index) => (
+      {optionsIndex.map(option => (
         <button
-          className={props.selected.to(it => bem("drop-down__option", { selected: it === option }))}
-          on={{ click: () => onSelect(option, index) }}
+          className={bemFlow("drop-down__option", { selected: isSelect(option) })}
+          on={{ click: () => onSelect(option) }}
           role="option"
           type="button"
 

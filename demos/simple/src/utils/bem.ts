@@ -1,4 +1,4 @@
-import { Flow } from "@denshya/flow"
+import { Flow, Flowable } from "@denshya/flow"
 import { castArray, isRecord } from "./common"
 
 class BEM {
@@ -37,6 +37,9 @@ export function bem(classNames: BEMElement | BEMElement[], ...modifiers: (Record
   return bemTil.merge(...castArray(classNames).map(className => bemTil.modify(className, ...mods)))
 }
 
+export const bemFlow = (classNames: Flowable<BEMElement> | Flowable<BEMElement>[], ...mods) => {
+  const classNamesFlows = Flow.all(castArray(classNames).map(Flow.from))
+  const modsFlows = Flow.all(mods.map(mod => isRecord(mod) ? Flow.computeRecord(mod) : mod))
 
-// type Statable<T> = T | Flow<T>
-export const bemFlow = Flow.for(bem)
+  return Flow.compute((c, m) => bem(c, ...m), [classNamesFlows, modsFlows])
+}
