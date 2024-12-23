@@ -2,7 +2,6 @@ import "./DropDown.scss"
 
 
 import { bemFlow } from "@/utils/bem"
-import { castArray } from "@/utils/common"
 import { Flow } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
 
@@ -13,12 +12,11 @@ interface DropDownProps<T> {
   expanded: Flow<boolean>
   selected: Flow<DropDownOption<T> | null>
 
-  children: DropDownOption<T> | DropDownOption<T>[] | (Proton.Index<DropDownOption<T> | DropDownOption<T>[]>)
+  children: JSX.Children<DropDownOption<T>>
 }
 
 function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
-  const options = props.children instanceof Proton.Index ? props.children : castArray(props.children)
-  const optionsIndex = new Proton.Index(options)
+  const optionsIndex = new Proton.Index(props.children)
 
   function onSelect(option: DropDownOption<T>) {
     props.selected.set(option)
@@ -29,19 +27,15 @@ function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
     return props.selected.to(it => it === option || it?.props.value === option?.props.value)
   }
 
-  const mutation = new MutationObserver(() => contain(this.getView()))
+  const mutation = new MutationObserver(() => contain(this.getView() as HTMLElement))
 
   this.use(view => {
     if (view instanceof HTMLElement === false) return
 
-    props.expanded.sets(it => {
-      if (it === false) return
-
-      contain(view)
-    })
+    props.expanded.sets(it => !it && contain(view))
 
     mutation.observe(view, { subtree: true, childList: true, characterData: true })
-    return { unsubscribe: () => mutation.disconnect() }
+    return () => mutation.disconnect()
   })
 
   function contain(view: HTMLElement) {
