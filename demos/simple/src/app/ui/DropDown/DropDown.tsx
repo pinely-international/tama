@@ -1,7 +1,7 @@
 import "./DropDown.scss"
 
 
-import { bem } from "@/utils/bem"
+import { bem, bemFlow } from "@/utils/bem"
 import { castArray } from "@/utils/common"
 import { Flow } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
@@ -22,27 +22,20 @@ function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
   const options = castArray(props.children)
   const optionsIndex = new Proton.Index(options)
 
-
   function onSelect(option: DropDownOption<T>, index: number) {
     props.selected.set(option)
     props.expanded.set(false)
   }
 
-  function dispatchSelection(option: DropDownOption<T>) { }
+  this.use(view => {
+    const mutation = new MutationObserver(contain)
+    props.expanded.sets(it => {
+      if (it === false) return
 
-  function isSelected(option: DropDownOption<T>): boolean {
-    return false
-  }
-
-  const mutation = new MutationObserver(contain)
-
-  this.use((view) => {
-    console.log(view)
-
-    contain(view)
+      contain(view)
+    })
 
     mutation.observe(view, { subtree: true, childList: true, characterData: true })
-
     return { unsubscribe: () => mutation.disconnect() }
   })
 
@@ -52,7 +45,7 @@ function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
   }
 
   return (
-    <div className={props.expanded.to(expanded => bem("drop-down", { expanded }))} role="listbox" aria-expanded={props.expanded}>
+    <div className={bemFlow("drop-down", { expanded: props.expanded })} role="listbox" aria-expanded={props.expanded}>
       {optionsIndex.map((option, index) => (
         <button
           className={props.selected.to(it => bem("drop-down__option", { selected: it === option }))}

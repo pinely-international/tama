@@ -14,6 +14,6 @@ export default defineConfig({
     modulePreload: false,
   },
   esbuild: {
-    jsxDev: false
+    jsxDev: false,
   },
 })

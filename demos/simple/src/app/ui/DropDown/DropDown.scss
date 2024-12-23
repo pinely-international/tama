@@ -1,6 +1,10 @@
 @use "@/assets/scss/bundle" as *;
 
 
+$page-indent: 1em;
+$scrollbar-width: 0.675rem;
+$option-padding-inline: 0.675rem;
+
 .drop-down {
 	--translate: 0.25em;
 
@@ -10,48 +14,51 @@
 
 	display: grid;
 
-	max-height: 35vh;
-	overflow: auto;
-
+	width: calc(var(--max-option-width) * 1px + $scrollbar-width);
+	max-width: calc(var(--max-visible-width) * 1px - $page-indent);
 	min-width: 100%;
-	background: white;
-	border: 1px solid $color-gray;
-	border-radius: 0.5em;
-	box-shadow: 0px 0px 4px -5px rgba(39, 45, 58, 0.12);
+	max-height: 80vh;
+	overflow: auto;
+	overscroll-behavior: contain;
+
+	@include Scrollbar(0.675em);
+
+	padding: 0.25em 0;
+	background: $color-white;
+	border-radius: 0.25em;
+	box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35);
 
 	color: $color-dark;
 
 	transform: translateY(var(--translate));
-	transition: 200ms ease opacity, 200ms ease transform;
+	transition: 200ms ease opacity, 200ms ease transform, 200ms ease display, 300ms ease width;
+	transition-behavior: allow-discrete;
 	z-index: 1;
 
-	&:not(&--expanded) {
+	contain: paint;
+
+	@starting-style {
 		--translate: 0em;
 
 		opacity: 0;
-		pointer-events: none;
+	}
+
+	&:not(&--expanded) {
+		--translate: 0.5em;
+
+		opacity: 0;
+		display: none;
 	}
 
 	&--upwards {
-		--translate: calc(-100% - 0.25em);
+		--translate: -0.25em;
 
-		top: 0%;
-	}
-
-	&--upwards:not(&--expanded) {
-		--translate: calc(-100% - 0em);
-	}
-
-	&--small {}
-
-	&--big {
-		.drop-down__option {
-			padding: 0.75rem 1.25rem;
-		}
+		top: unset;
+		bottom: 100%;
 	}
 
 	&--dark {
-		background: $color-gray-dark;
+		background: $color-dark;
 		border-color: rgba(white, 0.25);
 
 		color: white;

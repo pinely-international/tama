@@ -33,6 +33,7 @@ function Market(this: Proton.Shell) {
             <SearchBar value={market.filters.search} />
             <Button><Icon name="funnel" /></Button>
             <Selector iconName="sort" placeholder="Sorting">
+              <option value="1">1</option>
               <option value="1">Price</option>
               <option value="2">Rating</option>
               <option value="3">Alphabet</option>

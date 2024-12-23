@@ -1,3 +1,4 @@
+import { Flow } from "@denshya/flow"
 import { castArray, isRecord } from "./common"
 
 class BEM {
@@ -38,4 +39,4 @@ export function bem(classNames: BEMElement | BEMElement[], ...modifiers: (Record
 
 
 // type Statable<T> = T | Flow<T>
-// const bemSs = Flow.for(bem, (classNames: Statable<string> | Statable<string[]>, ...mods) => [classNames, ...mods])
+export const bemFlow = Flow.for(bem)
