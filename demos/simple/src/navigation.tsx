@@ -1,7 +1,7 @@
 import { Proton } from "@denshya/proton"
 import { Unsubscribable } from "type-fest"
-import { bem } from "./utils/bem"
-import { Flow } from "@denshya/flow"
+import { Flow, Flowable } from "@denshya/flow"
+import { bemFlow } from "./utils/bem"
 
 
 
@@ -87,12 +87,9 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
 
 
 
-export function NavLink(props: { to: string; className?: string; children?: unknown }) {
-  const className = new Flow(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))
-
-  navigation[Symbol.subscribe](() => {
-    className.set(bem(props.className ?? "nav-link", { active: navigation.path === props.to }))
-  })
+export function NavLink(props: { to: string; className?: Flowable<string>; children?: unknown }) {
+  const active = Flow.from(navigation).to(it => it.path === props.to)
+  const className = bemFlow(props.className ?? "nav-link", { active })
 
   function onClick(event: MouseEvent) {
     event.preventDefault()

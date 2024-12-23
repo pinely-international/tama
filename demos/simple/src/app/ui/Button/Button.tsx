@@ -1,5 +1,6 @@
-import { bem } from "@/utils/bem"
 import "./Button.scss"
+
+import { bemFlow } from "@/utils/bem"
 
 import { Flow, Flowable } from "@denshya/flow"
 
@@ -13,14 +14,9 @@ interface ButtonProps {
 
 function Button(props: ButtonProps) {
   const color = Flow.from(props.color ?? new Flow(""))
-  const className = new Flow(bem("button", [color.get()]))
-
-  color[Symbol.subscribe](() => {
-    className.set(bem("button", [color.get()]))
-  })
 
   return (
-    <button type="button" className={className} on={{ click: () => props.onClick?.() }}>{props.children}</button>
+    <button type="button" className={bemFlow("button", [color])} on={{ click: () => props.onClick?.() }}>{props.children}</button>
   )
 }
 

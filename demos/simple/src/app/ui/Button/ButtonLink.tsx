@@ -1,8 +1,8 @@
 import "./Button.scss"
 
 import { NavLink } from "@/navigation"
+import { bemFlow } from "@/utils/bem"
 
-import { bem } from "@/utils/bem"
 import { Flow, Flowable } from "@denshya/flow"
 
 
@@ -17,15 +17,10 @@ interface ButtonLinkProps {
 }
 
 function ButtonLink(props: ButtonLinkProps) {
-  const color = Flow.from(props.color ?? new Flow(""))
-  const className = new Flow(bem("button", [color.get()]))
-
-  color[Symbol.subscribe](() => {
-    className.set(bem("button", [color.get()]))
-  })
+  const color = Flow.from(props.color)
 
   return (
-    <NavLink to={props.to} className="button">{props.children}</NavLink>
+    <NavLink to={props.to} className={bemFlow("button", [color])}>{props.children}</NavLink>
   )
 }
 

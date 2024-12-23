@@ -4,18 +4,17 @@ import DropDown, { DropDownOption } from "../DropDown/DropDown"
 import Icon, { IconName } from "../Icon/Icon"
 import { Proton } from "@denshya/proton"
 import { Flow, Flowable } from "@denshya/flow"
-import { bem } from "@/utils/bem"
+import { bemFlow } from "@/utils/bem"
 
 
 interface SelectorProps<T> {
   name?: string
   label?: unknown
   placeholder?: unknown
-  createPending?: boolean
 
   iconName?: Flowable<IconName>
 
-  children: DropDownOption<T> | DropDownOption<T>[]
+  children: JSX.Children<DropDownOption<T>>
 }
 
 function Selector<T = string | undefined>(this: Proton.Shell, props: SelectorProps<T>) {
@@ -34,8 +33,8 @@ function Selector<T = string | undefined>(this: Proton.Shell, props: SelectorPro
       <button className="selector__appearance" type="button" on={{ click: () => expanded.set(it => !it) }}>
         <Icon className="selector__icon" name={Flow.from(props.iconName).required} />
         <div className="selector__placeholder" mounted={selected.isNullish}>{props.placeholder}</div>
-        <div className="selector__current">{selected.to(it => it?.children).required}</div>
-        <Icon className={expanded.to(up => bem("selector__icon", { up }))} name="chevron-down" />
+        <div className="selector__current">{selected.$.children.required}</div>
+        <Icon className={bemFlow("selector__icon", { up: expanded })} name="chevron-down" />
       </button>
       <DropDown expanded={expanded} selected={selected}>
         {props.children}

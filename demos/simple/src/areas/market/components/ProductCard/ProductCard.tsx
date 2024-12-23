@@ -5,10 +5,10 @@ import { Proton } from "@denshya/proton"
 import Price from "@/utils/price"
 import MarketModel from "../../models/MarketModel"
 import Icon from "@/app/ui/Icon/Icon"
-import { bem } from "@/utils/bem"
 import ProductCardBuy from "./ProductCardBuyButton"
 import { NavLink } from "@/navigation"
 import { Flow, Flowable, FlowRead } from "@denshya/flow"
+import { bemFlow } from "@/utils/bem"
 
 
 interface ProductCardProps extends MarketProduct { }
@@ -43,7 +43,7 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
         <div className="product-card__buy">
           <ProductCardBuy amount={amount} onClick={() => market.cart.$.set(props.id, 1)} />
         </div>
-        <button className={liked.to(active => bem("product-card__like", { active }))} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
+        <button className={bemFlow("product-card__like", { active: liked })} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
           <Icon name="heart" />
         </button>
       </div>

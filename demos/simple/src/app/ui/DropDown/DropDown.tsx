@@ -27,21 +27,25 @@ function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
     return props.selected.to(it => it === option || it?.props.value === option?.props.value)
   }
 
-  const mutation = new MutationObserver(() => contain(this.getView() as HTMLElement))
-
-  this.use(view => {
-    if (view instanceof HTMLElement === false) return
-
-    props.expanded.sets(it => !it && contain(view))
-
-    mutation.observe(view, { subtree: true, childList: true, characterData: true })
-    return () => mutation.disconnect()
-  })
 
   function contain(view: HTMLElement) {
     containByWidth(view)
     containByHeight(view, document.body)
   }
+
+  const mutation = new MutationObserver(() => contain(this.getView() as HTMLElement))
+
+  this.use(view => {
+    if (view instanceof HTMLElement === false) return
+
+    const expandedSubscription = props.expanded.sets(it => !it && contain(view))
+    mutation.observe(view, { subtree: true, childList: true, characterData: true })
+
+    return () => {
+      mutation.disconnect()
+      expandedSubscription.unsubscribe()
+    }
+  })
 
   return (
     <div className={bemFlow("drop-down", { expanded: props.expanded })} role="listbox" aria-expanded={props.expanded}>
