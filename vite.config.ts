@@ -24,6 +24,6 @@ export default defineConfig({
   esbuild: {
     treeShaking: true,
     minifyIdentifiers: false,
-    keepNames: true
+    keepNames: false
   },
 })
