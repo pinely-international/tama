@@ -121,8 +121,18 @@ namespace Proton {
     private array: T[]
     private readonly events = new Emitter<ProtonIndexEvents<T>>
 
-    constructor(init: Iterable<T> | Index<T>) {
-      this.array = init instanceof Index ? [...init.array] : [...init]
+    constructor(init: Iterable<T> | Index<T> | T) {
+      if (init instanceof Index) {
+        this.array = [...init.array]
+        return
+      }
+
+      if (init instanceof Object && globalThis.Symbol.iterator in init) {
+        this.array = [...init]
+        return
+      }
+
+      this.array = [init]
     }
 
     get length() { return this.array.length }
