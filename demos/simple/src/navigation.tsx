@@ -1,6 +1,6 @@
 import { Proton } from "@denshya/proton"
-import { Unsubscribable } from "type-fest"
 import { Flow, Flowable } from "@denshya/flow"
+
 import { bemFlow } from "./utils/bem"
 
 
@@ -8,8 +8,6 @@ import { bemFlow } from "./utils/bem"
 abstract class Navigation<Path = string> {
   abstract navigate(delta: number): void
   abstract navigate(to: Path): void
-
-  abstract [Symbol.subscribe](next: () => void): Unsubscribable
 }
 
 export default Navigation
@@ -21,7 +19,7 @@ namespace WebNavigation {
 }
 
 export class WebNavigation extends Navigation {
-  private readonly current = new Flow(new URL(window.location.href))
+  readonly current = new Flow(new URL(window.location.href))
 
   get path() { return this.current.get().pathname }
   get url() { return this.current.get() }
@@ -57,8 +55,6 @@ export class WebNavigation extends Navigation {
     window.history.pushState(state, "", url)
     return url
   }
-
-  [Symbol.subscribe](next: () => void) { return this.current[Symbol.subscribe](() => next()) }
 }
 
 
@@ -81,14 +77,14 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
     this.view.set(children)
   }
 
-  navigation[Symbol.subscribe](switchView)
   switchView()
+  navigation.current.sets(switchView)
 }
 
 
 
 export function NavLink(props: { to: string; className?: Flowable<string>; children?: unknown }) {
-  const active = Flow.from(navigation).to(it => it.path === props.to)
+  const active = navigation.current.to(it => it.pathname === props.to)
   const className = bemFlow(props.className ?? "nav-link", { active })
 
   function onClick(event: MouseEvent) {
