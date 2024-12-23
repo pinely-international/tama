@@ -34,9 +34,9 @@ interface _AttributesOf<T> {
 declare global {
   namespace JSX {
     interface Element {
-      type: unknown
-      props: unknown
-      children: unknown | unknown[]
+      type: any
+      props: any
+      children: any
     }
 
     interface ElementTypeConstructor { }
