@@ -109,7 +109,7 @@ namespace Proton {
     getView() { return this.viewElement }
     on<K extends keyof ShellEvents>(event: K): Subscriptable<ShellEvents[K]> { return this.events.observe(event) }
 
-    use(subscribe: (view: unknown) => () => void) {
+    use(subscribe: (view: unknown) => void | (() => void)) {
       this.events.observe("mount").subscribe(() => {
         const unsubscribe = subscribe(this.viewElement)
         this.events.once("unmount", unsubscribe)
