@@ -16,7 +16,7 @@
   "dependencies": {
     "@denshya/flow": "^0.1.4",
     "@denshya/observable": "^0.1.0",
-    "@denshya/proton": "^0.1.116"
+    "@denshya/proton": "^0.1.117"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.16.0",

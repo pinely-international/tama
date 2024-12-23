@@ -34,14 +34,16 @@ function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
     return false
   }
 
-  requestAnimationFrame(() => {
-    const view = this.getView()
+  const mutation = new MutationObserver(contain)
+
+  this.use((view) => {
     console.log(view)
 
     contain(view)
 
-    const mutation = new MutationObserver(contain)
     mutation.observe(view, { subtree: true, childList: true, characterData: true })
+
+    return { unsubscribe: () => mutation.disconnect() }
   })
 
   function contain(view: unknown) {
