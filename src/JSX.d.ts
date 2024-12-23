@@ -3,6 +3,7 @@ import { IsEqual } from "type-fest"
 import { Accessible, AccessorGet } from "./Accessor"
 import Guarded from "./Guarded"
 import Observable from "./Observable"
+import Proton from "./Proton"
 
 
 export { }
@@ -57,6 +58,8 @@ declare global {
       | (Guarded<T> & Observable<T>)
       | (Guarded<T> & Accessible<T>)
       | (Guarded<T> & Observable<T> & Accessible<T>)
+
+    type Children<T extends JSX.Element> = T | T[] | Proton.Index<T>
 
     type HTMLElementEvents = {
       [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
