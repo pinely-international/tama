@@ -470,11 +470,11 @@ export class WebInflator extends Inflator {
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
 
     let currentView: Node = this.getInitialView(view, componentPlaceholder)
-    let currentViewChildren: Node[] = Null.ARRAY
+    // let currentViewChildren: Node[] = Null.ARRAY
 
-    if (view instanceof DocumentFragment) {
-      currentViewChildren = [...view.childNodes]
-    }
+    // if (view instanceof DocumentFragment) {
+    //   currentViewChildren = [...view.childNodes]
+    // }
 
     let lastAnimationFrame = -1
 
@@ -495,17 +495,17 @@ export class WebInflator extends Inflator {
       }
 
       if (currentView instanceof DocumentFragment) {
-        const anchorFirstChild = currentViewChildren[0]
+        const anchorFirstChild = currentView.fixedNodes[0]
         if (anchorFirstChild == null) throw new Error("Can't replace live element of fragment")
 
         const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
         if (!anchorFirstChildParent) throw new Error("Can't replace live element of fragment")
 
         const oldView = currentView
-        const oldViewChildren = currentViewChildren.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
+        const oldViewChildren = currentView.fixedNodes.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
 
         currentView = view
-        currentViewChildren = [...view.childNodes]
+        // currentViewChildren = [...view.childNodes]
 
         // `anchorFirstChild` is meant to throw error if `null`.
         anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
@@ -522,20 +522,21 @@ export class WebInflator extends Inflator {
     }
 
     shell.on("view").subscribe(view => {
+      if (view === null) view = componentPlaceholder
+      if (view instanceof Node === false) return
+
       view = WebComponentPlaceholder.actualOf(view)!
       currentView = WebComponentPlaceholder.actualOf(currentView)!
 
-      if (view === null) view = componentPlaceholder
-      if (view instanceof Node === false) return
       if (view === currentView) return
 
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
 
-    lastAnimationFrame = requestAnimationFrame(() => view instanceof Node && schedule(view))
+    // lastAnimationFrame = requestAnimationFrame(() => view instanceof Node && schedule(view))
 
-    return componentPlaceholder
+    return currentView
   }
 }
 
