@@ -9,7 +9,7 @@ import { Flow, Flowable } from "@denshya/flow"
 
 interface ButtonLinkProps {
   children: unknown
-  to: string
+  to: Flowable<string>
 
   color?: Flowable<string>
 

@@ -55,6 +55,21 @@ export class WebNavigation extends Navigation {
     window.history.pushState(state, "", url)
     return url
   }
+
+  readonly result = new Flow<URLPatternResult | null>(null)
+
+  test(pathPattern: string | undefined | null): boolean {
+    const pattern = new URLPattern(pathPattern ?? undefined, window.location.href);
+    const result = pattern.exec(this.current.get().pathname, window.location.href)
+
+    try {
+      this.result.set(result)
+    } catch (error) {
+      queueMicrotask(() => { throw error })
+    } finally {
+      return !!result
+    }
+  }
 }
 
 
@@ -65,10 +80,18 @@ export const navigation = new WebNavigation
 export function NavRoute(this: Proton.Shell, props: { path?: string; children: unknown }) {
   let children: unknown
 
+  let result: RouteContext | null = null
+
   const switchView = () => {
-    if (navigation.path !== props.path) {
+    if (!navigation.test(props.path)) {
       return this.view.set(null)
     }
+
+    if (result == null) {
+      result = this.context.provide(new RouteContext(null))
+    }
+
+    result.set(navigation.result.get())
 
     if (children == null) {
       children = this.inflator.inflate(<>{props.children}</>)
@@ -83,16 +106,19 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
 
 
 
-export function NavLink(props: { to: string; className?: Flowable<string>; children?: unknown }) {
-  const active = navigation.current.to(it => it.pathname === props.to)
+export function NavLink(props: { to: Flowable<string>; className?: Flowable<string>; children?: unknown }) {
+  const active = Flow.compute((nav, to) => to.length > 1 && nav.pathname.startsWith(to), [navigation.current, props.to])
   const className = bemFlow(props.className ?? "nav-link", { active })
 
   function onClick(event: MouseEvent) {
     event.preventDefault()
-    navigation.navigate(props.to)
+    navigation.navigate(Flow.get(props.to))
   }
 
   return (
     <a className={className} href={props.to} on={{ click: onClick }}>{props.children}</a>
   )
 }
+
+
+export class RouteContext extends Flow<URLPatternResult | null> { }

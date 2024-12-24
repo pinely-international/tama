@@ -14,6 +14,7 @@ import { Flow } from "@denshya/flow"
 const TictactoeGame = Proton.Lazy(() => import("./tictactoe/tictactoe"))
 const ProductsTableApp = Proton.Lazy(() => import("./products-table/ProductsTable"))
 const Market = Proton.Lazy(() => import("./areas/market/components/Market/Market"))
+const ProductPage = Proton.Lazy(() => import("./areas/market/components/ProductPage/ProductPage"))
 
 
 function App(this: Proton.Shell) {
@@ -37,6 +38,7 @@ function App(this: Proton.Shell) {
         <NavRoute path="/tictactoe"><TictactoeGame /></NavRoute>
         <NavRoute path="/products-table"><ProductsTableApp /></NavRoute>
         <NavRoute path="/market"><Market /></NavRoute>
+        <NavRoute path="/market/product/:id"><ProductPage /></NavRoute>
       </main>
     </>
   )

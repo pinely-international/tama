@@ -1,0 +1,74 @@
+@use "@/assets/scss/bundle" as *;
+
+.product-page {
+	display: flex;
+	justify-content: space-between;
+
+	max-width: 80em;
+	margin: 5em auto;
+}
+
+.product-page__banner {
+	display: grid;
+	gap: 0.5em;
+}
+
+.product-page__title {
+	font-size: 1.5rem;
+}
+
+.product-page__image {
+	width: 35em;
+	max-height: 35em;
+
+	border-radius: 0.375em;
+	object-fit: cover;
+}
+
+.product-page__pricing {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5em;
+
+	margin-bottom: 0.5em;
+
+	font-weight: bolder;
+}
+
+.product-page__price {
+	font-size: 1.5rem;
+	font-weight: bold;
+}
+
+.product-page__price-old {
+	color: rgba(black, 0.5);
+	text-decoration: line-through;
+	font-size: $font-size-text-small;
+}
+
+.product-page__discount {
+	color: $color-red-pale;
+	font-size: $font-size-text-small;
+}
+
+.product-page__reviews {
+	position: relative;
+
+	--icon-color: #{$color-orange};
+
+	display: flex;
+	align-items: center;
+	gap: 0.25em;
+
+	margin-top: 0.25em;
+	margin-bottom: 1em;
+
+	strong {
+		font-size: 1rem;
+		vertical-align: baseline;
+	}
+
+	span {
+		font-size: 1rem;
+	}
+}

@@ -8,7 +8,6 @@ class BEM {
    */
   merge(...classNames: Array<BEMElement>): string {
     const space = " "
-    console.log(classNames)
     return classNames.filter(Boolean).join(space)
   }
 

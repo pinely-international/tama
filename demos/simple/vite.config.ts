@@ -16,5 +16,9 @@ export default defineConfig({
   esbuild: {
     jsxDev: false,
     keepNames: true,
+
+    supported: {
+      "top-level-await": true
+    },
   },
 })

@@ -7,6 +7,24 @@ const inflated = inflator.inflate(<App />)
 
 document.getElementById("root")!.appendChild(inflated)
 
+// Conditional ESM module loading (Node.js and browser)
+// @ts-ignore: Property 'UrlPattern' does not exist
+if (!globalThis.URLPattern) {
+  await import("urlpattern-polyfill");
+}
+/**
+ * The above is the recommended way to load the ESM module, as it only
+ * loads it on demand, thus when not natively supported by the runtime or
+ * already polyfilled.
+ */
+import "urlpattern-polyfill";
+
+/**
+ * In case you want to replace an existing implementation with the polyfill:
+ */
+import { URLPattern } from "urlpattern-polyfill";
+globalThis.URLPattern = URLPattern
+
 
 if (import.meta.env.DEV) {
   // REGISTER ERROR OVERLAY
