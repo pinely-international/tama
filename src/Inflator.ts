@@ -530,9 +530,9 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
 
-    // lastAnimationFrame = requestAnimationFrame(() => view instanceof Node && schedule(view))
+    lastAnimationFrame = requestAnimationFrame(() => view instanceof Node && schedule(view))
 
-    return currentView
+    return componentPlaceholder
   }
 }
 
