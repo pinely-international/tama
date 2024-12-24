@@ -478,6 +478,49 @@ export class WebInflator extends Inflator {
 
     let lastAnimationFrame = -1
 
+
+    const schedule = (view: Node) => {
+      view = WebComponentPlaceholder.actualOf(view)!
+      currentView = WebComponentPlaceholder.actualOf(currentView)!
+
+      if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
+        if (view instanceof DocumentFragment) {
+          currentViewChildren = [...view.childNodes]
+        }
+
+        currentView.replaceWith(view)
+        currentView = view
+
+        return
+      }
+
+      if (currentView instanceof DocumentFragment) {
+        const anchorFirstChild = currentViewChildren[0]
+        if (anchorFirstChild == null) throw new Error("Can't replace live element of fragment")
+
+        const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
+        if (!anchorFirstChildParent) throw new Error("Can't replace live element of fragment")
+
+        const oldView = currentView
+        const oldViewChildren = currentViewChildren.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
+
+        currentView = view
+        currentViewChildren = [...view.childNodes]
+
+        // `anchorFirstChild` is meant to throw error if `null`.
+        anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
+        oldView.replaceChildren(...oldViewChildren)
+
+        if (anchorFirstChild instanceof WebComponentPlaceholder) {
+          anchorFirstChild.shell.events.dispatch("unmount")
+        }
+
+        return
+      }
+
+      throw new Error("Couldn't update view")
+    }
+
     shell.on("view").subscribe(view => {
       view = WebComponentPlaceholder.actualOf(view)!
       currentView = WebComponentPlaceholder.actualOf(currentView)!
@@ -486,53 +529,13 @@ export class WebInflator extends Inflator {
       if (view instanceof Node === false) return
       if (view === currentView) return
 
-      const schedule = () => {
-        view = WebComponentPlaceholder.actualOf(view)!
-        currentView = WebComponentPlaceholder.actualOf(currentView)!
-
-        if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-          if (view instanceof DocumentFragment) {
-            currentViewChildren = [...view.childNodes]
-          }
-
-          currentView.replaceWith(view)
-          currentView = view
-
-          return
-        }
-
-        if (currentView instanceof DocumentFragment) {
-          const anchorFirstChild = currentViewChildren[0]
-          if (anchorFirstChild == null) throw new Error("Can't replace live element of fragment")
-
-          const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
-          if (!anchorFirstChildParent) throw new Error("Can't replace live element of fragment")
-
-          const oldView = currentView
-          const oldViewChildren = currentViewChildren.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
-
-          currentView = view
-          currentViewChildren = [...view.childNodes]
-
-          // `anchorFirstChild` is meant to throw error if `null`.
-          anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
-          oldView.replaceChildren(...oldViewChildren)
-
-          if (anchorFirstChild instanceof WebComponentPlaceholder) {
-            anchorFirstChild.shell.events.dispatch("unmount")
-          }
-
-          return
-        }
-
-        throw new Error("Couldn't update view")
-      }
-
       cancelAnimationFrame(lastAnimationFrame)
-      lastAnimationFrame = requestAnimationFrame(schedule)
+      lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
 
-    return currentView
+    lastAnimationFrame = requestAnimationFrame(() => view instanceof Node && schedule(view))
+
+    return componentPlaceholder
   }
 }
 
