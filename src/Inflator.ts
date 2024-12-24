@@ -468,10 +468,10 @@ export class WebInflator extends Inflator {
     const view = shell.getView()
 
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
-    // const componentFragment = new DocumentFragment
+    const componentFragment = new DocumentFragment
 
-    // componentFragment.appendChild(componentPlaceholder)
-    // if (view instanceof Node) componentFragment.appendChild(view)
+    componentFragment.appendChild(componentPlaceholder)
+    if (view instanceof Node) componentFragment.appendChild(view)
 
     // let currentView: Node = componentPlaceholder
     // let currentViewChildren: Node[] = Null.ARRAY
@@ -505,7 +505,6 @@ export class WebInflator extends Inflator {
         const oldViewChildren = currentView.fixedNodes.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
 
         // currentView = view
-        // currentViewChildren = [...view.childNodes]
 
         // `anchorFirstChild` is meant to throw error if `null`.
         anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
@@ -534,7 +533,7 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
 
-    return componentPlaceholder
+    return componentFragment
   }
 }
 
