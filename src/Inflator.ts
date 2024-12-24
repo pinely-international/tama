@@ -126,6 +126,7 @@ class WebComponentPlaceholder extends Comment {
     const element = super.parentElement ?? this.actual?.parentElement
     if (element == null) {
       const shellView = this.shell.getView()
+      if (shellView === this) return null
       if (shellView instanceof Node === false) return null
 
       return shellView.parentElement
