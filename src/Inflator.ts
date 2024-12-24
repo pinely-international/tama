@@ -484,10 +484,6 @@ export class WebInflator extends Inflator {
       currentView = WebComponentPlaceholder.actualOf(currentView)!
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-        if (view instanceof DocumentFragment) {
-          currentViewChildren = [...view.childNodes]
-        }
-
         currentView.replaceWith(view)
         currentView = view
 
