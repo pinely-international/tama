@@ -14,7 +14,7 @@ async function ProductPage(this: Proton.Shell) {
 
   this.view.set(<LoaderCover />)
 
-  await new Promise(r => setTimeout(r, 1000))
+  await this.suspendOf(new Promise(r => setTimeout(r, 1000)))
 
   const id = route.$.pathname.$.groups.$.id.to(id => {
     if (id == null) throw new TypeError("This page can't be accessed without `id`")

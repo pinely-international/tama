@@ -2,6 +2,7 @@ import { Proton } from "@denshya/proton"
 import { Flow, Flowable } from "@denshya/flow"
 
 import { bemFlow } from "./utils/bem"
+import LoaderCover from "./app/ui/Loader/LoaderCover"
 
 
 
@@ -78,6 +79,10 @@ export const navigation = new WebNavigation
 
 
 export function NavRoute(this: Proton.Shell, props: { path?: string; children: unknown }) {
+  this.suspense(() => this.view.set(<LoaderCover />))
+  this.unsuspense(() => this.view.reset())
+
+
   let children: unknown
 
   let result: RouteContext | null = null
