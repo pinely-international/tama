@@ -487,6 +487,9 @@ export class WebInflator extends Inflator {
       if (view === currentView) return
 
       const schedule = () => {
+        view = WebComponentPlaceholder.actualOf(view)!
+        currentView = WebComponentPlaceholder.actualOf(currentView)!
+
         if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
           if (view instanceof DocumentFragment) {
             currentViewChildren = [...view.childNodes]
