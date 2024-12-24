@@ -469,7 +469,7 @@ export class WebInflator extends Inflator {
 
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
 
-    let currentView: Node = this.getInitialView(view, componentPlaceholder)
+    let currentView: Node = componentPlaceholder
     // let currentViewChildren: Node[] = Null.ARRAY
 
     // if (view instanceof DocumentFragment) {
