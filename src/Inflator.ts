@@ -479,6 +479,7 @@ export class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     shell.on("view").subscribe(view => {
+      view = WebComponentPlaceholder.actualOf(view)!
       currentView = WebComponentPlaceholder.actualOf(currentView)!
 
       if (view === null) view = componentPlaceholder
