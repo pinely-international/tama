@@ -122,8 +122,15 @@ class WebComponentPlaceholder extends Comment {
     super(shellConstructor.name)
   }
 
+  protected safeActualParentElement() {
+    const actual = this.actual
+    if (actual === this) return null
+
+    return this.actual?.parentElement
+  }
+
   override get parentElement() {
-    const element = super.parentElement ?? this.actual?.parentElement
+    const element = super.parentElement ?? this.safeActualParentElement()
     if (element == null) {
       const shellView = this.shell.getView()
       if (shellView === this) return null
