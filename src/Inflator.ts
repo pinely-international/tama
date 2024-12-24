@@ -468,8 +468,12 @@ export class WebInflator extends Inflator {
     const view = shell.getView()
 
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
+    // const componentFragment = new DocumentFragment
 
-    let currentView: Node = componentPlaceholder
+    // componentFragment.appendChild(componentPlaceholder)
+    // if (view instanceof Node) componentFragment.appendChild(view)
+
+    // let currentView: Node = componentPlaceholder
     // let currentViewChildren: Node[] = Null.ARRAY
 
     // if (view instanceof DocumentFragment) {
@@ -481,7 +485,7 @@ export class WebInflator extends Inflator {
 
     const schedule = (view: Node) => {
       view = WebComponentPlaceholder.actualOf(view)!
-      currentView = WebComponentPlaceholder.actualOf(shell.getView())!
+      const currentView = WebComponentPlaceholder.actualOf(shell.getView())!
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(view)
@@ -522,7 +526,7 @@ export class WebInflator extends Inflator {
       if (view instanceof Node === false) return
 
       view = WebComponentPlaceholder.actualOf(view)!
-      currentView = WebComponentPlaceholder.actualOf(currentView)!
+      const currentView = WebComponentPlaceholder.actualOf(shell.getView())!
 
       if (view === currentView) return
 
