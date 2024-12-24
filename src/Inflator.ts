@@ -481,11 +481,11 @@ export class WebInflator extends Inflator {
 
     const schedule = (view: Node) => {
       view = WebComponentPlaceholder.actualOf(view)!
-      currentView = WebComponentPlaceholder.actualOf(currentView)!
+      currentView = WebComponentPlaceholder.actualOf(shell.getView())!
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(view)
-        currentView = view
+        // currentView = view
 
         return
       }
@@ -500,7 +500,7 @@ export class WebInflator extends Inflator {
         const oldView = currentView
         const oldViewChildren = currentView.fixedNodes.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
 
-        currentView = view
+        // currentView = view
         // currentViewChildren = [...view.childNodes]
 
         // `anchorFirstChild` is meant to throw error if `null`.
