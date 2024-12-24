@@ -473,24 +473,15 @@ export class WebInflator extends Inflator {
     componentFragment.appendChild(componentPlaceholder)
     if (view instanceof Node) componentFragment.appendChild(view)
 
-    // let currentView: Node = componentPlaceholder
-    // let currentViewChildren: Node[] = Null.ARRAY
-
-    // if (view instanceof DocumentFragment) {
-    //   currentViewChildren = [...view.childNodes]
-    // }
 
     let lastAnimationFrame = -1
 
-
     const schedule = (view: Node) => {
       view = WebComponentPlaceholder.actualOf(view)!
-      const currentView = WebComponentPlaceholder.actualOf(shell.getView())!
+      const currentView = shell.getView()
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(view)
-        // currentView = view
-
         return
       }
 
@@ -503,8 +494,6 @@ export class WebInflator extends Inflator {
 
         const oldView = currentView
         const oldViewChildren = currentView.fixedNodes.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
-
-        // currentView = view
 
         // `anchorFirstChild` is meant to throw error if `null`.
         anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
@@ -521,12 +510,10 @@ export class WebInflator extends Inflator {
     }
 
     shell.on("view").subscribe(view => {
+      const currentView = shell.getView()
+
       if (view === null) view = componentPlaceholder
       if (view instanceof Node === false) return
-
-      view = WebComponentPlaceholder.actualOf(view)!
-      const currentView = WebComponentPlaceholder.actualOf(shell.getView())!
-
       if (view === currentView) return
 
       cancelAnimationFrame(lastAnimationFrame)
