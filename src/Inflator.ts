@@ -456,23 +456,10 @@ export class WebInflator extends Inflator {
     if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get?.() ?? value))
   }
 
-  private getInitialView(view: unknown, comment: Comment): Node {
-    if (view instanceof DocumentFragment) return view
-    if (view instanceof Node && "replaceWith" in view) return view
-
-    return comment
-  }
-
   protected inflateJSXComponent(component: ProtonJSX.Component) {
     const shell = this.inflateComponent(component.type as never, component.props)
-    const view = shell.getView()
 
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
-    const componentFragment = new DocumentFragment
-
-    componentFragment.appendChild(componentPlaceholder)
-    if (view instanceof Node) componentFragment.appendChild(view)
-
 
     let lastAnimationFrame = -1
 
@@ -520,7 +507,7 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
 
-    return componentFragment
+    return componentPlaceholder
   }
 }
 
