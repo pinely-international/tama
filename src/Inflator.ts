@@ -44,7 +44,7 @@ export abstract class Inflator {
       constructor = constructor.default instanceof Function ? constructor.default : constructor
 
       try {
-        shell.view.default = await constructor.call(shell, props)
+        shell.view.default = await Promise.resolve(constructor.call(shell, props))
       } catch (thrown) {
         if (this.suspenseCallback != null && thrown instanceof Promise) {
           if (this.suspenses.length === 0) this.suspenseCallback(thrown)
@@ -465,27 +465,17 @@ export class WebInflator extends Inflator {
 
   protected inflateJSXComponent(component: ProtonJSX.Component) {
     const shell = this.inflateComponent(component.type as never, component.props)
-    const view = shell.getView()
 
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
-    // const componentFragment = new DocumentFragment
 
-    // componentFragment.appendChild(componentPlaceholder)
-    // if (view instanceof Node) componentFragment.appendChild(view)
-
-    // let currentView: Node = componentPlaceholder
-    // let currentViewChildren: Node[] = Null.ARRAY
-
-    // if (view instanceof DocumentFragment) {
-    //   currentViewChildren = [...view.childNodes]
-    // }
+    let currentView: Node = componentPlaceholder
 
     let lastAnimationFrame = -1
 
 
     const schedule = (view: Node) => {
       view = WebComponentPlaceholder.actualOf(view)!
-      const currentView = WebComponentPlaceholder.actualOf(shell.getView())!
+      currentView = WebComponentPlaceholder.actualOf(shell.getView())!
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(view)
@@ -504,8 +494,8 @@ export class WebInflator extends Inflator {
         const oldView = currentView
         const oldViewChildren = currentView.fixedNodes.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
 
-        // currentView = view
-        // currentViewChildren = [...view.childNodes]
+        currentView = view
+        currentViewChildren = [...view.childNodes]
 
         // `anchorFirstChild` is meant to throw error if `null`.
         anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
