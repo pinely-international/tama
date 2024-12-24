@@ -6,10 +6,15 @@ import Icon from "@/app/ui/Icon/Icon"
 import { Flow } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
 import Price from "@/utils/price"
+import LoaderCover from "@/app/ui/Loader/LoaderCover"
 
 
-function ProductPage(this: Proton.Shell) {
+async function ProductPage(this: Proton.Shell) {
   const route = this.context.require(RouteContext)
+
+  this.view.set(<LoaderCover />)
+
+  await new Promise(r => setTimeout(r, 1000))
 
   const id = route.$.pathname.$.groups.$.id.to(id => {
     if (id == null) throw new TypeError("This page can't be accessed without `id`")
