@@ -30,9 +30,9 @@ export abstract class Inflator {
   protected abstract inflateFragment(): unknown
 
   protected declare parentShell: Proton.Shell
-  protected declare catchCallback: (thrown: unknown) => void
-  protected declare suspenseCallback: (promise: Promise<void>) => void
-  protected declare unsuspenseCallback: (promise: Promise<void>) => void
+  protected declare catchCallback?: (thrown: unknown) => void
+  protected declare suspenseCallback?: (promise: Promise<unknown>) => void
+  protected declare unsuspenseCallback?: (promise: Promise<unknown>) => void
 
   private suspenses: Promise<unknown>[] = []
 
@@ -68,7 +68,9 @@ export abstract class Inflator {
 
         throw thrown
       } finally {
-        shell.view.default && shell.view.set(shell.view.default)
+        if (shell.view.default == null) return
+
+        shell.view.set(shell.view.default)
 
         requestAnimationFrame(() => {
           shell.events.dispatch("mount", shell.getView())

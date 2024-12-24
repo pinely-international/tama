@@ -18,14 +18,15 @@ declare global {
 
 type ProtectedInflator = Inflator & {
   parentShell: Inflator["parentShell"]
-  catchCallback: Inflator["catchCallback"]
-  suspenseCallback: Inflator["suspenseCallback"]
-  unsuspenseCallback: Inflator["unsuspenseCallback"]
+  catchCallback?: Inflator["catchCallback"]
+  suspenseCallback?: Inflator["suspenseCallback"]
+  unsuspenseCallback?: Inflator["unsuspenseCallback"]
 }
 
 
 interface ShellEvents {
   view: unknown
+  suspend: Promise<unknown>
 }
 
 namespace Proton {
@@ -57,7 +58,7 @@ namespace Proton {
     private lastSubject: unknown = {} // Ensures first subject to be different.
     private viewElement: unknown = null
 
-    constructor(inflator: Inflator, parent?: Shell) {
+    constructor(inflator: Inflator, private readonly parent?: Shell) {
       this.inflator = cloneInstance(inflator)
       this.inflatorProtected = this.inflator as never
       this.inflatorProtected.parentShell = this
@@ -95,6 +96,29 @@ namespace Proton {
     }
 
     catch<T>(catchCallback: (thrown: T) => void) { this.inflatorProtected.catchCallback = catchCallback as never }
+    async suspendOf<T>(value: Promise<T>): Promise<T> {
+      if (this.inflatorProtected.suspenseCallback == null) {
+        this.parent?.events.dispatch("suspend", value)
+        return await value
+      }
+
+      const suspenses = this.inflator.suspenses
+
+      if (suspenses.length === 0) this.inflatorProtected.suspenseCallback(value)
+      if (!suspenses.includes(value)) suspenses.push(value)
+
+      const length = suspenses.length
+
+
+      await Promise.all(suspenses)
+
+      if (length === suspenses.length) {
+        this.inflatorProtected.unsuspenseCallback?.(value)
+        this.inflator.suspenses = []
+      }
+
+      return await value
+    }
     /**
      * Calls passed `callback` just before the component is going to be suspended.
      * Batches any down tree suspensions together while there are some unresolved.
