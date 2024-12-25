@@ -9,12 +9,8 @@ import Price from "@/utils/price"
 import LoaderCover from "@/app/ui/Loader/LoaderCover"
 
 
-async function ProductPage(this: Proton.Shell) {
+function ProductPage(this: Proton.Shell) {
   const route = this.context.require(RouteContext)
-
-  this.view.set(<LoaderCover />)
-
-  await this.suspendOf(new Promise(r => setTimeout(r, 1000)))
 
   const id = route.$.pathname.$.groups.$.id.to(id => {
     if (id == null) throw new TypeError("This page can't be accessed without `id`")
@@ -22,17 +18,30 @@ async function ProductPage(this: Proton.Shell) {
     return id
   })
 
-  const product = id.to(id => {
-    const asd = STATIC_PRODUCTS.find(product => product.id === id)
-    if (asd == null) throw new TypeError("Product is not found of id " + id)
 
-    return asd
+
+  const product = id.to(id => {
+    const value = STATIC_PRODUCTS.find(product => product.id === id)
+    if (value == null) throw new TypeError("Product is not found of id " + id)
+
+    return value
   })
+  // const product = new Flow(null)
+  // productPromise.sets(async promise => {
+  //   this.view.set(<LoaderCover />)
+  //   const value = await promise
+
+  //   product.set(value)
+  //   this.view.reset()
+  // })
+
+  // this.view.set(<LoaderCover />)
+  // const product = await productPromise.await()
 
   return (
     <div className="product-page">
       <div className="product-page__banner">
-        <img className="product-page__image" src={product.$.preview} on={{ change: e => console.log(e) }} alt="Preview" loading="lazy" />
+        <img className="product-page__image" src={product.$.preview} alt="Preview" loading="lazy" />
       </div>
 
       <div className="product-page__info">
