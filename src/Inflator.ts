@@ -458,10 +458,12 @@ export class WebInflator extends Inflator {
       }
 
       if (currentView instanceof DocumentFragment) {
-        const anchor = currentView.fixedNodes[0]
+        const fixedNodes = currentView.fixedNodes.map(WebComponentPlaceholder.actualOf)
+        const anchor = fixedNodes[0]
 
-        anchor.parentElement.replaceChild(nextView, WebComponentPlaceholder.actualOf(anchor)!)
-        currentView.replaceChildren(...currentView.fixedNodes.map(node => node.shell.getView()))
+        anchor.parentElement.replaceChild(nextView, anchor)
+        currentView.replaceChildren(...fixedNodes)
+
         currentView = nextView
         currentView.shell = shell
 
