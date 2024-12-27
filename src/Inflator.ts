@@ -67,15 +67,13 @@ export abstract class Inflator {
         if (this.catchCallback != null) return void this.catchCallback(thrown)
 
         throw thrown
-      } finally {
-        if (shell.view.default == null) return
-
-        shell.view.set(shell.view.default)
-
-        requestAnimationFrame(() => {
-          shell.events.dispatch("mount", shell.getView())
-        })
       }
+
+      shell.view.set(shell.view.default)
+
+      requestAnimationFrame(() => {
+        shell.events.dispatch("mount", shell.getView())
+      })
     }
 
     asyncTry()
