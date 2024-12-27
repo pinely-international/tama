@@ -56,6 +56,7 @@ namespace Proton {
     private readonly events = new Emitter<ShellEvents>
 
     private lastSubject: unknown = {} // Ensures first subject to be different.
+    private previousView: unknown = null
     private viewElement: unknown = null
 
     constructor(inflator: Inflator, private readonly parent?: Shell) {
@@ -65,7 +66,6 @@ namespace Proton {
 
       this.context = new TreeContextAPI(parent?.context)
 
-      let previousView: unknown
       this.view = {
         set: subject => {
           if (subject === this.lastSubject) return
@@ -74,21 +74,21 @@ namespace Proton {
           this.lastSubject = subject
 
           try {
-            const object = this.inflator.inflate(subject)
+            const nextView = this.inflator.inflate(subject)
 
-            if (subject !== previousView) {
-              previousView = this.viewElement
+            if (nextView !== this.previousView) {
+              this.previousView = this.viewElement
             }
 
-            this.viewElement = object
-            this.events.dispatch("view", object)
+            this.viewElement = nextView
+            this.events.dispatch("view", nextView)
           } catch (thrown) {
             if (this.inflatorProtected.catchCallback != null) return void this.inflatorProtected.catchCallback(thrown)
 
             throw thrown
           }
         },
-        reset: () => this.view.set(previousView),
+        reset: () => this.view.set(this.previousView),
         detach: () => { },
         transit: subject => document.startViewTransition(() => this.view.set(subject)),
         default: null

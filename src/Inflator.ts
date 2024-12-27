@@ -447,7 +447,6 @@ export class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     const schedule = (nextView: Node) => {
-
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(nextView)
         currentView = nextView
@@ -457,7 +456,7 @@ export class WebInflator extends Inflator {
       }
 
       if (currentView instanceof DocumentFragment) {
-        const fixedNodes = currentView.fixedNodes.map(WebComponentPlaceholder.actualOf)
+        const fixedNodes = currentView.fixedNodes.map(WebComponentPlaceholder.actualOf).map(node => node.shell ? (node.shell.previousView.isConnected ? node.shell.previousView : node.shell.viewElement) : node)
         const anchor = fixedNodes[0]
 
         anchor.parentElement.replaceChild(nextView, anchor)
