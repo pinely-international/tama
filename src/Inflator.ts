@@ -456,11 +456,7 @@ export class WebInflator extends Inflator {
       }
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-        if (nextView instanceof DocumentFragment) {
-          currentView.replaceWith(...nextView.fixedNodes)
-        } else {
-          currentView.replaceWith(nextView)
-        }
+        currentView.replaceWith(nextView)
         currentView = nextView
 
         return
