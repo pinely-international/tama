@@ -114,7 +114,7 @@ class WebComponentPlaceholder extends Comment {
 
     if (shellView == null) return this
     if (shellView instanceof Node === false) return null
-    if (shellView.parentElement == null) return this
+    if (!shellView.isConnected) return this
 
     return WebComponentPlaceholder.actualOf(shellView)
   }
