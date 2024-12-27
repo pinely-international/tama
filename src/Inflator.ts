@@ -2,7 +2,6 @@ import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "./Accessor"
 import { isRecord } from "./helpers"
-import Null from "./Null"
 import { Subscriptable } from "./Observable"
 import Proton from "./Proton"
 import ProtonJSX from "./ProtonJSX"
@@ -114,7 +113,6 @@ class WebComponentPlaceholder extends Comment {
 
     if (shellView == null) return this
     if (shellView instanceof Node === false) return null
-    if (!shellView.isConnected) return this
 
     return WebComponentPlaceholder.actualOf(shellView)
   }
