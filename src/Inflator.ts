@@ -6,6 +6,7 @@ import Null from "./Null"
 import { Subscriptable } from "./Observable"
 import Proton from "./Proton"
 import ProtonJSX from "./ProtonJSX"
+import WebNodeBinding from "./WebElementBinding"
 
 
 
@@ -288,19 +289,19 @@ export class WebInflator extends Inflator {
       throw new TypeError(typeof intrinsic.type + " type of intrinsic element is not supported", { cause: { type: intrinsic.type } })
     }
 
-    const intrinsicInflated = this.inflateDocumentElement(intrinsic.type)
-    if (intrinsic.props == null) return intrinsicInflated
+    const inflated = this.inflateDocumentElement(intrinsic.type)
+    if (intrinsic.props == null) return inflated
 
-    if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, intrinsicInflated)
+    if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, inflated)
 
-    if (intrinsicInflated instanceof SVGElement) {
+    if (inflated instanceof SVGElement) {
       if (intrinsic.props.class != null) {
-        this.bindPropertyCallback(intrinsic.props.class, value => intrinsicInflated.setAttribute("class", String(value)))
+        this.bindPropertyCallback(intrinsic.props.class, value => inflated.setAttribute("class", String(value)))
       }
     }
 
-    if (intrinsic.type === "use") {
-      const svgUse = intrinsicInflated as SVGUseElement
+    if (inflated instanceof SVGUseElement) {
+      const svgUse = inflated as SVGUseElement
       if (typeof intrinsic.props.href === "string") svgUse.href.baseVal = intrinsic.props.href
       if (typeof intrinsic.props.href === "object") {
         const accessor = Accessor.extractObservable(intrinsic.props.href)
@@ -312,37 +313,20 @@ export class WebInflator extends Inflator {
         }
       }
     }
-    if (intrinsic.type === "input") {
-      const accessor = Accessor.extractObservable(intrinsic.props.value)
-      if (accessor != null) {
-        if (accessor.get) HTMLInputNativeSet.call(intrinsicInflated, accessor.get())
-        if (accessor.set) {
-          Object.defineProperty(intrinsicInflated, "value", {
-            get: () => HTMLInputNativeGet.call(intrinsicInflated),
-            set: value => {
-              HTMLInputNativeSet.call(intrinsicInflated, value)
-              accessor.set!(value)
-            }
-          })
-
-          intrinsicInflated.addEventListener("input", event => accessor.set!((event.currentTarget as HTMLInputElement).value))
-        }
-        accessor.subscribe?.(value => HTMLInputNativeSet.call(intrinsicInflated, accessor.get?.() ?? value))
-      }
+    if (inflated instanceof HTMLInputElement || inflated instanceof HTMLTextAreaElement) {
+      WebNodeBinding.dualSignalBind(inflated, "value", intrinsic.props.value, "input")
     }
 
-    if (intrinsic.props.on instanceof Object) {
+    if (isRecord(intrinsic.props.on)) {
       if (this.catchCallback == null)
         for (const key in intrinsic.props.on) {
-          intrinsicInflated.addEventListener(key, intrinsic.props.on[key])
+          inflated.addEventListener(key, intrinsic.props.on[key])
         }
       if (this.catchCallback != null)
         for (const key in intrinsic.props.on) {
-          intrinsicInflated.addEventListener(key, event => {
-            if (intrinsic.props?.on?.[key as never] == null) return
-
+          inflated.addEventListener(key, event => {
             try {
-              intrinsic.props.on[key as never].call(event.currentTarget, event)
+              intrinsic.props.on[key].call(event.currentTarget, event)
             } catch (thrown) {
               if (this.catchCallback != null) return void this.catchCallback(thrown)
 
@@ -368,16 +352,16 @@ export class WebInflator extends Inflator {
         if (key === "href") continue
       }
 
-      if (intrinsicInflated instanceof SVGElement) {
+      if (inflated instanceof SVGElement) {
         if (key === "class") continue
       }
 
-      this.bindProperty(key, value, intrinsicInflated)
+      this.bindProperty(key, value, inflated)
     }
 
 
     // Guard Rendering.
-    const mountPlaceholder = new WebMountPlaceholder(intrinsicInflated, intrinsic.type.toString())
+    const mountPlaceholder = new WebMountPlaceholder(inflated, intrinsic.type.toString())
 
     const guards = new Map<object, boolean>()
     const guardAccessors: (AccessorGet<unknown> & Subscriptable<unknown>)[] = []
@@ -398,10 +382,10 @@ export class WebInflator extends Inflator {
 
         if (guards.values().every(Boolean)) {
           if (!mountPlaceholder.isConnected) return
-          mountPlaceholder.replaceWith(intrinsicInflated)
+          mountPlaceholder.replaceWith(inflated)
         } else {
-          if (!intrinsicInflated.isConnected) return
-          intrinsicInflated.replaceWith(mountPlaceholder)
+          if (!inflated.isConnected) return
+          inflated.replaceWith(mountPlaceholder)
         }
       })
 
@@ -412,7 +396,7 @@ export class WebInflator extends Inflator {
     // `Mounted` property.
     if (intrinsic.props.mounted) {
       const accessor = Accessor.extractObservable(intrinsic.props.mounted)
-      if (accessor == null) return intrinsicInflated
+      if (accessor == null) return inflated
 
       guardAccessors.push(accessor as never)
 
@@ -421,20 +405,20 @@ export class WebInflator extends Inflator {
 
         if (mounted) {
           if (!mountPlaceholder.isConnected) return
-          mountPlaceholder.replaceWith(intrinsicInflated)
+          mountPlaceholder.replaceWith(inflated)
         } else {
-          if (!intrinsicInflated.isConnected) return
-          intrinsicInflated.replaceWith(mountPlaceholder)
+          if (!inflated.isConnected) return
+          inflated.replaceWith(mountPlaceholder)
         }
       })
 
-      if (accessor?.get == null) return intrinsicInflated
+      if (accessor?.get == null) return inflated
       if (!accessor.get()) return mountPlaceholder
     }
 
 
 
-    return intrinsicInflated
+    return inflated
   }
 
   protected bindProperty(key: keyof never, source: unknown, target: unknown): void {
@@ -456,52 +440,41 @@ export class WebInflator extends Inflator {
     if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get?.() ?? value))
   }
 
-  private getInitialView(view: unknown, comment: Comment): Node {
-    if (view instanceof DocumentFragment) return view
-    if (view instanceof Node && "replaceWith" in view) return view
-
-    return comment
-  }
-
   protected inflateJSXComponent(component: ProtonJSX.Component) {
     const shell = this.inflateComponent(component.type as never, component.props)
-
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
 
     let currentView: Node = componentPlaceholder
-
     let lastAnimationFrame = -1
 
+    const schedule = (nextView: Node) => {
+      currentView = currentView.shell.getView()
 
-    const schedule = (view: Node) => {
-      view = WebComponentPlaceholder.actualOf(view)!
-      currentView = WebComponentPlaceholder.actualOf(currentView)!
+      if (nextView.shell !== shell) {
+        throw new Error("Proton is poorly handling changing shells of a view")
+      }
+      nextView.shell = shell
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-        currentView.replaceWith(view)
-        currentView = view
+        if (nextView instanceof DocumentFragment) {
+          currentView.replaceWith(...nextView.fixedNodes)
+        } else {
+          currentView.replaceWith(nextView)
+        }
+        currentView = nextView
 
         return
       }
 
       if (currentView instanceof DocumentFragment) {
-        const anchorFirstChild = currentView.fixedNodes[0]
-        if (anchorFirstChild == null) throw new Error("Can't replace live element of fragment")
+        const anchor = currentView.fixedNodes[0]
 
-        const anchorFirstChildParent = anchorFirstChild instanceof Node && anchorFirstChild.parentElement
-        if (!anchorFirstChildParent) throw new Error("Can't replace live element of fragment")
+        anchor.parentElement.replaceChild(nextView, WebComponentPlaceholder.actualOf(anchor)!)
+        currentView.replaceChildren(...currentView.fixedNodes)
+        currentView = nextView
 
-        const oldView = currentView
-        const oldViewChildren = currentView.fixedNodes.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
-
-        currentView = view
-
-        // `anchorFirstChild` is meant to throw error if `null`.
-        anchorFirstChildParent.replaceChild(view, WebComponentPlaceholder.actualOf(anchorFirstChild)!)
-        oldView.replaceChildren(...oldViewChildren)
-
-        if (anchorFirstChild instanceof WebComponentPlaceholder) {
-          anchorFirstChild.shell.events.dispatch("unmount")
+        if (anchor instanceof WebComponentPlaceholder) {
+          anchor.shell.events.dispatch("unmount")
         }
 
         return
@@ -521,8 +494,3 @@ export class WebInflator extends Inflator {
     return componentPlaceholder
   }
 }
-
-
-const HTMLInputNativeValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!
-const HTMLInputNativeSet = HTMLInputNativeValue.set!
-const HTMLInputNativeGet = HTMLInputNativeValue.get!
