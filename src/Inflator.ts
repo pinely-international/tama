@@ -448,7 +448,7 @@ export class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     const schedule = (nextView: Node) => {
-      currentView = currentView.shell.getView()
+      // currentView = currentView.shell.getView()
 
       if (nextView.shell == null) nextView.shell = shell
       if (nextView.shell !== shell) {
