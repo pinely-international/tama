@@ -450,7 +450,7 @@ export class WebInflator extends Inflator {
     const schedule = (nextView: Node) => {
       currentView = currentView.shell.getView()
 
-      if (nextView == null) nextView.shell = shell
+      if (nextView.shell == null) nextView.shell = shell
       if (nextView.shell !== shell) {
         throw new Error("Proton is poorly handling changing shells of a view")
       }
