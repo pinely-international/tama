@@ -30,7 +30,7 @@ function App(this: Proton.Shell) {
       </header>
       <main>
         <NavRoute path="/"><span>123</span></NavRoute>
-        <NavRoute path="/terms">Terms</NavRoute>
+        <NavRoute path="/documentation">Documentation</NavRoute>
         <NavRoute path="/profile">
           <MiniProfile />
           <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
