@@ -112,6 +112,7 @@ class WebComponentPlaceholder extends Comment {
     const shellView = this.shell.getView()
 
     if (shellView == null) return this
+    if (shellView === this) return this
     if (shellView instanceof Node === false) return null
 
     return WebComponentPlaceholder.actualOf(shellView)
