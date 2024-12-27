@@ -448,16 +448,11 @@ export class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     const schedule = (nextView: Node) => {
-      // currentView = currentView.shell.getView()
-
-      if (nextView.shell == null) nextView.shell = shell
-      if (nextView.shell !== shell) {
-        throw new Error("Proton is poorly handling changing shells of a view")
-      }
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(nextView)
         currentView = nextView
+        currentView.shell = shell
 
         return
       }
@@ -466,8 +461,9 @@ export class WebInflator extends Inflator {
         const anchor = currentView.fixedNodes[0]
 
         anchor.parentElement.replaceChild(nextView, WebComponentPlaceholder.actualOf(anchor)!)
-        currentView.replaceChildren(...currentView.fixedNodes)
+        currentView.replaceChildren(...currentView.fixedNodes.map(node => node.shell.getView()))
         currentView = nextView
+        currentView.shell = shell
 
         if (anchor instanceof WebComponentPlaceholder) {
           anchor.shell.events.dispatch("unmount")
