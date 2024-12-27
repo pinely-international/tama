@@ -77,7 +77,7 @@ namespace Proton {
             const nextView = this.inflator.inflate(subject)
 
             if (nextView !== this.previousView) {
-              this.previousView = this.viewElement
+              this.previousView = this.viewElement ?? nextView
             }
 
             this.viewElement = nextView

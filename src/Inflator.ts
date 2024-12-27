@@ -456,7 +456,7 @@ export class WebInflator extends Inflator {
       }
 
       if (currentView instanceof DocumentFragment) {
-        const fixedNodes = currentView.fixedNodes.map(WebComponentPlaceholder.actualOf).map(node => node.shell ? (node.shell.previousView.isConnected ? node.shell.previousView : node.shell.viewElement) : node)
+        const fixedNodes = currentView.fixedNodes.map(WebComponentPlaceholder.actualOf).map(node => node.shell ? (node.shell.previousView?.isConnected ? node.shell.previousView : node.shell.viewElement) : node)
         const anchor = fixedNodes[0]
 
         anchor.parentElement.replaceChild(nextView, anchor)
