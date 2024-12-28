@@ -310,8 +310,15 @@ export class WebInflator extends Inflator {
         }
       }
     }
+    if (inflated instanceof HTMLInputElement) {
+      WebNodeBinding.dualSignalBind(inflated, "valueAsDate", intrinsic.props.valueAsDate, "input")
+      WebNodeBinding.dualSignalBind(inflated, "valueAsNumber", intrinsic.props.valueAsNumber, "input")
+    }
     if (inflated instanceof HTMLInputElement || inflated instanceof HTMLTextAreaElement) {
       WebNodeBinding.dualSignalBind(inflated, "value", intrinsic.props.value, "input")
+    }
+    if (inflated instanceof HTMLSelectElement) {
+      WebNodeBinding.dualSignalBind(inflated, "value", intrinsic.props.value, "change")
     }
 
     if (isRecord(intrinsic.props.on)) {
