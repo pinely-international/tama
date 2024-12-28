@@ -39,7 +39,12 @@ namespace WebNodeBinding {
 
       node.addEventListener(changeEventKey, event => accessor.set!((event.currentTarget as T)[key]))
     }
-    accessor.subscribe?.(value => descriptor.set!.call(node, accessor.get?.() ?? value))
+    accessor.subscribe?.(value => {
+      value = accessor.get?.() ?? value
+      if (value === descriptor.get!.call(node)) return
+
+      descriptor.set!.call(node, value)
+    })
   }
 
   export function asd(target, source, key: keyof never) {
