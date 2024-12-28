@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@denshya/proton",
-  "version": "0.1.161",
+  "version": "0.1.162",
   "private": false,
   "publishConfig": {
     "access": "restricted",
