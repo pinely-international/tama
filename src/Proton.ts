@@ -5,6 +5,7 @@ import Observable, { Subscriptable } from "./Observable"
 import ProtonJSX from "./ProtonJSX"
 import ProtonViewAPI from "./ProtonTreeAPI"
 import TreeContextAPI from "./TreeContextAPI"
+import { AccessorGet } from "./Accessor"
 
 declare global {
   namespace JSX {
@@ -198,12 +199,24 @@ namespace Proton {
     }
 
     indexOf(item: T): number { return this.array.indexOf(item) }
-    orderOf(item: T): Observable<number> {
-      const next = () => this.nonNullableArray().indexOf(item)
+    orderOf(index: number): Observable<number> & AccessorGet<number> {
+      const next = () => {
+        let order = -1
+
+        for (let itemIndex = 0; itemIndex <= index; itemIndex++) {
+          const item = this.array[itemIndex]
+          if (item !== Null.OBJECT) order += 1
+        }
+
+        if (order === -1) {
+          throw new ReferenceError()
+        }
+        return order
+      }
 
       const indexState = new Signal(next())
-      this.on("null").subscribe(() => indexState.set(next))
-      this.on("replace").subscribe(() => indexState.set(next))
+      this.on("null").subscribe(() => indexState.set(next()))
+      this.on("replace").subscribe(() => indexState.set(next()))
       return indexState
     }
 
