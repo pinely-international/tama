@@ -145,7 +145,7 @@ namespace Proton {
     private array: T[]
     private readonly events = new Emitter<ProtonIndexEvents<T>>
 
-    constructor(init: Iterable<T> | Index<T> | T) {
+    constructor(init: Iterable<T> | (Observable<Iterable<T>> & AccessorGet<Iterable<T>>) | Index<T> | T) {
       if (init instanceof Index) {
         this.array = [...init.array]
         return
@@ -153,6 +153,12 @@ namespace Proton {
 
       if (init instanceof Object && globalThis.Symbol.iterator in init) {
         this.array = [...init]
+        return
+      }
+
+      if (init instanceof Object && globalThis.Symbol.subscribe in init) {
+        this.array = [...init.get()]
+        init[globalThis.Symbol.subscribe](next => this.replace([...next]))
         return
       }
 
