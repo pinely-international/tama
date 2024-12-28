@@ -289,138 +289,141 @@ export class WebInflator extends Inflator {
     const inflated = this.inflateDocumentElement(intrinsic.type)
     if (intrinsic.props == null) return inflated
 
-    if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, inflated)
+    try {
 
-    if (inflated instanceof SVGElement) {
-      if (intrinsic.props.class != null) {
-        this.bindPropertyCallback(intrinsic.props.class, value => inflated.setAttribute("class", String(value)))
-      }
-    }
-
-    if (inflated instanceof SVGUseElement) {
-      const svgUse = inflated as SVGUseElement
-      if (typeof intrinsic.props.href === "string") svgUse.href.baseVal = intrinsic.props.href
-      if (typeof intrinsic.props.href === "object") {
-        const accessor = Accessor.extractObservable(intrinsic.props.href)
-        if (accessor != null) {
-          svgUse.href.baseVal = String(accessor.get?.() ?? "")
-          accessor.subscribe?.(value => svgUse.href.baseVal = String(accessor.get?.() ?? value))
-        } else {
-          svgUse.href.baseVal = intrinsic.props.href.baseVal
-        }
-      }
-    }
-    if (inflated instanceof HTMLInputElement) {
-      WebNodeBinding.dualSignalBind(inflated, "valueAsDate", intrinsic.props.valueAsDate, "input")
-      WebNodeBinding.dualSignalBind(inflated, "valueAsNumber", intrinsic.props.valueAsNumber, "input")
-    }
-    if (inflated instanceof HTMLInputElement || inflated instanceof HTMLTextAreaElement) {
-      WebNodeBinding.dualSignalBind(inflated, "value", intrinsic.props.value, "input")
-    }
-    if (inflated instanceof HTMLSelectElement) {
-      WebNodeBinding.dualSignalBind(inflated, "value", intrinsic.props.value, "change")
-    }
-
-    if (isRecord(intrinsic.props.on)) {
-      if (this.catchCallback == null)
-        for (const key in intrinsic.props.on) {
-          inflated.addEventListener(key, intrinsic.props.on[key])
-        }
-      if (this.catchCallback != null)
-        for (const key in intrinsic.props.on) {
-          inflated.addEventListener(key, event => {
-            try {
-              intrinsic.props.on[key].call(event.currentTarget, event)
-            } catch (thrown) {
-              if (this.catchCallback != null) return void this.catchCallback(thrown)
-
-              throw thrown
-            }
-          })
-        }
-    }
-
-    const properties = Object.entries(intrinsic.props)
-
-    for (const [key, value] of properties) {
-      if (key === "style") continue
-      if (key === "on") continue
-      if (key === "mounted") continue
-      if (key === "children") continue
-
-      if (intrinsic.type === "input") {
-        if (key === "value") continue
-      }
-
-      if (intrinsic.type === "use") {
-        if (key === "href") continue
-      }
+      if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, inflated)
 
       if (inflated instanceof SVGElement) {
-        if (key === "class") continue
+        if (intrinsic.props.class != null) {
+          this.bindPropertyCallback(intrinsic.props.class, value => inflated.setAttribute("class", String(value)))
+        }
       }
 
-      this.bindProperty(key, value, inflated)
-    }
-
-
-    // Guard Rendering.
-    const mountPlaceholder = new WebMountPlaceholder(inflated, intrinsic.type.toString())
-
-    const guards = new Map<object, boolean>()
-    const guardAccessors: (AccessorGet<unknown> & Subscriptable<unknown>)[] = []
-
-    for (const [, property] of properties) {
-      if (property instanceof Object === false) continue
-      if ("valid" in property === false) continue
-      if (property.valid instanceof Function === false) continue
-
-      const accessor = Accessor.extractObservable(property)
-      if (accessor == null) continue
-
-      guardAccessors.push(accessor as never)
-      accessor.subscribe?.(value => {
-        // @ts-expect-error should be fine actually.
-        guards.set(accessor, property.valid(value))
-        value = accessor.get?.() ?? value
-
-        if (guards.values().every(Boolean)) {
-          if (!mountPlaceholder.isConnected) return
-          mountPlaceholder.replaceWith(inflated)
-        } else {
-          if (!inflated.isConnected) return
-          inflated.replaceWith(mountPlaceholder)
+      if (inflated instanceof SVGUseElement) {
+        const svgUse = inflated as SVGUseElement
+        if (typeof intrinsic.props.href === "string") svgUse.href.baseVal = intrinsic.props.href
+        if (typeof intrinsic.props.href === "object") {
+          const accessor = Accessor.extractObservable(intrinsic.props.href)
+          if (accessor != null) {
+            svgUse.href.baseVal = String(accessor.get?.() ?? "")
+            accessor.subscribe?.(value => svgUse.href.baseVal = String(accessor.get?.() ?? value))
+          } else {
+            svgUse.href.baseVal = intrinsic.props.href.baseVal
+          }
         }
-      })
+      }
+      if (inflated instanceof HTMLInputElement) {
+        WebNodeBinding.dualSignalBind(inflated, "valueAsDate", intrinsic.props.valueAsDate, "input")
+        WebNodeBinding.dualSignalBind(inflated, "valueAsNumber", intrinsic.props.valueAsNumber, "input")
+      }
+      if (inflated instanceof HTMLInputElement || inflated instanceof HTMLTextAreaElement) {
+        WebNodeBinding.dualSignalBind(inflated, "value", intrinsic.props.value, "input")
+      }
+      if (inflated instanceof HTMLSelectElement) {
+        WebNodeBinding.dualSignalBind(inflated, "value", intrinsic.props.value, "change")
+      }
 
-      const value = accessor.get?.()
-      if (property.valid(value) === false) return mountPlaceholder
-    }
+      if (isRecord(intrinsic.props.on)) {
+        if (this.catchCallback == null)
+          for (const key in intrinsic.props.on) {
+            inflated.addEventListener(key, intrinsic.props.on[key])
+          }
+        if (this.catchCallback != null)
+          for (const key in intrinsic.props.on) {
+            inflated.addEventListener(key, event => {
+              try {
+                intrinsic.props.on[key].call(event.currentTarget, event)
+              } catch (thrown) {
+                if (this.catchCallback != null) return void this.catchCallback(thrown)
 
-    // `Mounted` property.
-    if (intrinsic.props.mounted) {
-      const accessor = Accessor.extractObservable(intrinsic.props.mounted)
-      if (accessor == null) return inflated
+                throw thrown
+              }
+            })
+          }
+      }
 
-      guardAccessors.push(accessor as never)
+      const properties = Object.entries(intrinsic.props)
 
-      accessor.subscribe?.(mounted => {
-        mounted = accessor.get?.() ?? mounted
+      for (const [key, value] of properties) {
+        if (key === "style") continue
+        if (key === "on") continue
+        if (key === "mounted") continue
+        if (key === "children") continue
 
-        if (mounted) {
-          if (!mountPlaceholder.isConnected) return
-          mountPlaceholder.replaceWith(inflated)
-        } else {
-          if (!inflated.isConnected) return
-          inflated.replaceWith(mountPlaceholder)
+        if (intrinsic.type === "input") {
+          if (key === "value") continue
         }
-      })
 
-      if (accessor?.get == null) return inflated
-      if (!accessor.get()) return mountPlaceholder
+        if (intrinsic.type === "use") {
+          if (key === "href") continue
+        }
+
+        if (inflated instanceof SVGElement) {
+          if (key === "class") continue
+        }
+
+        this.bindProperty(key, value, inflated)
+      }
+
+
+      // Guard Rendering.
+      const mountPlaceholder = new WebMountPlaceholder(inflated, intrinsic.type.toString())
+
+      const guards = new Map<object, boolean>()
+      const guardAccessors: (AccessorGet<unknown> & Subscriptable<unknown>)[] = []
+
+      for (const [, property] of properties) {
+        if (property instanceof Object === false) continue
+        if ("valid" in property === false) continue
+        if (property.valid instanceof Function === false) continue
+
+        const accessor = Accessor.extractObservable(property)
+        if (accessor == null) continue
+
+        guardAccessors.push(accessor as never)
+        accessor.subscribe?.(value => {
+          // @ts-expect-error should be fine actually.
+          guards.set(accessor, property.valid(value))
+          value = accessor.get?.() ?? value
+
+          if (guards.values().every(Boolean)) {
+            if (!mountPlaceholder.isConnected) return
+            mountPlaceholder.replaceWith(inflated)
+          } else {
+            if (!inflated.isConnected) return
+            inflated.replaceWith(mountPlaceholder)
+          }
+        })
+
+        const value = accessor.get?.()
+        if (property.valid(value) === false) return mountPlaceholder
+      }
+
+      // `Mounted` property.
+      if (intrinsic.props.mounted) {
+        const accessor = Accessor.extractObservable(intrinsic.props.mounted)
+        if (accessor == null) return inflated
+
+        guardAccessors.push(accessor as never)
+
+        accessor.subscribe?.(mounted => {
+          mounted = accessor.get?.() ?? mounted
+
+          if (mounted) {
+            if (!mountPlaceholder.isConnected) return
+            mountPlaceholder.replaceWith(inflated)
+          } else {
+            if (!inflated.isConnected) return
+            inflated.replaceWith(mountPlaceholder)
+          }
+        })
+
+        if (accessor?.get == null) return inflated
+        if (!accessor.get()) return mountPlaceholder
+      }
+    } catch (error) {
+      console.error("Element props binding failed -> ", error)
     }
-
-
 
     return inflated
   }
