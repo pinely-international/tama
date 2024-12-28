@@ -8,7 +8,7 @@ function getNativeDescriptor(instance: Node, property: keyof never): PropertyDes
   }
 
   if (instance.constructor.name in nativeDescriptors === false) {
-    const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, property)
+    const descriptor = Object.getOwnPropertyDescriptor(instance.constructor.prototype, property)
     if (descriptor == null) {
       throw new TypeError("This instance constructor does provide a property descriptor for: " + String(property), { cause: { property } })
     }
