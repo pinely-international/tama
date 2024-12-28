@@ -313,6 +313,8 @@ export class WebInflator extends Inflator {
         }
       }
       if (inflated instanceof HTMLInputElement) {
+        this.bindProperty("type", intrinsic.props.type, inflated)
+
         WebNodeBinding.dualSignalBind(inflated, "valueAsDate", intrinsic.props.valueAsDate, "input")
         WebNodeBinding.dualSignalBind(inflated, "valueAsNumber", intrinsic.props.valueAsNumber, "input")
       }
@@ -351,6 +353,8 @@ export class WebInflator extends Inflator {
         if (key === "children") continue
 
         if (inflated instanceof HTMLInputElement) {
+          if (key === "type") continue
+
           if (key === "value") continue
           if (key === "valueAsDate") continue
           if (key === "valueAsNumber") continue
