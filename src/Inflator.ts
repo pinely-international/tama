@@ -350,11 +350,17 @@ export class WebInflator extends Inflator {
         if (key === "mounted") continue
         if (key === "children") continue
 
-        if (intrinsic.type === "input") {
+        if (inflated instanceof HTMLInputElement) {
+          if (key === "value") continue
+          if (key === "valueAsDate") continue
+          if (key === "valueAsNumber") continue
+        }
+
+        if (inflated instanceof HTMLSelectElement) {
           if (key === "value") continue
         }
 
-        if (intrinsic.type === "use") {
+        if (inflated instanceof SVGUseElement) {
           if (key === "href") continue
         }
 
