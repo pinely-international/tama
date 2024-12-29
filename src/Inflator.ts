@@ -438,13 +438,13 @@ export class WebInflator extends Inflator {
     return inflated
   }
 
-  protected bindProperty(key: keyof never, source: unknown, target: unknown): void {
+  protected bindProperty(key: keyof never, value: unknown, target: unknown): void {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.bindPropertyCallback(source, value => (target as any)[key] = value)
+    this.bindPropertyCallback(value, value => (target as any)[key] = value)
   }
 
   protected bindPropertyCallback(source: unknown, targetBindCallback: (value: unknown) => void): void {
-    if (typeof source === "string") {
+    if (typeof source === "string" || typeof source === "number" || typeof source === "boolean" || typeof source === "bigint") {
       targetBindCallback(source)
       return
     }
