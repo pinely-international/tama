@@ -35,7 +35,8 @@ function ProductPage(this: Proton.Shell) {
   //   this.view.reset()
   // })
 
-  // this.view.set(<LoaderCover />)
+  this.view.set(<LoaderCover />)
+  this.suspendOf(new Promise(r => setTimeout(r, 1000)))
   // const product = await productPromise.await()
 
   return (
