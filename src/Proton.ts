@@ -86,13 +86,13 @@ namespace Proton {
       }
     }
 
-    protected declare catchCallback?: (thrown: unknown) => void
-    protected declare suspenseCallback?: (promise: Promise<unknown>) => void
-    protected declare unsuspenseCallback?: (promise: Promise<unknown>) => void
+    private declare catchCallback?: (thrown: unknown) => void
+    private declare suspenseCallback?: (promise: Promise<unknown>) => void
+    private declare unsuspenseCallback?: (promise: Promise<unknown>) => void
 
     private suspenses: Promise<unknown>[] = []
 
-    protected async evaluate(constructor: Function, props?: {}): Promise<void> {
+    private async evaluate(constructor: Function, props?: {}): Promise<void> {
       constructor = await resolveShellConstructorModule(constructor)
 
       try {
@@ -283,20 +283,12 @@ namespace Proton {
 
 export default Proton
 
-function cloneInstance<T>(origin: T): T {
-  return Object.assign(Object.create(Object.getPrototypeOf(origin)), origin)
-}
-
 
 interface ProtonIndexEvents<T = unknown> {
   push: T[]
   null: number
   replace: T[]
 }
-
-
-// export type ProtonShellConstructor = (this: Proton.Shell, props?: {}) => unknown
-
 
 interface Module<T> {
   default: T
