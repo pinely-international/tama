@@ -14,8 +14,12 @@ export default defineConfig({
   build: {
     target: false,
     outDir: "build",
+
+    minify: false,
     sourcemap: true,
     emptyOutDir: true,
+    modulePreload: false,
+
     lib: {
       entry: [path.resolve(__dirname, "./src/index.ts"), path.resolve(__dirname, "./src/jsx-runtime.ts")],
       formats: ["es"]

@@ -31,9 +31,6 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "build",
-    "jsx": "react",
-    "jsxFactory": "Proton.JSX.Element",
-    "jsxFragmentFactory": "Proton.JSX.Fragment",
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,

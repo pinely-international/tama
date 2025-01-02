@@ -27,7 +27,7 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "peerDependencies": {
-    "type-fest": "4.x.x",
+    "type-fest": "^4.31.0",
     "@denshya/flow": "^0.1.3"
   },
   "devDependencies": {
@@ -38,7 +38,7 @@
     "eslint-plugin-unused-imports": "^3.0.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
-    "vite": "^4.5.0",
+    "vite": "^6.0.6",
     "vite-bundle-visualizer": "^1.2.1",
     "vite-plugin-externalize-deps": "^0.8.0"
   }
