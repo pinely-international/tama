@@ -158,10 +158,13 @@ export class WebInflator extends Inflator {
     const fragment = new DocumentFragment
 
     const inflateItem = (item: unknown) => item !== indexObject.EMPTY ? this.inflate(item) : item
-    let inflatedIndexedItems: unknown[] = indexObject.array.map(inflateItem)
+    // @ts-expect-error
+    const items = indexObject.array
+    let inflatedIndexedItems: unknown[] = items.map(inflateItem)
     const disconnectInflated = (item: unknown) => {
       const node = WebComponentPlaceholder.actualOf(item)
       if (node instanceof DocumentFragment) {
+        // @ts-expect-error
         node.fixedNodes.forEach(disconnectInflated)
         return
       }
@@ -233,6 +236,7 @@ export class WebInflator extends Inflator {
     jsx.childrenExtrinsic?.forEach(appendChildObject)
 
     if (node instanceof DocumentFragment) {
+      // @ts-expect-error
       node.fixedNodes = [...node.childNodes]
     }
 
@@ -294,17 +298,20 @@ export class WebInflator extends Inflator {
       }
 
       if (isRecord(intrinsic.props.on)) {
-        if (this.shell.catchCallback == null)
+        // @ts-expect-error
+        const catchCallback = this.shell.catchCallback
+
+        if (catchCallback == null)
           for (const key in intrinsic.props.on) {
             inflated.addEventListener(key, intrinsic.props.on[key])
           }
-        if (this.shell.catchCallback != null)
+        if (catchCallback != null)
           for (const key in intrinsic.props.on) {
             inflated.addEventListener(key, event => {
               try {
                 intrinsic.props.on[key].call(event.currentTarget, event)
               } catch (thrown) {
-                if (this.shell.catchCallback != null) return void this.shell.catchCallback(thrown)
+                if (catchCallback != null) return void catchCallback(thrown)
 
                 throw thrown
               }
@@ -436,22 +443,30 @@ export class WebInflator extends Inflator {
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(nextView)
         currentView = nextView
-        // currentView.shell = shell
 
         return
       }
 
       if (currentView instanceof DocumentFragment) {
-        const fixedNodes = currentView.fixedNodes.map(WebComponentPlaceholder.actualOf).map(node => node.shell ? (node.shell.previousView?.isConnected ? node.shell.previousView : node.shell.viewElement) : node)
+        // @ts-expect-error
+        const f = currentView.fixedNodes as Node[]
+        const fixedNodes = f.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
+        // .map(node => {
+        //   if (node.shell) {
+        //     return (node.shell.previousView?.isConnected ? node.shell.previousView : node.shell.viewElement)
+        //   }
+        //   return node
+        // })
+
         const anchor = fixedNodes[0]
 
-        anchor.parentElement.replaceChild(nextView, anchor)
+        anchor.parentElement!.replaceChild(nextView, anchor) // Should throw if no parent.
         currentView.replaceChildren(...fixedNodes)
 
         currentView = nextView
-        // currentView.shell = shell
 
         if (anchor instanceof WebComponentPlaceholder) {
+          // @ts-expect-error
           anchor.shell.events.dispatch("unmount")
         }
 
@@ -469,6 +484,7 @@ export class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
 
+    // @ts-expect-error
     shell.evaluate(component.type, component.props)
 
     return componentPlaceholder
