@@ -2,7 +2,7 @@ import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "./Accessor"
 import { isRecord } from "./helpers"
-import { Subscriptable } from "./Observable"
+import Observable, { Subscriptable } from "./Observable"
 import Proton from "./Proton"
 import ProtonJSX from "./ProtonJSX"
 import WebNodeBinding from "./WebElementBinding"
@@ -10,6 +10,10 @@ import WebNodeBinding from "./WebElementBinding"
 
 
 export abstract class Inflator {
+  static clone(inflator: Inflator, shell: Proton.Shell): Inflator {
+    return inflator.clone(shell)
+  }
+
   public inflate(subject: unknown): unknown {
     if (subject == null) return subject
 
@@ -26,60 +30,12 @@ export abstract class Inflator {
     }
   }
 
+  protected abstract clone(shell: Proton.Shell): Inflator
+
   protected abstract inflatePrimitive(primitive: Primitive): unknown
-  protected abstract inflateFragment(): unknown
+  // protected abstract inflateFragment(): unknown
 
-  protected declare parentShell: Proton.Shell
-  protected declare catchCallback?: (thrown: unknown) => void
-  protected declare suspenseCallback?: (promise: Promise<unknown>) => void
-  protected declare unsuspenseCallback?: (promise: Promise<unknown>) => void
-
-  private suspenses: Promise<unknown>[] = []
-
-  protected inflateComponent(constructor: <T extends Proton.Shell>(this: T, props?: {}) => T, props?: {}) {
-    const shell = new Proton.Shell(this, this.parentShell)
-
-    const asyncTry = async () => {
-      constructor = constructor instanceof Promise ? await constructor : constructor
-      constructor = constructor.default instanceof Function ? constructor.default : constructor
-
-      try {
-        shell.view.default = await Promise.resolve(constructor.call(shell, props))
-      } catch (thrown) {
-        if (this.suspenseCallback != null && thrown instanceof Promise) {
-          if (this.suspenses.length === 0) this.suspenseCallback(thrown)
-          if (!this.suspenses.includes(thrown)) this.suspenses.push(thrown)
-
-          const length = this.suspenses.length
-
-
-          await Promise.all(this.suspenses)
-          shell.view.default = await constructor.call(shell, props)
-
-
-          if (length === this.suspenses.length) {
-            this.unsuspenseCallback?.(thrown)
-            this.suspenses = []
-          }
-
-          return
-        }
-        if (this.catchCallback != null) return void this.catchCallback(thrown)
-
-        throw thrown
-      }
-
-      shell.view.set(shell.view.default)
-
-      requestAnimationFrame(() => {
-        shell.events.dispatch("mount", shell.getView())
-      })
-    }
-
-    asyncTry()
-
-    return shell
-  }
+  protected declare shell: Proton.Shell
 }
 
 class WebMountPlaceholder extends Comment {
@@ -147,8 +103,23 @@ const isNode = (value: unknown): value is Node => {
   return false
 }
 
+
+type InflateResult<T> =
+  T extends Node ? T :
+  T extends JSX.Element ? (Element | WebComponentPlaceholder) :
+  T extends Observable<unknown> ? Text :
+  T extends Primitive ? Text :
+  Text
+
 export class WebInflator extends Inflator {
-  public inflate<T>(subject: T): T extends Node ? T : (T extends JSX.Element ? (Element | Comment) : unknown) {
+  protected clone(shell: Proton.Shell): Inflator {
+    const inflator = new WebInflator
+    inflator.shell = shell
+
+    return inflator
+  }
+
+  public inflate<T>(subject: T): InflateResult<T> {
     if (subject instanceof Node) return subject as never
     if (subject instanceof ProtonJSX.Node) return this.inflateJSXDeeply(subject) as never
     if (subject instanceof Object && subject[Proton.Symbol.index as keyof object] != null) return this.inflateIndexed(subject as never) as never
@@ -198,7 +169,6 @@ export class WebInflator extends Inflator {
       node?.parentNode?.removeChild(node)
     }
 
-    fragment.indexed = inflatedIndexedItems
     fragment.replaceChildren(...inflatedIndexedItems.filter(isNode))
     fragment.append(comment)
 
@@ -221,7 +191,6 @@ export class WebInflator extends Inflator {
 
       const newInflatedItems = newItems.map(inflateItem)
       inflatedIndexedItems = newInflatedItems
-      fragment.indexed = inflatedIndexedItems
 
       fragment.replaceChildren(...newInflatedItems.filter(isNode))
       comment.before(fragment)
@@ -290,7 +259,6 @@ export class WebInflator extends Inflator {
     if (intrinsic.props == null) return inflated
 
     try {
-
       if ("style" in intrinsic.props) this.bindStyle(intrinsic.props.style, inflated)
 
       if (inflated instanceof SVGElement) {
@@ -326,17 +294,17 @@ export class WebInflator extends Inflator {
       }
 
       if (isRecord(intrinsic.props.on)) {
-        if (this.catchCallback == null)
+        if (this.shell.catchCallback == null)
           for (const key in intrinsic.props.on) {
             inflated.addEventListener(key, intrinsic.props.on[key])
           }
-        if (this.catchCallback != null)
+        if (this.shell.catchCallback != null)
           for (const key in intrinsic.props.on) {
             inflated.addEventListener(key, event => {
               try {
                 intrinsic.props.on[key].call(event.currentTarget, event)
               } catch (thrown) {
-                if (this.catchCallback != null) return void this.catchCallback(thrown)
+                if (this.shell.catchCallback != null) return void this.shell.catchCallback(thrown)
 
                 throw thrown
               }
@@ -458,7 +426,7 @@ export class WebInflator extends Inflator {
   }
 
   protected inflateJSXComponent(component: ProtonJSX.Component) {
-    const shell = this.inflateComponent(component.type as never, component.props)
+    const shell = new Proton.Shell(this, this.shell)
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
 
     let currentView: Node = componentPlaceholder
@@ -468,7 +436,7 @@ export class WebInflator extends Inflator {
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(nextView)
         currentView = nextView
-        currentView.shell = shell
+        // currentView.shell = shell
 
         return
       }
@@ -481,7 +449,7 @@ export class WebInflator extends Inflator {
         currentView.replaceChildren(...fixedNodes)
 
         currentView = nextView
-        currentView.shell = shell
+        // currentView.shell = shell
 
         if (anchor instanceof WebComponentPlaceholder) {
           anchor.shell.events.dispatch("unmount")
@@ -500,6 +468,8 @@ export class WebInflator extends Inflator {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
+
+    shell.evaluate(component.type, component.props)
 
     return componentPlaceholder
   }

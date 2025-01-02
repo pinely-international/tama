@@ -42,18 +42,18 @@ namespace WebNodeBinding {
     accessor.subscribe?.(value => descriptor.set!.call(node, accessor.get?.() ?? value))
   }
 
-  export function asd(target, source, key: keyof never) {
-    if (typeof source[key] === "string") target[key].baseVal = source[key]
-    if (typeof source[key] === "object") {
-      const accessor = Accessor.extractObservable(source[key])
-      if (accessor != null) {
-        target[key].baseVal = String(accessor.get?.() ?? "")
-        accessor.subscribe?.(value => target[key].baseVal = String(accessor.get?.() ?? value))
-      } else {
-        target[key].baseVal = source[key].baseVal
-      }
-    }
-  }
+  // export function asd(target, source, key: keyof never) {
+  //   if (typeof source[key] === "string") target[key].baseVal = source[key]
+  //   if (typeof source[key] === "object") {
+  //     const accessor = Accessor.extractObservable(source[key])
+  //     if (accessor != null) {
+  //       target[key].baseVal = String(accessor.get?.() ?? "")
+  //       accessor.subscribe?.(value => target[key].baseVal = String(accessor.get?.() ?? value))
+  //     } else {
+  //       target[key].baseVal = source[key].baseVal
+  //     }
+  //   }
+  // }
 }
 
 export default WebNodeBinding

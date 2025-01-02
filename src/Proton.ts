@@ -16,18 +16,12 @@ declare global {
   }
 }
 
-
-type ProtectedInflator = Inflator & {
-  parentShell: Inflator["parentShell"]
-  catchCallback?: Inflator["catchCallback"]
-  suspenseCallback?: Inflator["suspenseCallback"]
-  unsuspenseCallback?: Inflator["unsuspenseCallback"]
-}
-
-
 interface ShellEvents {
   view: unknown
   suspend: Promise<unknown>
+
+  mount: unknown
+  unmount: void
 }
 
 namespace Proton {
@@ -53,7 +47,6 @@ namespace Proton {
     public readonly inflator: Inflator
     public readonly context: TreeContextAPI
 
-    private readonly inflatorProtected: ProtectedInflator
     private readonly events = new Emitter<ShellEvents>
 
     private lastSubject: unknown = {} // Ensures first subject to be different.
@@ -61,10 +54,7 @@ namespace Proton {
     private viewElement: unknown = null
 
     constructor(inflator: Inflator, private readonly parent?: Shell) {
-      this.inflator = cloneInstance(inflator)
-      this.inflatorProtected = this.inflator as never
-      this.inflatorProtected.parentShell = this
-
+      this.inflator = Inflator.clone(inflator, this)
       this.context = new TreeContextAPI(parent?.context)
 
       this.view = {
@@ -84,7 +74,7 @@ namespace Proton {
             this.viewElement = nextView
             this.events.dispatch("view", nextView)
           } catch (thrown) {
-            if (this.inflatorProtected.catchCallback != null) return void this.inflatorProtected.catchCallback(thrown)
+            if (this.catchCallback != null) return void this.catchCallback(thrown)
 
             throw thrown
           }
@@ -96,16 +86,58 @@ namespace Proton {
       }
     }
 
-    catch<T>(catchCallback: (thrown: T) => void) { this.inflatorProtected.catchCallback = catchCallback as never }
+    protected declare catchCallback?: (thrown: unknown) => void
+    protected declare suspenseCallback?: (promise: Promise<unknown>) => void
+    protected declare unsuspenseCallback?: (promise: Promise<unknown>) => void
+
+    private suspenses: Promise<unknown>[] = []
+
+    protected async evaluate(constructor: Function, props?: {}): Promise<void> {
+      constructor = await resolveShellConstructorModule(constructor)
+
+      try {
+        this.view.default = await Promise.resolve(constructor.call(this, props))
+      } catch (thrown) {
+        if (this.suspenseCallback != null && thrown instanceof Promise) {
+          if (this.suspenses.length === 0) this.suspenseCallback(thrown)
+          if (!this.suspenses.includes(thrown)) this.suspenses.push(thrown)
+
+          const length = this.suspenses.length
+
+
+          await Promise.all(this.suspenses)
+          this.view.default = await constructor.call(this, props)
+
+
+          if (length === this.suspenses.length) {
+            this.unsuspenseCallback?.(thrown)
+            this.suspenses = []
+          }
+
+          return
+        }
+        if (this.catchCallback != null) return void this.catchCallback(thrown)
+
+        throw thrown
+      }
+
+      this.view.set(this.view.default)
+
+      requestAnimationFrame(() => { // Scheduling should not be here.
+        this.events.dispatch("mount", this.getView())
+      })
+    }
+
+    catch<T>(catchCallback: (thrown: T) => void) { this.catchCallback = catchCallback as never }
     async suspendOf<T>(value: Promise<T>): Promise<T> {
-      if (this.inflatorProtected.suspenseCallback == null) {
+      if (this.suspenseCallback == null) {
         this.parent?.events.dispatch("suspend", value)
         return await value
       }
 
-      const suspenses = this.inflator.suspenses
+      const suspenses = this.suspenses
 
-      if (suspenses.length === 0) this.inflatorProtected.suspenseCallback(value)
+      if (suspenses.length === 0) this.suspenseCallback(value)
       if (!suspenses.includes(value)) suspenses.push(value)
 
       const length = suspenses.length
@@ -114,8 +146,8 @@ namespace Proton {
       await Promise.all(suspenses)
 
       if (length === suspenses.length) {
-        this.inflatorProtected.unsuspenseCallback?.(value)
-        this.inflator.suspenses = []
+        this.unsuspenseCallback?.(value)
+        this.suspenses = []
       }
 
       return await value
@@ -128,15 +160,15 @@ namespace Proton {
      *
      * When the component is unsuspended, all the effects applied in the `callback` are reverted by a built-in mechanism.
      */
-    suspense<T = void>(callback: (result: T) => void) { this.inflatorProtected.suspenseCallback = callback as never }
-    unsuspense<T = void>(callback: (result: T) => void) { this.inflatorProtected.unsuspenseCallback = callback as never }
+    suspense<T = void>(callback: (result: T) => void) { this.suspenseCallback = callback as never }
+    unsuspense<T = void>(callback: (result: T) => void) { this.unsuspenseCallback = callback as never }
 
     getView() { return this.viewElement }
     on<K extends keyof ShellEvents>(event: K): Subscriptable<ShellEvents[K]> { return this.events.observe(event) }
 
     use(subscribe: (view: unknown) => void | (() => void)) {
       this.events.observe("mount").subscribe(() => {
-        const unsubscribe = subscribe(this.viewElement)
+        const unsubscribe = subscribe(this.viewElement) ?? Null.FUNCTION
         this.events.once("unmount", unsubscribe)
       })
     }
@@ -256,16 +288,23 @@ function cloneInstance<T>(origin: T): T {
 }
 
 
-
-// abstract class ProtonIndex {
-//   abstract array: unknown[]
-//   abstract on<K extends keyof ProtonIndexEvents>(event: K): Subscriptable<ProtonIndexEvents[K]>
-
-//   readonly [Proton.Symbol.index] = this
-//   readonly EMPTY = Null.OBJECT
-// }
 interface ProtonIndexEvents<T = unknown> {
   push: T[]
   null: number
   replace: T[]
+}
+
+
+// export type ProtonShellConstructor = (this: Proton.Shell, props?: {}) => unknown
+
+
+interface Module<T> {
+  default: T
+}
+
+async function resolveShellConstructorModule(moduleOrConstructor: Promise<Module<Function>> | Module<Function> | Function): Promise<Function> {
+  if (moduleOrConstructor instanceof Function) return moduleOrConstructor
+  if (moduleOrConstructor instanceof Promise) return (await moduleOrConstructor).default
+
+  return moduleOrConstructor.default
 }
