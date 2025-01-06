@@ -8,6 +8,7 @@
       "ESNext"
     ],
     "module": "ESNext",
+    "moduleDetection": "force",
     "skipLibCheck": true,
     // App
     "paths": {
@@ -16,7 +17,8 @@
       ]
     },
     "types": [
-      "vite/client"
+      "vite/client",
+      "bun"
     ],
     "verbatimModuleSyntax": false,
     "experimentalDecorators": true,
@@ -37,7 +39,8 @@
     "noEmitOnError": false
   },
   "include": [
-    "src"
+    "src",
+    "eslint.config.mts"
   ],
   "references": [
     {
