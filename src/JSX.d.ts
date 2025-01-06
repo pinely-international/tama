@@ -3,7 +3,7 @@ import { IsEqual, LiteralUnion } from "type-fest"
 import { Accessible, AccessorGet } from "./Accessor"
 import Guarded from "./Guarded"
 import Observable from "./Observable"
-import Proton from "./Proton"
+import ProtonList from "./Proton/ProtonList"
 
 
 export { }
@@ -15,7 +15,7 @@ type GetReadonlyKeys<
   K extends keyof T = keyof T
 > = K extends keyof T ? IsEqual<Pick<T, K>, Pick<U, K>> extends true ? K : never : never;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 type AnyFunction = ((...args: any[]) => unknown)
 
 
@@ -59,7 +59,7 @@ declare global {
       | (Guarded<T> & Accessible<T>)
       | (Guarded<T> & Observable<T> & Accessible<T>)
 
-    type Children<T extends JSX.Element> = T | T[] | Proton.List<T>
+    type Children<T extends JSX.Element> = T | T[] | ProtonList<T>
 
     type HTMLElementEvents = {
       [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
