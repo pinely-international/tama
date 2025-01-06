@@ -1,4 +1,4 @@
-import Proton from "@/Proton"
+import ProtonShell from "@/Proton/ProtonShell"
 
 
 class WebComponentPlaceholder extends Comment {
@@ -27,7 +27,7 @@ class WebComponentPlaceholder extends Comment {
     return WebComponentPlaceholder.actualOf(shellView)
   }
 
-  constructor(public shell: Proton.Shell, shellConstructor: Function) {
+  constructor(public shell: ProtonShell, shellConstructor: Function) {
     super(shellConstructor.name)
   }
 

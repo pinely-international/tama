@@ -2,7 +2,7 @@ import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
 import Observable from "@/Observable"
-import Proton from "@/Proton"
+import ProtonShell from "@/Proton/ProtonShell"
 import ProtonJSX from "@/ProtonJSX"
 import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
@@ -278,7 +278,7 @@ class WebInflator extends Inflator {
       return this.inflate(component.type(component.props))
     }
 
-    const shell = new Proton.Shell(this, this.shell)
+    const shell = new ProtonShell(this, this.shell)
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
 
     let currentView: Node = componentPlaceholder
@@ -323,7 +323,7 @@ class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
 
-    Proton.Shell.evaluate(shell, component.type, component.props)
+    ProtonShell.evaluate(shell, component.type, component.props)
 
     return componentPlaceholder
   }
