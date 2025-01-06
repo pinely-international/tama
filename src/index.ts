@@ -1,6 +1,6 @@
 import "./REQUIRED_SYMBOLS"
 
-import WebInflator from "./Inflator/web/WebInflator"
-import Proton from "./Proton"
+export * from "./Proton"
+export { default as WebInflator } from "./Inflator/web/WebInflator"
 
-export { Proton, WebInflator }
+// export { WebInflator }
