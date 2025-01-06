@@ -5,7 +5,6 @@ import { InflatorAdapter } from "@/Inflator/InflatorAdapter"
 import { Unsubscribe } from "../Observable"
 
 /**
- * @__PURE__
  * @example
   function UserProfile() {
     const userStatusSwitch = new Proton.Switch({

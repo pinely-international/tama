@@ -15,7 +15,7 @@ interface ProtonIndexEvents<T = unknown> {
   replace: T[]
 }
 
-/** @__PURE__ */
+
 class ProtonList<T> {
   private array: T[]
   private readonly events = new Emitter<ProtonIndexEvents<T>>
