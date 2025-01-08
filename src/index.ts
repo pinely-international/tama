@@ -7,3 +7,5 @@ export * from "./Proton/ProtonList"
 export * from "./Proton/ProtonReconciler"
 export * from "./Proton/ProtonShell"
 export * from "./Proton/ProtonSwitch"
+
+export { default as Proton } from "./Proton/Proton"
