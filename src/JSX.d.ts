@@ -6,7 +6,7 @@ import Observable from "./Observable"
 import ProtonList from "./Proton/ProtonList"
 
 
-export { }
+type Any = object | null | undefined
 
 /** https://github.com/type-challenges/type-challenges/issues/139 */
 type GetReadonlyKeys<
@@ -39,15 +39,15 @@ declare global {
       children: any
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ElementTypeConstructor { }
+    interface ElementTypeConstructor {
+      (this: never, props: Record<keyof never, unknown>): unknown
+    }
     type ElementType = string | ElementTypeConstructor
 
-    interface ElementChildrenAttribute {
-      children: {}
-    }
-    interface ElementAttributesProperty {
-      props: {}
-    }
+    interface ElementChildrenAttribute { children }
+    interface ElementAttributesProperty { props }
 
 
     type Attribute<T> =
@@ -73,7 +73,7 @@ declare global {
       ns?: LiteralUnion<string, "http://www.w3.org/1999/xhtml" | "http://www.w3.org/2000/svg" | "http://www.w3.org/1998/Math/MathML">
       on?: HTMLElementEvents
       style?: Attribute<Record<string, Attribute<string | CSSStyleValue>> | { [K in keyof CSSStyleDeclaration]?: Attribute<CSSStyleDeclaration[K] | CSSStyleValue | null | undefined> } | string>
-      children?: unknown
+      children?: Any | Any[]
     }
 
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]

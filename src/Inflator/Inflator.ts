@@ -4,15 +4,14 @@ import { AccessorGet } from "@/Accessor"
 import Observable from "@/Observable"
 import ProtonShell from "@/Proton/ProtonShell"
 
-import { InflatorAdapter } from "./InflatorAdapter"
-
+import InflatorAdaptersMap from "./InflatorAdaptersMap"
 
 
 abstract class Inflator {
-  readonly adapters = new Set<InflatorAdapter>
+  adapters = new InflatorAdaptersMap(this)
 
   public inflate(subject: unknown): unknown {
-    for (const adapter of this.adapters) {
+    for (const adapter of this.adapters.values()) {
       const result = adapter.inflate(subject)
       if (result) return result
     }
@@ -48,7 +47,9 @@ abstract class Inflator {
 
   static injectShell(inflator: Inflator, shell: ProtonShell): Inflator {
     const clone = inflator.clone()
+
     clone.shell = shell
+    clone.adapters = new InflatorAdaptersMap(clone, inflator.adapters)
 
     return clone
   }

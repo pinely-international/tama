@@ -1,6 +1,9 @@
 import "./REQUIRED_SYMBOLS"
 
-export * from "./Proton/Proton"
 export { default as WebInflator } from "./Inflator/web/WebInflator"
 
-// export { WebInflator }
+export * from "./Proton/ProtonLazy"
+export * from "./Proton/ProtonList"
+export * from "./Proton/ProtonReconciler"
+export * from "./Proton/ProtonShell"
+export * from "./Proton/ProtonSwitch"

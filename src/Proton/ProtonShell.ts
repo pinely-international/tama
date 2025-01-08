@@ -1,6 +1,7 @@
 import { Emitter } from "@denshya/flow"
 
 import Inflator from "@/Inflator/Inflator"
+import { InflatorAdapter } from "@/Inflator/InflatorAdapter"
 
 import Null from "../Null"
 import { Subscriptable } from "../Observable"
@@ -8,13 +9,6 @@ import ProtonViewAPI from "../ProtonTreeAPI"
 import TreeContextAPI from "../TreeContextAPI"
 
 
-interface ShellEvents {
-  view: unknown
-  suspend: Promise<unknown>
-
-  mount: unknown
-  unmount: void
-}
 
 class ProtonShell {
   public readonly view: ProtonViewAPI
@@ -109,7 +103,7 @@ class ProtonShell {
     })
   }
 
-  static async evaluate(shell: ProtonShell, constructor: Function, props?: object): Promise<void> {
+  static async evaluate(shell: ProtonShell, constructor: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
     constructor = await resolveShellConstructorModule(constructor)
 
     try {
@@ -145,12 +139,24 @@ class ProtonShell {
 export default ProtonShell
 
 
-interface Module<T> {
-  default: T
+export class ProtonShellWebInflator extends InflatorAdapter {
+  inflate(value: unknown) {
+
+  }
 }
 
 
+interface ShellEvents {
+  view: unknown
+  suspend: Promise<unknown>
 
+  mount: unknown
+  unmount: void
+}
+
+interface Module<T> {
+  default: T
+}
 
 
 async function resolveShellConstructorModule(moduleOrConstructor: Promise<Module<Function>> | Module<Function> | Function): Promise<Function> {

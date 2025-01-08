@@ -35,7 +35,7 @@ class WebComponentPlaceholder extends Comment {
     const actual = this.actual
     if (actual === this) return null
 
-    return this.actual?.parentElement
+    return actual?.parentElement
   }
 
   override get parentElement() {

@@ -8,16 +8,14 @@ class TreeContextAPI {
   constructor(readonly parent?: TreeContextAPI) { }
 
   provide<T extends InstanceType<TreeContext>>(context: T extends TreeContext ? never : T): T {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.contexts.set((context as any).constructor, context)
     return context
   }
   find<T extends TreeContext>(context: T): InstanceType<T> | null {
     const instance = this.contexts.get(context)
-
     if (instance != null) return instance as InstanceType<T>
-    if (this.parent != null) return this.parent.find(context)
 
+    if (this.parent != null) return this.parent.find(context)
     return null
   }
   /**

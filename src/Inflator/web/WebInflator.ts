@@ -39,12 +39,12 @@ class WebInflator extends Inflator {
     return document.createDocumentFragment()
   }
 
-  protected inflateJSX(value: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
-    if (value instanceof ProtonJSX.Intrinsic) return this.inflateJSXIntrinsic(value)
-    if (value instanceof ProtonJSX.Component) return this.inflateJSXComponent(value)
-    if (value instanceof ProtonJSX._Fragment) return this.inflateFragment()
+  protected inflateJSX(jsx: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
+    if (jsx instanceof ProtonJSX.Intrinsic) return this.inflateJSXIntrinsic(jsx)
+    if (jsx instanceof ProtonJSX.Component) return this.inflateJSXComponent(jsx)
+    if (jsx instanceof ProtonJSX.Fragment) return this.inflateFragment()
 
-    throw new TypeError("Unsupported type of `jsx`", { cause: { jsx: value } })
+    throw new TypeError("Unsupported type of `jsx`", { cause: { jsx } })
   }
 
   protected inflateObservable<T>(observable: Observable<T> & AccessorGet<T>) {
@@ -69,9 +69,13 @@ class WebInflator extends Inflator {
 
   private inflateJSXDeeply(jsx: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
     const inflated = this.inflateJSX(jsx)
+    // Inflation of Component children is handled by the component itself.
     if (jsx instanceof ProtonJSX.Component) return inflated
 
+    return this.inflateJSXIntrinsicDeeply(jsx, inflated)
+  }
 
+  private inflateJSXIntrinsicDeeply(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): HTMLElement | DocumentFragment | Node {
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
       const childInflated = this.inflate(child)
       if (!isNode(childInflated)) return
@@ -85,8 +89,10 @@ class WebInflator extends Inflator {
       }
     }
 
-    jsx.children?.forEach(appendChildObject)
-    jsx.childrenExtrinsic?.forEach(appendChildObject)
+    if (jsx.children instanceof Array === false) appendChildObject(jsx.children)
+
+    if (jsx.children instanceof Array) jsx.children.forEach(appendChildObject)
+    if (jsx.childrenExtrinsic != null) jsx.childrenExtrinsic.forEach(appendChildObject)
 
     if (inflated instanceof DocumentFragment) {
       // @ts-expect-error by design.
@@ -285,8 +291,14 @@ class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     const schedule = (nextView: Node) => {
+      currentView = currentView.replacedWith ?? currentView
+
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         currentView.replaceWith(nextView)
+
+        currentView.replacedWith = nextView
+        nextView.replacedWith = null
+
         currentView = nextView
 
         return
@@ -299,8 +311,11 @@ class WebInflator extends Inflator {
 
         const anchor = fixedNodes[0]
 
-        anchor.parentElement!.replaceChild(nextView, anchor) // Should throw if no parent.
+        anchor.parentElement!.replaceChild(nextView, anchor)
         currentView.replaceChildren(...fixedNodes)
+
+        currentView.replacedWith = nextView
+        nextView.replacedWith = null
 
         currentView = nextView
 
