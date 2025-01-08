@@ -131,7 +131,7 @@ export class ProtonListWebInflator extends InflatorAdapter {
 
     const comment = new Comment(list.constructor.name)
 
-    const inflateItem = (item: unknown) => item !== list.EMPTY ? this.inflate(item) : item
+    const inflateItem = (item: unknown) => item !== list.EMPTY ? this.inflator.inflate(item) : item
     // @ts-expect-error by design.
     const items = list.array
     let inflatedIndexedItems: unknown[] = items.map(inflateItem)
