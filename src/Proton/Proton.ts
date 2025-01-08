@@ -10,7 +10,7 @@ export * from "./ProtonReconciler"
 export * from "./ProtonShell"
 export * from "./ProtonSwitch"
 
-export default {
+export const Proton = {
   Lazy: ProtonLazy,
   List: ProtonList,
   Reconciler: ProtonReconciler,
