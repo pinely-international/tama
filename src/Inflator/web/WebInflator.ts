@@ -8,7 +8,7 @@ import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { isNode } from "./helpers"
+import { isNode, truthyGuard } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
 import WebMountPlaceholder from "./WebMountPlaceholder"
 
