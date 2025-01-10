@@ -9,12 +9,25 @@ import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
 import { NavRoute } from "./navigation"
 import UserContext from "./UserContext"
 import { Flow } from "@denshya/flow"
+import LoaderCover from "./app/ui/Loader/LoaderCover"
 
 
-const TictactoeGame = Proton.Lazy(() => import("./tictactoe/tictactoe"))
-const ProductsTableApp = Proton.Lazy(() => import("./products-table/ProductsTable"))
-const Market = Proton.Lazy(() => import("./areas/market/components/Market/Market"))
-const ProductPage = Proton.Lazy(() => import("./areas/market/components/ProductPage/ProductPage"))
+const TictactoeGame = Lazy(() => import("./tictactoe/tictactoe"))
+const ProductsTableApp = Lazy(() => import("./products-table/ProductsTable"))
+const Market = Lazy(() => import("./areas/market/components/Market/Market"))
+const ProductPage = Lazy(() => import("./areas/market/components/ProductPage/ProductPage"))
+
+function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise<{ default: T } | T>) {
+  return async function (this: Proton.Shell) {
+    this.view.set(<LoaderCover />)
+    console.log(this)
+    const Module = await importFactory()
+
+
+    if ("default" in Module) return <Module.default />
+    return <Module />
+  }
+}
 
 
 function App(this: Proton.Shell) {
@@ -22,6 +35,9 @@ function App(this: Proton.Shell) {
   const userContext = new UserContext(user)
 
   this.context.provide(userContext)
+
+  this.suspense(() => this.view.set(<LoaderCover />))
+  this.unsuspense(() => this.view.set(this.view.default))
 
   return (
     <>
