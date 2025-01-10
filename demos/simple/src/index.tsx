@@ -7,17 +7,17 @@ class LazyModuleWebInflator {
 
   inflate(value: unknown) {
     if (value instanceof Promise === false) return
+    console.log(this.inflator)
 
     const placeholder = new Comment("Promise Placeholder")
     value.then(value => {
-      console.log(value)
       placeholder.replaceWith(this.inflator.inflate(value))
     })
 
     return placeholder
   }
 }
-console.log(Proton.ListWebInflator)
+
 const inflator = new WebInflator
 inflator.adapters.add(LazyModuleWebInflator)
 inflator.adapters.add(Proton.ListWebInflator)

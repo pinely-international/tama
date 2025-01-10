@@ -10,6 +10,7 @@ import LoaderCover from "@/app/ui/Loader/LoaderCover"
 
 
 function ProductPage(this: Proton.Shell) {
+  console.log(this)
   const route = this.context.require(RouteContext)
 
   const id = route.$.pathname.$.groups.$.id.to(id => {
