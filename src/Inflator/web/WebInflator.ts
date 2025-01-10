@@ -306,11 +306,11 @@ class WebInflator extends Inflator {
         nextView.replacedWith = null
 
         if (currentView instanceof WebComponentPlaceholder) {
+          currentView = nextView
+        } else {
           currentView.shell = null
           currentView = nextView
           currentView.shell = shell
-        } else {
-          currentView = nextView
         }
 
         return
@@ -334,11 +334,11 @@ class WebInflator extends Inflator {
         nextView.replacedWith = null
 
         if (currentView instanceof WebComponentPlaceholder) {
+          currentView = nextView
+        } else {
           currentView.shell = null
           currentView = nextView
           currentView.shell = shell
-        } else {
-          currentView = nextView
         }
 
         if (anchor instanceof WebComponentPlaceholder) {
