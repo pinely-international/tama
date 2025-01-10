@@ -8,7 +8,7 @@ import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { isNode, truthyGuard } from "./helpers"
+import { isNode, nonGuard } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
 import WebMountPlaceholder from "./WebMountPlaceholder"
 
@@ -159,7 +159,7 @@ class WebInflator extends Inflator {
       if (property instanceof Object === false) continue
 
       // @ts-expect-error `valid` property is there.
-      if (key === "mounted") property.valid = truthyGuard
+      if (key === "mounted") property.valid = nonGuard
 
       if ("valid" in property === false) continue
       if (property.valid instanceof Function === false) continue

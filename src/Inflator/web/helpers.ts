@@ -2,7 +2,7 @@ import WebComponentPlaceholder from "./WebComponentPlaceholder"
 
 
 export const isNode = (value: unknown) => value instanceof Node
-export const truthyGuard = () => true as const
+export const nonGuard = (value: unknown) => value
 
 
 export function disconnectInflated(item: unknown) {
