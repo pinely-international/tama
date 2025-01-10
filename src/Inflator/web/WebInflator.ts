@@ -291,7 +291,8 @@ class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     const schedule = (nextView: Node) => {
-      nextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
+      // @ts-expect-error by design.
+      nextView = nextView?.shell.getView() ?? nextView
       currentView = resolveReplacement(currentView)
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
@@ -304,7 +305,9 @@ class WebInflator extends Inflator {
         // @ts-expect-error by design.
         nextView.replacedWith = null
 
+        currentView.shell = null
         currentView = nextView
+        currentView.shell = shell
 
         return
       }
@@ -326,7 +329,9 @@ class WebInflator extends Inflator {
         // @ts-expect-error by design.
         nextView.replacedWith = null
 
+        currentView.shell = null
         currentView = nextView
+        currentView.shell = shell
 
         if (anchor instanceof WebComponentPlaceholder) {
           // @ts-expect-error no another way.
