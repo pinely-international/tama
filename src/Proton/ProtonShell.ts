@@ -1,7 +1,6 @@
 import { Emitter } from "@denshya/flow"
 
 import Inflator from "@/Inflator/Inflator"
-import { InflatorAdapter } from "@/Inflator/InflatorAdapter"
 
 import Null from "../Null"
 import { Subscriptable } from "../Observable"
@@ -22,6 +21,9 @@ export class ProtonShell {
   private lastSubject: unknown = {} // Ensures first subject to be different.
   private previousView: unknown = null
   private viewElement: unknown = null
+
+  /** Debug value for `constructor` which evaluated this shell. */
+  declare private evaluatedBy: Function
 
   constructor(inflator: Inflator, private readonly parent?: ProtonShell) {
     this.inflator = Inflator.cloneWith(inflator, this)
@@ -106,7 +108,7 @@ export class ProtonShell {
   }
 
   static async evaluate(shell: ProtonShell, constructor: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
-    shell.evaluatedBy = constructor
+    shell.evaluatedBy = constructor // Pure. For debugging.
     constructor = await resolveShellConstructorModule(constructor)
 
     try {
@@ -138,14 +140,6 @@ export class ProtonShell {
     shell.view.set(shell.view.default)
   }
 }
-
-
-export class ProtonShellWebInflator implements InflatorAdapter {
-  inflate(value: unknown) {
-
-  }
-}
-
 
 interface ShellEvents {
   view: unknown
