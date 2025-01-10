@@ -4,9 +4,7 @@ import { ProtonShell } from "./ProtonShell"
 
 export * from "./ProtonLazy"
 export * from "./ProtonList"
-export * from "./ProtonReconciler"
 export * from "./ProtonShell"
-export * from "./ProtonSwitch"
 
 const Proton = {
   Lazy: ProtonLazy,

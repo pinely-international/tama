@@ -1,7 +1,10 @@
-import { ProtonLazy as Lazy, ProtonList as List, ProtonListWebInflator as ListWebInflator, ProtonShell as Shell, ProtonShellWebInflator as ShellWebInflator } from "./Proton"
+import { ProtonLazy as Lazy } from "./ProtonLazy"
+import { ProtonList as List, ProtonListWebInflator as ListWebInflator } from "./ProtonList"
+import { ProtonShell as Shell } from "./ProtonShell"
+
 
 declare namespace Proton {
-  export { Lazy, List, Shell, ListWebInflator, ShellWebInflator }
+  export { Lazy, List, Shell, ListWebInflator }
 }
 
 export default Proton
