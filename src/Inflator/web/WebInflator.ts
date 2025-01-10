@@ -291,12 +291,17 @@ class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     const schedule = (nextView: Node) => {
+      // @ts-expect-error by design.
       currentView = currentView.replacedWith ?? currentView
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-        currentView.replaceWith(nextView)
+        if (currentView.isConnected) {
+          currentView.replaceWith(nextView)
+        }
 
+        // @ts-expect-error by design.
         currentView.replacedWith = nextView
+        // @ts-expect-error by design.
         nextView.replacedWith = null
 
         currentView = nextView
@@ -305,16 +310,20 @@ class WebInflator extends Inflator {
       }
 
       if (currentView instanceof DocumentFragment) {
-        // @ts-expect-error shit.
+        // @ts-expect-error by design.
         const f = currentView.fixedNodes as Node[]
         const fixedNodes = f.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
 
         const anchor = fixedNodes[0]
 
-        anchor.parentElement!.replaceChild(nextView, anchor)
+        if (anchor.isConnected) {
+          anchor.parentElement?.replaceChild(nextView, anchor)
+        }
         currentView.replaceChildren(...fixedNodes)
 
+        // @ts-expect-error by design.
         currentView.replacedWith = nextView
+        // @ts-expect-error by design.
         nextView.replacedWith = null
 
         currentView = nextView

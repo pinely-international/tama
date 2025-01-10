@@ -24,3 +24,7 @@ export function compileAssign(keys: string[]): (target: object, source: object) 
 
   return eval(functionString)
 }
+
+export function gracefullyThrow(value: unknown): void {
+  queueMicrotask(() => { throw value })
+}
