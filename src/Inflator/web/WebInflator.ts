@@ -291,8 +291,7 @@ class WebInflator extends Inflator {
     let lastAnimationFrame = -1
 
     const schedule = (nextView: Node) => {
-      // @ts-expect-error by design.
-      currentView = currentView.replacedWith ?? currentView
+      currentView = resolveReplacement(currentView)
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         if (currentView.isConnected) {
@@ -354,3 +353,9 @@ class WebInflator extends Inflator {
 }
 
 export default WebInflator
+
+
+function resolveReplacement(value: any): any {
+  if (value === value.replacedWith) return value
+  return resolveReplacement(value.replacedWith) ?? value
+}
