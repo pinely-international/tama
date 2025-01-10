@@ -12,6 +12,7 @@ abstract class Inflator {
 
   public inflate(subject: unknown): unknown {
     for (const adapter of this.adapters.values()) {
+      adapter.inflator = this
       const result = adapter.inflate(subject)
       if (result) return result
     }
