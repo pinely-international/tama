@@ -305,11 +305,11 @@ class WebInflator extends Inflator {
         // @ts-expect-error by design.
         nextView.replacedWith = null
 
-        if (currentView instanceof WebComponentPlaceholder) {
-          currentView = nextView
-        } else {
+        if (currentView instanceof WebComponentPlaceholder === false) {
           currentView.shell = null
-          currentView = nextView
+        }
+        currentView = nextView
+        if (currentView instanceof WebComponentPlaceholder === false) {
           currentView.shell = shell
         }
 
@@ -333,11 +333,11 @@ class WebInflator extends Inflator {
         // @ts-expect-error by design.
         nextView.replacedWith = null
 
-        if (currentView instanceof WebComponentPlaceholder) {
-          currentView = nextView
-        } else {
+        if (currentView instanceof WebComponentPlaceholder === false) {
           currentView.shell = null
-          currentView = nextView
+        }
+        currentView = nextView
+        if (currentView instanceof WebComponentPlaceholder === false) {
           currentView.shell = shell
         }
 
