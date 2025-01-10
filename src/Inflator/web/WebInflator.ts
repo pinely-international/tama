@@ -356,8 +356,5 @@ export default WebInflator
 
 
 function resolveReplacement(value: any): any {
-  if (value == null) return value
-  if (value === value.replacedWith) return value
-
-  return resolveReplacement(value.replacedWith)
+  return resolveReplacement(value.replacedWith) ?? value
 }
