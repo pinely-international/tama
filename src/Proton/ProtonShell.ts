@@ -106,6 +106,7 @@ export class ProtonShell {
   }
 
   static async evaluate(shell: ProtonShell, constructor: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
+    shell.evaluatedBy = constructor
     constructor = await resolveShellConstructorModule(constructor)
 
     try {

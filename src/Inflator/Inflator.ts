@@ -3,6 +3,7 @@ import { Primitive } from "type-fest"
 import { AccessorGet } from "@/Accessor"
 import Observable from "@/Observable"
 import { ProtonShell } from "@/Proton/ProtonShell"
+import { isObservableGetter } from "@/utils/observable"
 
 import InflatorAdaptersMap from "./InflatorAdaptersMap"
 
@@ -17,9 +18,8 @@ abstract class Inflator {
       if (result) return result
     }
 
-    // @ts-expect-error ok to check this way.
-    if (subject instanceof Object && subject.get instanceof Function && subject[Symbol.subscribe] instanceof Function) {
-      return this.inflateObservable(subject as never)
+    if (isObservableGetter(subject)) {
+      return this.inflateObservable(subject)
     }
 
     if (subject == null) return subject

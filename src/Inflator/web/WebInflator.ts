@@ -280,9 +280,9 @@ class WebInflator extends Inflator {
   }
 
   protected inflateJSXComponent(component: ProtonJSX.Component) {
-    if (component.type.prototype == null) { // Assume it's arrow function.
-      return this.inflate(component.type(component.props))
-    }
+    // if (component.type.prototype == null) { // Assume it's arrow function.
+    //   return this.inflate(component.type(component.props))
+    // }
 
     const shell = new ProtonShell(this, this.shell)
     const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
