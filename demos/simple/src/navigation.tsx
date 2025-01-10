@@ -89,15 +89,12 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
 
     if (result == null) {
       result = this.context.provide(new RouteContext(null))
-      console.log(this)
     }
 
     result.set(navigation.result.get())
 
     if (children == null) {
-      console.log(props.children)
       children = this.inflator.inflate(<>{props.children}</>)
-      console.log(children.childNodes[0])
     }
 
     this.view.set(children)

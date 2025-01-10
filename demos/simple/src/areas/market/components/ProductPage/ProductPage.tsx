@@ -9,8 +9,7 @@ import Price from "@/utils/price"
 import LoaderCover from "@/app/ui/Loader/LoaderCover"
 
 
-function ProductPage(this: Proton.Shell) {
-  console.log(this)
+async function ProductPage(this: Proton.Shell) {
   const route = this.context.require(RouteContext)
 
   const id = route.$.pathname.$.groups.$.id.to(id => {
@@ -19,26 +18,21 @@ function ProductPage(this: Proton.Shell) {
     return id
   })
 
-
-
   const product = id.to(id => {
     const value = STATIC_PRODUCTS.find(product => product.id === id)
     if (value == null) throw new TypeError("Product is not found of id " + id)
 
     return value
   })
-  // const product = new Flow(null)
-  // productPromise.sets(async promise => {
-  //   this.view.set(<LoaderCover />)
-  //   const value = await promise
 
-  //   product.set(value)
-  //   this.view.reset()
-  // })
+  product.sets(async () => {
+    this.view.set(<LoaderCover />)
+    await new Promise(r => setTimeout(r, 1000))
+    this.view.setPrevious()
+  })
 
   this.view.set(<LoaderCover />)
-  this.suspendOf(new Promise(r => setTimeout(r, 1000)))
-  // const product = await productPromise.await()
+  await new Promise(r => setTimeout(r, 1000))
 
   return (
     <div className="product-page">
