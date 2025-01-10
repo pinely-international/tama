@@ -8,28 +8,24 @@ import { Proton } from "@denshya/proton"
 import Price from "@/utils/price"
 import LoaderCover from "@/app/ui/Loader/LoaderCover"
 
+const getProductById = (id: string) => {
+  const value = STATIC_PRODUCTS.find(product => product.id === id)
+  if (value == null) throw new TypeError("Product is not found of id " + id)
+
+  return value
+}
+
+const requireRouteParam = (id?: string | null) => {
+  if (id == null) throw new TypeError("This page can't be accessed without `id`")
+
+  return id
+}
 
 async function ProductPage(this: Proton.Shell) {
   const route = this.context.require(RouteContext)
 
-  const id = route.$.pathname.$.groups.$.id.to(id => {
-    if (id == null) throw new TypeError("This page can't be accessed without `id`")
-
-    return id
-  })
-
-  const product = id.to(id => {
-    const value = STATIC_PRODUCTS.find(product => product.id === id)
-    if (value == null) throw new TypeError("Product is not found of id " + id)
-
-    return value
-  })
-
-  product.sets(async () => {
-    this.view.set(<LoaderCover />)
-    await new Promise(r => setTimeout(r, 1000))
-    this.view.setPrevious()
-  })
+  const id = route.$.pathname.$.groups.$.id.to(requireRouteParam)
+  const product = id.to(getProductById)
 
   this.view.set(<LoaderCover />)
   await new Promise(r => setTimeout(r, 1000))
