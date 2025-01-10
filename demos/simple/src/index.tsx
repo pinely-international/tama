@@ -1,8 +1,27 @@
-import { WebInflator } from "@denshya/proton"
+import { ProtonListWebInflator, WebInflator } from "@denshya/proton"
 
 import App from "./App"
 
+class LazyModuleWebInflator {
+  constructor(protected readonly inflator: Inflator) { }
+
+  inflate(value: unknown) {
+    if (value instanceof Promise === false) return
+
+    const placeholder = new Comment("Promise Placeholder")
+    value.then(value => {
+      console.log(value)
+      placeholder.replaceWith(this.inflator.inflate(value))
+    })
+
+    return placeholder
+  }
+}
+
 const inflator = new WebInflator
+inflator.adapters.add(ProtonListWebInflator)
+inflator.adapters.add(LazyModuleWebInflator)
+
 const inflated = inflator.inflate(<App />)
 
 document.getElementById("root")!.appendChild(inflated)

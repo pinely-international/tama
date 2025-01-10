@@ -40,7 +40,7 @@ function ProductRow(props: { product: Product }) {
 
 function ProductTable(props: { products: Product[], filterText: Flow<string>, inStockOnly: Flow<boolean> }) {
   let lastCategory: string | null = null
-  const productsIndex = new Proton.Index(props.products)
+  const productsIndex = new Proton.List(props.products)
 
   Flow.compute(() => {
     lastCategory = null

@@ -16,7 +16,7 @@ interface DropDownProps<T> {
 }
 
 function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
-  const optionsIndex = new Proton.Index(props.children)
+  const optionsIndex = new Proton.List(props.children)
 
   function onSelect(option: DropDownOption<T>) {
     props.selected.set(option)

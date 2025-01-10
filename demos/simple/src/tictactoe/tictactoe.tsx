@@ -77,8 +77,7 @@ export default function Game() {
     currentMove.set(nextMove)
   }
 
-  const historyIndex = new Proton.Index(history.get())
-  history.sets(it => historyIndex.replace(it))
+  const historyIndex = new Proton.List(history)
 
   const moves = historyIndex.map((squares, move) => {
     let description = "Go to game start"
