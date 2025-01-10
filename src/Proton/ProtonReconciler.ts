@@ -1,6 +1,8 @@
 import { AccessorGet } from "../Accessor"
 import Observable from "../Observable"
 
+
+
 class ProtonReconciler<T> {
   private transform: ((value: never, index: number, array: never[]) => T) | null = null
   private readonly source: AccessorGet<Foreachable<unknown>> & Observable<Foreachable<unknown>>
@@ -25,12 +27,12 @@ class ProtonReconciler<T> {
 
   forEach(callback: (value: T, index: number) => void): void { }
   difference(): { added: number[], removed: number[], moved: number[] } {
-    let added = news.filter(item => !old.includes(item));
-    let removed = old.filter(item => !news.includes(item));
+    const added = news.filter(item => !old.includes(item))
+    const removed = old.filter(item => !news.includes(item))
     // find items that only changed place
-    let oldCommon = old.filter(item => news.includes(item));
-    let newCommon = news.filter(item => old.includes(item));
-    let moved = newCommon.filter((item, i) => item != oldCommon[i]);
+    const oldCommon = old.filter(item => news.includes(item))
+    const newCommon = news.filter(item => old.includes(item))
+    const moved = newCommon.filter((item, i) => item != oldCommon[i])
 
     return {}
   }
@@ -40,7 +42,7 @@ class ProtonReconciler<T> {
   }
 }
 
-export default ProtonReconciler
+export { }
 
 
 interface Foreachable<T> extends Iterable<T> {

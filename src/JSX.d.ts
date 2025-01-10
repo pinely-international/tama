@@ -3,7 +3,7 @@ import { IsEqual, LiteralUnion } from "type-fest"
 import { Accessible, AccessorGet } from "./Accessor"
 import Guarded from "./Guarded"
 import Observable from "./Observable"
-import ProtonList from "./Proton/ProtonList"
+import { ProtonList } from "./Proton/ProtonList"
 
 
 type Any = object | null | undefined
@@ -42,12 +42,14 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ElementTypeConstructor { }
     interface ElementTypeConstructor {
-      (this: never, props: Record<keyof never, unknown>): unknown
+      (this: never, props: never): unknown
     }
     type ElementType = string | ElementTypeConstructor
 
-    interface ElementChildrenAttribute { children }
-    interface ElementAttributesProperty { props }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface ElementChildrenAttribute { children: {} }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface ElementAttributesProperty { props: {} }
 
 
     type Attribute<T> =

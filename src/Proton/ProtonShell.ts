@@ -10,7 +10,9 @@ import TreeContextAPI from "../TreeContextAPI"
 
 
 
-class ProtonShell {
+
+
+export class ProtonShell {
   public readonly view: ProtonViewAPI
   public readonly inflator: Inflator
   public readonly context: TreeContextAPI
@@ -22,7 +24,7 @@ class ProtonShell {
   private viewElement: unknown = null
 
   constructor(inflator: Inflator, private readonly parent?: ProtonShell) {
-    this.inflator = Inflator.injectShell(inflator, this)
+    this.inflator = Inflator.cloneWith(inflator, this)
     this.context = new TreeContextAPI(parent?.context)
 
     this.view = {
@@ -136,10 +138,8 @@ class ProtonShell {
   }
 }
 
-export default ProtonShell
 
-
-export class ProtonShellWebInflator extends InflatorAdapter {
+export class ProtonShellWebInflator implements InflatorAdapter {
   inflate(value: unknown) {
 
   }

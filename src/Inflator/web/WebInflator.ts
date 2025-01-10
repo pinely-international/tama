@@ -2,7 +2,7 @@ import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
 import Observable from "@/Observable"
-import ProtonShell from "@/Proton/ProtonShell"
+import { ProtonShell } from "@/Proton/ProtonShell"
 import ProtonJSX from "@/ProtonJSX"
 import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
@@ -191,7 +191,7 @@ class WebInflator extends Inflator {
 
   protected bindEventListeners(listeners: any, element: Element) {
     // @ts-expect-error by design.
-    const catchCallback = this.shell.catchCallback
+    const catchCallback = this.shell?.catchCallback
 
     if (catchCallback == null)
       for (const key in listeners) {

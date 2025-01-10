@@ -1,14 +1,13 @@
 import Inflator from "./Inflator"
-import { InflatorAdapter } from "./InflatorAdapter"
+import { InflatorAdapterConstructor, InflatorAdapterObject } from "./InflatorAdapter"
 
-class InflatorAdaptersMap extends Map<typeof InflatorAdapter, InflatorAdapter> {
-  constructor(private readonly inflator: Inflator, init?: ConstructorParameters<typeof Map<typeof InflatorAdapter, InflatorAdapter>>[0]) { super(init) }
+class InflatorAdaptersMap extends Map<InflatorAdapterConstructor, InflatorAdapterObject> {
+  constructor(private readonly inflator: Inflator, init?: ConstructorParameters<typeof Map<InflatorAdapterConstructor, InflatorAdapterObject>>[0]) { super(init) }
 
-  add(adapter: typeof InflatorAdapter): this {
-    if (!this.has(adapter)) {
-      // @ts-expect-error assume this is non-abstract constructor.
+  add(adapter: InflatorAdapterConstructor): this {
+    if (!super.has(adapter)) {
       const adapterInstance = new adapter(this.inflator)
-      this.set(adapter, adapterInstance)
+      super.set(adapter, adapterInstance)
     }
     return this
   }

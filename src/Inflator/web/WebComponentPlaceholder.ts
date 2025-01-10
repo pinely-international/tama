@@ -1,4 +1,4 @@
-import ProtonShell from "@/Proton/ProtonShell"
+import { ProtonShell } from "@/Proton/ProtonShell"
 
 
 class WebComponentPlaceholder extends Comment {

@@ -42,11 +42,11 @@ class ProtonSwitch<T extends Record<keyof never | "default", unknown> = any> {
   readonly active: Signal<T[keyof T]>
 }
 
-export default ProtonSwitch
 
 
+export { }
 
-export class ProtonSwitchWebInflator extends InflatorAdapter {
+class ProtonSwitchWebInflator extends InflatorAdapter {
   test(value: unknown) { return value instanceof ProtonSwitch }
   inflate(switcher: unknown) {
     if (switcher instanceof ProtonSwitch === false) return null

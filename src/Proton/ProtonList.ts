@@ -16,7 +16,7 @@ interface ProtonIndexEvents<T = unknown> {
 }
 
 
-class ProtonList<T> {
+export class ProtonList<T> {
   private array: T[]
   private readonly events = new Emitter<ProtonIndexEvents<T>>
 
@@ -120,8 +120,6 @@ class ProtonList<T> {
 
   readonly EMPTY = Null.OBJECT
 }
-
-export default ProtonList
 
 
 export class ProtonListWebInflator extends InflatorAdapter {

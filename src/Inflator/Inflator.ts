@@ -2,7 +2,7 @@ import { Primitive } from "type-fest"
 
 import { AccessorGet } from "@/Accessor"
 import Observable from "@/Observable"
-import ProtonShell from "@/Proton/ProtonShell"
+import { ProtonShell } from "@/Proton/ProtonShell"
 
 import InflatorAdaptersMap from "./InflatorAdaptersMap"
 
@@ -42,10 +42,10 @@ abstract class Inflator {
 
   protected abstract clone(): Inflator
 
-  protected declare shell: ProtonShell
+  protected declare shell?: ProtonShell
 
 
-  static injectShell(inflator: Inflator, shell: ProtonShell): Inflator {
+  static cloneWith(inflator: Inflator, shell: ProtonShell): Inflator {
     const clone = inflator.clone()
 
     clone.shell = shell
