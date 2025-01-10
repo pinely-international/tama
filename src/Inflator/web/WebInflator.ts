@@ -292,7 +292,7 @@ class WebInflator extends Inflator {
 
     const schedule = (nextView: Node) => {
       // @ts-expect-error by design.
-      nextView = nextView?.shell.getView() ?? nextView
+      nextView = nextView?.shell?.getView?.() ?? nextView
       currentView = resolveReplacement(currentView)
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
