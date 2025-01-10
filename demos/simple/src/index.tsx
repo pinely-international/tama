@@ -1,4 +1,4 @@
-import { ProtonListWebInflator, WebInflator } from "@denshya/proton"
+import { WebInflator, Proton } from "@denshya/proton"
 
 import App from "./App"
 
@@ -17,10 +17,10 @@ class LazyModuleWebInflator {
     return placeholder
   }
 }
-
+console.log(Proton.ListWebInflator)
 const inflator = new WebInflator
-inflator.adapters.add(ProtonListWebInflator)
 inflator.adapters.add(LazyModuleWebInflator)
+inflator.adapters.add(Proton.ListWebInflator)
 
 const inflated = inflator.inflate(<App />)
 
