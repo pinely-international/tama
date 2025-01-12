@@ -304,7 +304,7 @@ class WebInflator extends Inflator {
       //   // @ts-expect-error by design.
       //   nextView = nextView?.shell?.getView?.() ?? nextView
       // }
-      const actualNextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
+      const actualNextView = nextView
       currentView = resolveReplacement(currentView)
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
