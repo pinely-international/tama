@@ -310,7 +310,7 @@ class WebInflator extends Inflator {
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         if (currentView.isConnected) currentView.replaceWith(actualNextView)
 
-        if (view === null) {
+        if (view !== null) {
           // @ts-expect-error by design.
           currentView.replacedWith = nextView
         }
@@ -346,7 +346,7 @@ class WebInflator extends Inflator {
         if (anchor.isConnected) anchor.parentElement?.replaceChild(actualNextView, anchor)
         currentView.replaceChildren(...fixed)
 
-        if (view === null) {
+        if (view !== null) {
           // @ts-expect-error by design.
           currentView.replacedWith = nextView
         }
