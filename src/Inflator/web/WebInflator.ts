@@ -290,7 +290,16 @@ class WebInflator extends Inflator {
     let currentView: Node = componentPlaceholder
     let lastAnimationFrame = -1
 
-    const schedule = (nextView: Node) => {
+    const schedule = (view: unknown) => {
+      let nextView = view
+      if (view === null) {
+        nextView = componentPlaceholder
+        // @ts-expect-error by design.
+        nextView.replacedWith = null
+      }
+      if (nextView instanceof Node === false) return
+
+
       // if (nextView instanceof WebComponentPlaceholder === false) {
       //   // @ts-expect-error by design.
       //   nextView = nextView?.shell?.getView?.() ?? nextView
@@ -301,8 +310,10 @@ class WebInflator extends Inflator {
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         if (currentView.isConnected) currentView.replaceWith(actualNextView)
 
-        // @ts-expect-error by design.
-        currentView.replacedWith = nextView
+        if (view === null) {
+          // @ts-expect-error by design.
+          currentView.replacedWith = nextView
+        }
         // @ts-expect-error by design.
         nextView.replacedWith = null
         actualNextView.replacedWith = null
@@ -335,8 +346,10 @@ class WebInflator extends Inflator {
         if (anchor.isConnected) anchor.parentElement?.replaceChild(actualNextView, anchor)
         currentView.replaceChildren(...fixed)
 
-        // @ts-expect-error by design.
-        currentView.replacedWith = nextView
+        if (view === null) {
+          // @ts-expect-error by design.
+          currentView.replacedWith = nextView
+        }
         // @ts-expect-error by design.
         nextView.replacedWith = null
         actualNextView.replacedWith = null
@@ -361,13 +374,6 @@ class WebInflator extends Inflator {
     }
 
     shell.on("view").subscribe(view => {
-      if (view === null) {
-        view = componentPlaceholder
-        // @ts-expect-error by design.
-        view.replacedWith = null
-      }
-      if (view instanceof Node === false) return
-
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
