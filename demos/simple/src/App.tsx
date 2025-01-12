@@ -20,7 +20,6 @@ const ProductPage = Lazy(() => import("./areas/market/components/ProductPage/Pro
 function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise<{ default: T } | T>) {
   return async function (this: Proton.Shell) {
     this.view.set(<LoaderCover />)
-    console.log(this)
     const Module = await importFactory()
 
 
