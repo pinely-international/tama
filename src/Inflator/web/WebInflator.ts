@@ -313,6 +313,9 @@ class WebInflator extends Inflator {
         if (view !== null) {
           // @ts-expect-error by design.
           currentView.replacedWith = nextView
+        } else {
+          // @ts-expect-error by design.
+          currentView.replacedWith = null
         }
         // @ts-expect-error by design.
         nextView.replacedWith = null
@@ -349,6 +352,9 @@ class WebInflator extends Inflator {
         if (view !== null) {
           // @ts-expect-error by design.
           currentView.replacedWith = nextView
+        } else {
+          // @ts-expect-error by design.
+          currentView.replacedWith = null
         }
         // @ts-expect-error by design.
         nextView.replacedWith = null
