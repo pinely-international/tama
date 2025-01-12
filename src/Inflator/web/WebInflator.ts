@@ -325,6 +325,12 @@ class WebInflator extends Inflator {
         const fixedNodes = f.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
 
         const anchor = fixedNodes[0]
+        if (actualNextView instanceof DocumentFragment) {
+          const firstAsd = actualNextView.fixedNodes[0]
+          const bla = WebComponentPlaceholder.actualOf(firstAsd) ?? firstAsd
+
+          if (bla === anchor) return
+        }
 
         if (anchor.isConnected) anchor.parentElement?.replaceChild(actualNextView, anchor)
         currentView.replaceChildren(...fixedNodes)
