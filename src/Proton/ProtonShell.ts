@@ -112,7 +112,7 @@ export class ProtonShell {
     constructor = await resolveShellConstructorModule(constructor)
 
     try {
-      shell.view.default = await Promise.resolve(constructor.call(shell, props))
+      shell.view.default = shell.inflator.inflate(await Promise.resolve(constructor.call(shell, props)))
     } catch (thrown) {
       if (shell.suspenseCallback != null && thrown instanceof Promise) {
         if (shell.suspenses.length === 0) shell.suspenseCallback(thrown)
@@ -122,7 +122,7 @@ export class ProtonShell {
 
 
         await Promise.all(shell.suspenses)
-        shell.view.default = await constructor.call(shell, props)
+        shell.view.default = shell.inflator.inflate(await constructor.call(shell, props))
 
 
         if (length === shell.suspenses.length) {

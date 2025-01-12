@@ -321,20 +321,19 @@ class WebInflator extends Inflator {
 
       if (currentView instanceof DocumentFragment) {
         // @ts-expect-error by design.
-        const f = currentView.fixedNodes as Node[]
-        const fixedNodes = f.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
+        const fixed = currentView.fixedNodes as Node[]
 
-        const anchor = fixedNodes[0]
+        const anchor = WebComponentPlaceholder.actualOf(fixed[0]) ?? fixed[0]
         if (actualNextView instanceof DocumentFragment) {
           // @ts-expect-error by design.
-          const firstAsd = actualNextView.fixedNodes[0]
-          const bla = WebComponentPlaceholder.actualOf(firstAsd) ?? firstAsd
+          const firstFixed = actualNextView.fixedNodes[0]
+          const actualAnchor = WebComponentPlaceholder.actualOf(firstFixed) ?? firstFixed
 
-          if (bla === anchor) return
+          if (actualAnchor === anchor) return
         }
 
         if (anchor.isConnected) anchor.parentElement?.replaceChild(actualNextView, anchor)
-        currentView.replaceChildren(...fixedNodes)
+        currentView.replaceChildren(...fixed)
 
         // @ts-expect-error by design.
         currentView.replacedWith = nextView
