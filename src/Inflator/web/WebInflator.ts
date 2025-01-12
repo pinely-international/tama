@@ -304,7 +304,7 @@ class WebInflator extends Inflator {
       //   // @ts-expect-error by design.
       //   nextView = nextView?.shell?.getView?.() ?? nextView
       // }
-      const actualNextView = resolveReplacement(nextView)
+      const actualNextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
       currentView = resolveReplacement(currentView)
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
@@ -319,6 +319,7 @@ class WebInflator extends Inflator {
         }
         // @ts-expect-error by design.
         nextView.replacedWith = null
+        // @ts-expect-error by design.
         actualNextView.replacedWith = null
 
         // if (currentView instanceof WebComponentPlaceholder === false) {
@@ -358,6 +359,7 @@ class WebInflator extends Inflator {
         }
         // @ts-expect-error by design.
         nextView.replacedWith = null
+        // @ts-expect-error by design.
         actualNextView.replacedWith = null
 
         // if (currentView instanceof WebComponentPlaceholder === false) {
