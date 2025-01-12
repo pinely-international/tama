@@ -304,14 +304,19 @@ class WebInflator extends Inflator {
       //   // @ts-expect-error by design.
       //   nextView = nextView?.shell?.getView?.() ?? nextView
       // }
-      const actualNextView = nextView
+      const actualNextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
       currentView = resolveReplacement(currentView)
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
         if (currentView.isConnected) currentView.replaceWith(actualNextView)
 
-        // @ts-expect-error by design.
-        currentView.replacedWith = nextView
+        if (view !== null) {
+          // @ts-expect-error by design.
+          currentView.replacedWith = nextView
+        } else {
+          // @ts-expect-error by design.
+          currentView.replacedWith = null
+        }
         // @ts-expect-error by design.
         nextView.replacedWith = null
         // @ts-expect-error by design.
@@ -332,8 +337,10 @@ class WebInflator extends Inflator {
       if (currentView instanceof DocumentFragment) {
         // @ts-expect-error by design.
         const fixed = currentView.fixedNodes as Node[]
+        const fixedNodes = fixed.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
 
-        const anchor = WebComponentPlaceholder.actualOf(fixed[0]) ?? fixed[0]
+        const anchor = fixedNodes[0]
+
         if (actualNextView instanceof DocumentFragment) {
           // @ts-expect-error by design.
           const firstFixed = actualNextView.fixedNodes[0]
@@ -343,10 +350,15 @@ class WebInflator extends Inflator {
         }
 
         if (anchor.isConnected) anchor.parentElement?.replaceChild(actualNextView, anchor)
-        currentView.replaceChildren(...fixed)
+        currentView.replaceChildren(...fixedNodes)
 
-        // @ts-expect-error by design.
-        currentView.replacedWith = nextView
+        if (view !== null) {
+          // @ts-expect-error by design.
+          currentView.replacedWith = nextView
+        } else {
+          // @ts-expect-error by design.
+          currentView.replacedWith = null
+        }
         // @ts-expect-error by design.
         nextView.replacedWith = null
         // @ts-expect-error by design.
