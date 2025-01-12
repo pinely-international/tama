@@ -326,6 +326,7 @@ class WebInflator extends Inflator {
 
         const anchor = fixedNodes[0]
         if (actualNextView instanceof DocumentFragment) {
+          // @ts-expect-error by design.
           const firstAsd = actualNextView.fixedNodes[0]
           const bla = WebComponentPlaceholder.actualOf(firstAsd) ?? firstAsd
 
@@ -361,7 +362,11 @@ class WebInflator extends Inflator {
     }
 
     shell.on("view").subscribe(view => {
-      if (view === null) view = componentPlaceholder
+      if (view === null) {
+        view = componentPlaceholder
+        // @ts-expect-error by design.
+        view.replacedWith = null
+      }
       if (view instanceof Node === false) return
 
       cancelAnimationFrame(lastAnimationFrame)
