@@ -31,17 +31,17 @@ class WebInflator extends Inflator {
 
     return super.inflate(subject) as never
   }
-  protected inflatePrimitive(primitive: Primitive): Node {
-    return document.createTextNode(String(primitive))
+  protected inflatePrimitive(primitive: Primitive): Text {
+    return new Text(String(primitive))
   }
 
   protected inflateFragment(): DocumentFragment {
     return document.createDocumentFragment()
   }
 
-  protected inflateJSX(jsx: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
-    if (jsx instanceof ProtonJSX.Intrinsic) return this.inflateJSXIntrinsic(jsx)
-    if (jsx instanceof ProtonJSX.Component) return this.inflateJSXComponent(jsx)
+  public inflateJSX(jsx: ProtonJSX.Node): Element | DocumentFragment | Node {
+    if (jsx instanceof ProtonJSX.Intrinsic) return this.inflateIntrinsic(jsx.type, jsx.props)
+    if (jsx instanceof ProtonJSX.Component) return this.inflateComponent(jsx.type, jsx.props)
     if (jsx instanceof ProtonJSX.Fragment) return this.inflateFragment()
 
     throw new TypeError("Unsupported type of `jsx`", { cause: { jsx } })
@@ -67,7 +67,7 @@ class WebInflator extends Inflator {
     this.bindPropertyCallback(style, value => element.style.cssText = String(value))
   }
 
-  private inflateJSXDeeply(jsx: ProtonJSX.Node): HTMLElement | DocumentFragment | Node {
+  private inflateJSXDeeply(jsx: ProtonJSX.Node): Element | DocumentFragment | Node {
     const inflated = this.inflateJSX(jsx)
     // Inflation of Component children is handled by the component itself.
     if (jsx instanceof ProtonJSX.Component) return inflated
@@ -75,7 +75,7 @@ class WebInflator extends Inflator {
     return this.inflateJSXIntrinsicDeeply(jsx, inflated)
   }
 
-  private inflateJSXIntrinsicDeeply(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): HTMLElement | DocumentFragment | Node {
+  private inflateJSXIntrinsicDeeply(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): Element | DocumentFragment | Node {
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
       const childInflated = this.inflate(child)
       if (!isNode(childInflated)) return
@@ -111,17 +111,17 @@ class WebInflator extends Inflator {
     return document.createElement(type)
   }
 
-  private inflateJSXIntrinsic(intrinsic: ProtonJSX.Intrinsic): Element | WebMountPlaceholder {
-    if (typeof intrinsic.type !== "string") {
-      throw new TypeError(typeof intrinsic.type + " type of intrinsic element is not supported", { cause: { type: intrinsic.type } })
+  public inflateIntrinsic(type: unknown, props?: any): Element | WebMountPlaceholder {
+    if (typeof type !== "string") {
+      throw new TypeError(typeof type + " type of intrinsic element is not supported", { cause: { type: type } })
     }
 
-    const inflated = this.inflateElement(intrinsic.type, intrinsic.props.ns)
-    if (intrinsic.props == null) return inflated
+    const inflated = this.inflateElement(type, props.ns)
+    if (props == null) return inflated
 
     try {
-      const properties = Object.entries(intrinsic.props)
-      const overridden = this.bindSpecialProperties(intrinsic.props, inflated)
+      const properties = Object.entries(props)
+      const overridden = this.bindSpecialProperties(props, inflated)
 
       for (const [key, value] of properties) {
         if (key === "children") continue
@@ -130,7 +130,7 @@ class WebInflator extends Inflator {
         this.bindProperty(key, value, inflated)
       }
 
-      const immediateGuard = this.applyGuardMounting(inflated, properties, intrinsic.type)
+      const immediateGuard = this.applyGuardMounting(inflated, properties, type)
       if (immediateGuard != null) return immediateGuard
     } catch (error) {
       console.error("Element props binding failed -> ", error)
@@ -279,41 +279,42 @@ class WebInflator extends Inflator {
     if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get!() ?? value))
   }
 
-  protected inflateJSXComponent(component: ProtonJSX.Component) {
+  public inflateComponent(type: Function, props?: any) {
     // if (component.type.prototype == null) { // Assume it's arrow function.
     //   return this.inflate(component.type(component.props))
     // }
 
     const shell = new ProtonShell(this, this.shell)
-    const componentPlaceholder = new WebComponentPlaceholder(shell, component.type)
+    const componentPlaceholder = new WebComponentPlaceholder(shell, type)
 
     let currentView: Node = componentPlaceholder
     let lastAnimationFrame = -1
 
     const schedule = (nextView: Node) => {
-      if (nextView instanceof WebComponentPlaceholder === false) {
-        // @ts-expect-error by design.
-        nextView = nextView?.shell?.getView?.() ?? nextView
-      }
+      // if (nextView instanceof WebComponentPlaceholder === false) {
+      //   // @ts-expect-error by design.
+      //   nextView = nextView?.shell?.getView?.() ?? nextView
+      // }
+      const actualNextView = resolveReplacement(nextView)
       currentView = resolveReplacement(currentView)
 
       if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
-        if (currentView.isConnected) {
-          currentView.replaceWith(nextView)
-        }
+        if (currentView.isConnected) currentView.replaceWith(actualNextView)
 
         // @ts-expect-error by design.
         currentView.replacedWith = nextView
         // @ts-expect-error by design.
         nextView.replacedWith = null
+        actualNextView.replacedWith = null
 
-        if (currentView instanceof WebComponentPlaceholder === false) {
-          currentView.shell = null
-        }
+        // if (currentView instanceof WebComponentPlaceholder === false) {
+        //   currentView.shell = null
+        // }
+        // if (nextView instanceof WebComponentPlaceholder === false) {
+        //   nextView.shell = shell
+        // }
+
         currentView = nextView
-        if (currentView instanceof WebComponentPlaceholder === false) {
-          currentView.shell = shell
-        }
 
         return
       }
@@ -325,23 +326,22 @@ class WebInflator extends Inflator {
 
         const anchor = fixedNodes[0]
 
-        if (anchor.isConnected) {
-          anchor.parentElement?.replaceChild(nextView, anchor)
-        }
+        if (anchor.isConnected) anchor.parentElement?.replaceChild(actualNextView, anchor)
         currentView.replaceChildren(...fixedNodes)
 
         // @ts-expect-error by design.
         currentView.replacedWith = nextView
         // @ts-expect-error by design.
         nextView.replacedWith = null
+        actualNextView.replacedWith = null
 
-        if (currentView instanceof WebComponentPlaceholder === false) {
-          currentView.shell = null
-        }
+        // if (currentView instanceof WebComponentPlaceholder === false) {
+        //   currentView.shell = null
+        // }
+        // if (nextView instanceof WebComponentPlaceholder === false) {
+        //   nextView.shell = shell
+        // }
         currentView = nextView
-        if (currentView instanceof WebComponentPlaceholder === false) {
-          currentView.shell = shell
-        }
 
         if (anchor instanceof WebComponentPlaceholder) {
           // @ts-expect-error no another way.
@@ -362,13 +362,17 @@ class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(() => schedule(view))
     })
 
-    ProtonShell.evaluate(shell, component.type, component.props)
+    ProtonShell.evaluate(shell, type, props)
 
     return componentPlaceholder
   }
 }
 
 export default WebInflator
+
+// const asd = new WebInflator
+// const element = asd.inflateIntrinsic("div", { mounted: false })
+// asd.inflateJSX(<p>123</p>)
 
 
 function resolveReplacement(value: any): any {
@@ -378,3 +382,12 @@ function resolveReplacement(value: any): any {
 
   return resolveReplacement(value.replacedWith)
 }
+
+
+// interface WebInflateChunk<T> {
+//   view: T
+// }
+
+// interface WebInflateChunkComponent<T> extends WebInflateChunk<T> {
+//   shell: ProtonShell
+// }
