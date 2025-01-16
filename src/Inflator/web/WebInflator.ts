@@ -290,7 +290,7 @@ class WebInflator extends Inflator {
     let currentView: Node = componentPlaceholder
     let lastAnimationFrame = -1
 
-    const schedule = (view: unknown) => {
+    const replace = (view: unknown) => {
       let nextView = view
       if (view === null) {
         nextView = componentPlaceholder
@@ -304,7 +304,8 @@ class WebInflator extends Inflator {
       //   // @ts-expect-error by design.
       //   nextView = nextView?.shell?.getView?.() ?? nextView
       // }
-      let actualNextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
+      // let actualNextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
+      let actualNextView = nextView
       if (actualNextView.toBeReplacedWith != null) {
         const toBeReplacedWith = actualNextView.toBeReplacedWith
 
@@ -314,7 +315,7 @@ class WebInflator extends Inflator {
 
       currentView = resolveReplacement(currentView)
 
-      if ("replaceWith" in currentView && currentView.replaceWith instanceof Function) {
+      if (currentView.replaceWith instanceof Function) {
         if (currentView.isConnected) currentView.replaceWith(actualNextView)
         if (currentView.isConnected === false) currentView.toBeReplacedWith = actualNextView
 
@@ -393,7 +394,7 @@ class WebInflator extends Inflator {
 
     shell.on("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
-      lastAnimationFrame = requestAnimationFrame(() => schedule(view))
+      lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
 
     ProtonShell.evaluate(shell, type, props)
