@@ -144,11 +144,19 @@ class WebInflator extends Inflator {
 
     function toggleMount(condition: unknown) {
       if (condition) {
-        if (!mountPlaceholder!.isConnected) return
+        mountPlaceholder.toBeReplacedWith = element
+
+        if (mountPlaceholder?.parentElement == null) return
         mountPlaceholder!.replaceWith(element)
+
+        mountPlaceholder.toBeReplacedWith = null
       } else {
-        if (!element.isConnected) return
+        element.toBeReplacedWith = mountPlaceholder
+
+        if (element.parentElement == null) return
         element.replaceWith(mountPlaceholder!)
+
+        element.toBeReplacedWith = null
       }
     }
 
@@ -314,10 +322,13 @@ class WebInflator extends Inflator {
       }
 
       currentView = resolveReplacement(currentView)
+      currentView.toBeReplacedWith = actualNextView
 
       if (currentView.replaceWith instanceof Function) {
-        if (currentView.isConnected) currentView.replaceWith(actualNextView)
-        if (currentView.isConnected === false) currentView.toBeReplacedWith = actualNextView
+        if (currentView.parentNode != null) {
+          currentView.replaceWith(actualNextView)
+          currentView.toBeReplacedWith = null
+        }
 
         if (view !== null) {
           // @ts-expect-error by design.
@@ -358,7 +369,10 @@ class WebInflator extends Inflator {
           if (actualAnchor === anchor) return
         }
 
-        if (anchor.isConnected) anchor.parentElement?.replaceChild(actualNextView, anchor)
+        if (currentView.parentNode != null) {
+          anchor.parentElement?.replaceChild(actualNextView, anchor)
+          currentView.toBeReplacedWith = null
+        }
         currentView.replaceChildren(...fixedNodes)
 
         if (view !== null) {
@@ -388,8 +402,6 @@ class WebInflator extends Inflator {
 
         return
       }
-
-      throw new Error("Couldn't update view")
     }
 
     shell.on("view").subscribe(view => {
