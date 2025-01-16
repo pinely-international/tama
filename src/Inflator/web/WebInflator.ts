@@ -373,8 +373,8 @@ class WebInflator extends Inflator {
           if (actualAnchor === anchor) return
         }
 
-        if (currentView.parentNode != null) {
-          anchor.parentElement?.replaceChild(actualNextView, anchor)
+        if (anchor.parentElement != null) {
+          anchor.parentElement.replaceChild(actualNextView, anchor)
           currentView.toBeReplacedWith = null
         }
         currentView.replaceChildren(...fixedNodes)
