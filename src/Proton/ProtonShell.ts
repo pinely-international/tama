@@ -137,7 +137,7 @@ export class ProtonShell {
       throw thrown
     }
 
-    shell.view.set(shell.view.default)
+    if (shell.view.default != null) shell.view.set(shell.view.default)
   }
 }
 
