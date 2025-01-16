@@ -9,7 +9,7 @@ import { ProtonShell } from "./ProtonShell"
  *
  * @example Dynamic(CharacterForm, { character })
  */
-function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown, props: { [K in keyof Props]: Flowable<Props[K]> }) {
+export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown, props: { [K in keyof Props]: Flowable<Props[K]> }) {
   const results = new Map<unknown[], unknown>()
   const resultsAge = new Map<unknown[], number>()
 
@@ -53,6 +53,3 @@ const SECONDS_100 = 1_000_000
 function arrayEquals(a: unknown[], b: unknown[]) {
   return a.length === b.length && a.every((aItem, i) => aItem === b[i])
 }
-
-
-export default ProtonDynamic
