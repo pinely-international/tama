@@ -326,7 +326,7 @@ class WebInflator extends Inflator {
 
       if (currentView.replaceWith instanceof Function) {
         if (currentView.parentNode != null) {
-          if (actualNextView.childNodes.length === 0) {
+          if (actualNextView instanceof DocumentFragment && actualNextView.childNodes.length === 0) {
             actualNextView.replaceChildren(...actualNextView.fixedNodes)
           }
 
