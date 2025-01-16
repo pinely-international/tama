@@ -43,7 +43,7 @@ function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown, props
     return getCachedFactory(this, propsState.get())
   }
 
-  DynamicComponent.name = "Dynamic/" + componentFactory.name
+  DynamicComponent.for = componentFactory.name
   return ProtonJSX.Element(DynamicComponent, null, null)
 }
 
