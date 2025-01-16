@@ -77,7 +77,7 @@ export class WebNavigation extends Navigation {
 export const navigation = new WebNavigation
 
 
-export function NavRoute(this: Proton.Shell, props: { path?: string; children: unknown }) {
+export function NavRoute(this: Proton.Shell, props: { path?: string; children: unknown; dynamic?: boolean }) {
   let children: unknown
 
   let result: RouteContext | null = null
