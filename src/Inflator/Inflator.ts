@@ -3,7 +3,7 @@ import { Primitive } from "type-fest"
 import { AccessorGet } from "@/Accessor"
 import Observable from "@/Observable"
 import { ProtonShell } from "@/Proton/ProtonShell"
-import { isObservableGetter } from "@/utils/observable"
+import { isAsyncIterable, isIterable, isObservableGetter } from "@/utils/testers"
 
 import InflatorAdaptersMap from "./InflatorAdaptersMap"
 
@@ -18,11 +18,12 @@ abstract class Inflator {
       if (result) return result
     }
 
-    if (isObservableGetter(subject)) {
-      return this.inflateObservable(subject)
-    }
-
     if (subject == null) return subject
+
+    if (isIterable(subject)) return this.inflateIterable(subject)
+    if (isAsyncIterable(subject)) return this.inflateAsyncIterable(subject)
+    if (isObservableGetter(subject)) return this.inflateObservable(subject)
+
 
     switch (typeof subject) {
       case "bigint":
@@ -39,6 +40,9 @@ abstract class Inflator {
 
   protected abstract inflatePrimitive(primitive: Primitive): unknown
   protected abstract inflateFragment(): unknown
+
+  protected abstract inflateIterable<T>(iterable: Iterable<T>): unknown
+  protected abstract inflateAsyncIterable<T>(asyncIterable: AsyncIterable<T>): unknown
   protected abstract inflateObservable<T>(observable: Observable<T> & AccessorGet<T>): unknown
 
   protected abstract clone(): Inflator

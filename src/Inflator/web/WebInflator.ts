@@ -55,6 +55,39 @@ class WebInflator extends Inflator {
     return textNode
   }
 
+  protected inflateIterable<T>(iterable: IteratorObject<T>): unknown {
+    const comment = new Comment("Iterable/" + iterable.constructor.name)
+    const fragment = new DocumentFragment
+
+    const inflateItem = (item: unknown) => this.inflate(item)
+
+    let inflatedIndexedItems: unknown[] = [...iterable.map(inflateItem)]
+
+    fragment.append(...inflatedIndexedItems.filter(isNode))
+    fragment.append(comment)
+
+
+    // @ts-expect-error fine.
+    iterable?.[Symbol.subscribe](replace)
+
+    function replace(newIterable: IteratorObject<T>) {
+      // Moves known nodes to the fragment.
+      fragment.replaceChildren(...inflatedIndexedItems.filter(isNode))
+
+      const newInflatedItems = newIterable.map(inflateItem)
+      inflatedIndexedItems = [...newInflatedItems]
+
+      // Previous nodes will be lost at this point.
+      fragment.replaceChildren(...newInflatedItems.filter(isNode))
+      comment.before(fragment)
+    }
+
+    return fragment
+  }
+  protected inflateAsyncIterable<T>(asyncIterable: AsyncIteratorObject<T>): unknown {
+    throw new TypeError("Async Iterator is not supported", { cause: { asyncIterable } })
+  }
+
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
     if (isRecord(style)) {
       for (const property in style) {
