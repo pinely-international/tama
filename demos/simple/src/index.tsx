@@ -19,10 +19,6 @@ const inflator = new WebInflator
 inflator.customAttributes.set("classMods", context => {
   if (context.value == null) return
 
-  console.log(context.props.className, "mods", context.value)
-  // console.log("mods", context.value)
-  // console.log(context.value)
-
   context.bind("className", bemFlow(context.props.className as never, ...castArray(context.value)))
 })
 

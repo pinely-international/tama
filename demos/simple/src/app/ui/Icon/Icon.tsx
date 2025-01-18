@@ -39,6 +39,7 @@ export type IconName =
 interface IconProps extends Partial<JSX.AttributesOf<SVGElement>> {
   href?: string
   className?: Flowable<string>
+  classMods?: JSX.CustomAttributes["classMods"]
   name?: Flowable<IconName>
 }
 
@@ -52,7 +53,7 @@ interface IconProps extends Partial<JSX.AttributesOf<SVGElement>> {
  *
  */
 function Icon(props: IconProps) {
-  const className = bemFlow(["icon", props.className], [props.name])
+  const className = bemFlow(["icon", props.className], [props.name], props.classMods)
 
   if (props.href) {
     return (

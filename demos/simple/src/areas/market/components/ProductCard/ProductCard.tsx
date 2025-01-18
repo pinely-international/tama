@@ -8,7 +8,6 @@ import Icon from "@/app/ui/Icon/Icon"
 import ProductCardBuy from "./ProductCardBuyButton"
 import { NavLink } from "@/navigation"
 import { Flow, Flowable, FlowRead } from "@denshya/flow"
-import { bemFlow } from "@/utils/bem"
 
 
 interface ProductCardProps extends MarketProduct { }

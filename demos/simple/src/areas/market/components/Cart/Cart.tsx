@@ -41,7 +41,7 @@ function Cart(this: Proton.Shell, props: CartProps) {
           <b>{totals.$.subtotal.to(Price.format)}</b>
         </div>
       </div>
-      <ButtonLink to="/market/cart" color="green">
+      <ButtonLink to="/market/cart">
         <div className="cart__button">
           <span>View cart</span>
           <Icon name="arrow-right" />

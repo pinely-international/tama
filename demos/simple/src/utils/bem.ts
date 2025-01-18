@@ -41,13 +41,12 @@ function bem(classNames: BEMElement | BEMElement[], ...modifiers: (Record<keyof 
 
 export const bemFlow = (classNames: Flowable<BEMElement> | Flowable<BEMElement>[], ...mods) => {
   const classNamesFlows = castArray(classNames).map(Flow.from)
-  const modsFlows = mods.map(mod => {
+  const modsFlows = mods.flatMap(mod => {
     if (isRecord(mod)) return Flow.computeRecord(mod)
     if (mod instanceof Array) return Flow.all(mod)
 
     return mod
   })
-  if (classNames === "button") console.log(classNames, "bem", mods, modsFlows)
 
   return Flow.compute(bem, [Flow.all(classNamesFlows), ...modsFlows])
 }
