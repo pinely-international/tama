@@ -1,8 +1,6 @@
 import { Proton } from "@denshya/proton"
 import { Flow, Flowable } from "@denshya/flow"
 
-import { bemFlow } from "./utils/bem"
-
 
 
 abstract class Navigation<Path = string> {
@@ -106,9 +104,8 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
 
 
 
-export function NavLink(props: { to: Flowable<string>; className?: Flowable<string>; children?: unknown }) {
+export function NavLink(props: { to: Flowable<string>; className?: Flowable<string>; classMods?: JSX.CustomAttributes["classMods"]; children?: unknown }) {
   const active = Flow.compute((nav, to) => to.length > 1 && nav.pathname.startsWith(to), [navigation.current, props.to])
-  const className = bemFlow(props.className ?? "nav-link", { active })
 
   function onClick(event: MouseEvent) {
     event.preventDefault()
@@ -116,7 +113,7 @@ export function NavLink(props: { to: Flowable<string>; className?: Flowable<stri
   }
 
   return (
-    <a className={className} href={props.to} on={{ click: onClick }}>{props.children}</a>
+    <a className={props.className ?? "nav-link"} classMods={[{ active }, props.classMods]} href={props.to} on={{ click: onClick }}>{props.children}</a>
   )
 }
 

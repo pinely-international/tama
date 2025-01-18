@@ -63,7 +63,7 @@ function Icon(props: IconProps) {
 
   return (
     // <svg {...props} className={classMerge("icon", props.className && classWithModifiers(classWithModifiers(props.className, props.name), ...props.modifiers || []))}>
-    <svg {...props} className={undefined} class={className}>
+    <svg {...props} classMods={undefined} className={undefined} class={className}>
       <use href={Flow.from(props.name).to(it => `/static/icons.svg#${it}`)} />
     </svg>
   )

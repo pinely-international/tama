@@ -4,7 +4,6 @@ import { Proton } from "@denshya/proton"
 
 import Icon from "../Icon/Icon"
 import { Flow } from "@denshya/flow"
-import { bemFlow } from "@/utils/bem"
 
 
 interface EditableAvatarProps {
@@ -40,7 +39,7 @@ function EditableAvatar(this: Proton.Shell, props: EditableAvatarProps) {
   }
 
   return (
-    <div className={bemFlow("editable-avatar", { pending })}>
+    <div className="editable-avatar" classMods={{ pending }}>
       <img src={image} alt="avatar" className="editable-avatar__image" />
       <label className="editable-avatar__cover">
         <Icon className="editable-avatar__icon" name="touch" />

@@ -1,7 +1,6 @@
 import "./DropDown.scss"
 
 
-import { bemFlow } from "@/utils/bem"
 import { Flow, FlowArray } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
 
@@ -48,10 +47,12 @@ function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
   })
 
   return (
-    <div className={bemFlow("drop-down", { expanded: props.expanded })} role="listbox" aria-expanded={props.expanded}>
+    <div className="drop-down" classMods={{ expanded: props.expanded }} role="listbox" aria-expanded={props.expanded}>
       {optionsList.map(option => (
         <button
-          className={bemFlow("drop-down__option", { selected: isSelect(option) })}
+          className="drop-down__option"
+          classMods={{ selected: isSelect(option) }}
+
           on={{ click: () => onSelect(option) }}
           role="option"
           type="button"

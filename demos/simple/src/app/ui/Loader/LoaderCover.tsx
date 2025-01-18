@@ -1,7 +1,7 @@
 import "./Loader.scss"
 
 import Loader from "./Loader"
-import { bemFlow } from "@/utils/bem"
+
 
 interface LoaderCoverProps {
   absolute?: boolean
@@ -11,7 +11,7 @@ interface LoaderCoverProps {
 
 function LoaderCover(props: LoaderCoverProps) {
   return (
-    <div className={bemFlow("loader-cover", props.absolute && "absolute", props.white && "white", props.dimmed && "dimmed")}>
+    <div className="loader-cover" classMods={props}>
       <Loader className="loader-cover__loader" />
     </div>
   )

@@ -47,6 +47,7 @@ export const bemFlow = (classNames: Flowable<BEMElement> | Flowable<BEMElement>[
 
     return mod
   })
+  if (classNames === "button") console.log(classNames, "bem", mods, modsFlows)
 
   return Flow.compute(bem, [Flow.all(classNamesFlows), ...modsFlows])
 }

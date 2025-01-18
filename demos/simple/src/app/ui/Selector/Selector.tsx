@@ -4,7 +4,6 @@ import DropDown, { DropDownOption } from "../DropDown/DropDown"
 import Icon, { IconName } from "../Icon/Icon"
 import { Proton } from "@denshya/proton"
 import { Flow, Flowable } from "@denshya/flow"
-import { bemFlow } from "@/utils/bem"
 
 
 interface SelectorProps<T> {
@@ -34,7 +33,7 @@ function Selector<T = string | undefined>(this: Proton.Shell, props: SelectorPro
         <Icon className="selector__icon" name={Flow.from(props.iconName).required} />
         <div className="selector__placeholder" mounted={selected.isNullish}>{props.placeholder}</div>
         <div className="selector__current">{selected.$.children.required}</div>
-        <Icon className={bemFlow("selector__icon", { up: expanded })} name="chevron-down" />
+        <Icon className="selector__icon" classMods={{ up: expanded }} name="chevron-down" />
       </button>
       <DropDown expanded={expanded} selected={selected}>
         {props.children}
