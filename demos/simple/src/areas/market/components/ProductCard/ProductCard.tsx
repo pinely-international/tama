@@ -43,7 +43,7 @@ function ProductCard(this: Proton.Shell, props: ProductCardProps) {
         <div className="product-card__buy">
           <ProductCardBuy amount={amount} onClick={() => market.cart.$.set(props.id, 1)} />
         </div>
-        <button className={bemFlow("product-card__like", { active: liked })} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
+        <button className="product-card__like" classMods={{ active: liked }} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
           <Icon name="heart" />
         </button>
       </div>

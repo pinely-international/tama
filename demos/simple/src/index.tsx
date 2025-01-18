@@ -1,9 +1,20 @@
 import { WebInflator } from "@denshya/proton"
 
 import App from "./App"
+import { bemFlow } from "./utils/bem"
+import { Flowable } from "@denshya/flow"
+
+
+declare global {
+  namespace JSX {
+    interface SpecialAttributes {
+      classMods?: Record<keyof never, Flowable<unknown>>
+    }
+  }
+}
 
 const inflator = new WebInflator
-inflator.jsx.addAttributeInitializer("bem")
+inflator.jsx.attribute("classBem", (value, context) => context.element.className = bemFlow(...value))
 
 
 const inflated = inflator.inflate(<App />)
