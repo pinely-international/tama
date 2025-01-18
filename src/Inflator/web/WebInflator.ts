@@ -311,7 +311,14 @@ class WebInflator extends Inflator {
     for (const [key, attributeSetup] of this.customAttributes.entries()) {
       if (key in properties === false) continue
 
-      attributeSetup(properties[key], { element })
+      attributeSetup({
+        key,
+        value: properties[key],
+        element,
+
+        bind: (key, value) => this.bindProperty(key, value, element),
+        set: {} as never // Not sure if should be implemented.
+      })
       overrides.add(key)
     }
 
@@ -472,8 +479,8 @@ export default WebInflator
 
 // const asd = new WebInflator
 // const element = asd.inflateIntrinsic("div", { mounted: false })
-// asd.inflateJSX(<p>123 </p>)
-// asd.jsx.attributes.set("classMods", (value) => 123)
+// asd.inflateJSX(<p>123</p>)
+// asd.customAttributes.set("classMods", context => context.bind("className", context.value))
 
 
 function resolveReplacement(value: any): any {
