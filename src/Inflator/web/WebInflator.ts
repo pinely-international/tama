@@ -321,8 +321,7 @@ class WebInflator extends Inflator {
         bind: (key, value) => {
           this.bindProperty(key, value, element)
           overrides.add(key)
-        },
-        set: {} as never // Not sure if should be implemented.
+        }
       })
       overrides.add(key)
     }

@@ -4,10 +4,8 @@ interface AttributeSetupContext<T> {
   key: string
   value: T
   element: Element
-  /** Sets `value` to `element` attribute by `key`. */
-  set(key: string, value: unknown): void
   /**
-   * Extends `set` method. If observable, updates `element` attribute by `key` when `value` is changed.
+   * Sets and updates `element` attribute by `key` when `value` is changed. Discards existing `key` binding.
    */
   bind(key: string, value: unknown): void
 }
