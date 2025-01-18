@@ -358,7 +358,7 @@ class WebInflator extends Inflator {
     const componentPlaceholder = new WebComponentPlaceholder(shell, type)
     const componentWrapper = new WebTempFragment
     componentWrapper.append(componentPlaceholder)
-    componentWrapper.target = componentPlaceholder
+    componentWrapper.fixedNodes = [componentPlaceholder]
 
     let currentView: Node = componentPlaceholder
     let lastAnimationFrame = -1
@@ -373,7 +373,9 @@ class WebInflator extends Inflator {
       }
       if (nextView instanceof Node === false) return
 
-      if (currentView instanceof WebTempFragment) currentView = currentView.target
+      if (nextView instanceof WebTempFragment) nextView = nextView.fixedNodes[0]
+      if (currentView instanceof WebTempFragment) currentView = currentView.fixedNodes[0]
+
 
       // if (nextView instanceof WebComponentPlaceholder === false) {
       //   // @ts-expect-error by design.
@@ -421,6 +423,8 @@ class WebInflator extends Inflator {
         // }
 
         currentView = nextView
+
+        return
       }
 
       if (currentView instanceof DocumentFragment) {
@@ -468,6 +472,8 @@ class WebInflator extends Inflator {
           // @ts-expect-error no another way.
           anchor.shell.events.dispatch("unmount")
         }
+
+        return
       }
     }
 
