@@ -1,5 +1,7 @@
 import { ProtonShell } from "@/Proton/ProtonShell"
 
+import WebTempFragment from "./WebTempFragment"
+
 
 class WebComponentPlaceholder extends Comment {
   /**
@@ -8,6 +10,7 @@ class WebComponentPlaceholder extends Comment {
    * @returns null if `item` is NOT instance of `Node`.
    */
   static actualOf(item: unknown): WebComponentPlaceholder | Node | null {
+    if (item instanceof WebTempFragment) return item.target
     if (item instanceof WebComponentPlaceholder) return item.actual
     if (item instanceof Node) return item
 

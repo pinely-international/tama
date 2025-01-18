@@ -358,6 +358,7 @@ class WebInflator extends Inflator {
     const componentPlaceholder = new WebComponentPlaceholder(shell, type)
     const componentWrapper = new WebTempFragment
     componentWrapper.append(componentPlaceholder)
+    componentWrapper.target = componentPlaceholder
     componentWrapper.fixedNodes = [componentPlaceholder]
 
     let currentView: Node = componentPlaceholder
@@ -373,8 +374,8 @@ class WebInflator extends Inflator {
       }
       if (nextView instanceof Node === false) return
 
-      if (nextView instanceof WebTempFragment) nextView = nextView.fixedNodes[0]
-      if (currentView instanceof WebTempFragment) currentView = currentView.fixedNodes[0]
+      if (nextView instanceof WebTempFragment) nextView = nextView.target
+      if (currentView instanceof WebTempFragment) currentView = currentView.target
 
 
       // if (nextView instanceof WebComponentPlaceholder === false) {
