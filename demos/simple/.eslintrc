@@ -119,5 +119,5 @@
     "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/ban-types": "off",
     "react/no-children-prop": "off"
-  }
+  } 
 }
