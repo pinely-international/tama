@@ -389,6 +389,12 @@ class WebInflator extends Inflator {
       currentView = resolveReplacement(currentView)
       currentView.toBeReplacedWith = actualNextView
 
+
+      if (currentView instanceof WebTempFragment) {
+        replace(currentView.target)
+        currentView.target = actualNextView
+      }
+
       if (currentView.replaceWith instanceof Function) {
         if (currentView.parentNode != null) {
           if (actualNextView instanceof DocumentFragment && actualNextView.childNodes.length === 0) {
@@ -466,11 +472,6 @@ class WebInflator extends Inflator {
           // @ts-expect-error no another way.
           anchor.shell.events.dispatch("unmount")
         }
-      }
-
-      if (currentView instanceof WebTempFragment) {
-        replace(currentView.target)
-        currentView.target = actualNextView
       }
     }
 
