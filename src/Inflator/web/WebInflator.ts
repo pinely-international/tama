@@ -12,6 +12,7 @@ import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
 import { isNode, nonGuard } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
 import WebMountPlaceholder from "./WebMountPlaceholder"
+import WebTempFragment from "./WebTempFragment"
 
 import Inflator from "../Inflator"
 
@@ -353,7 +354,10 @@ class WebInflator extends Inflator {
     // }
 
     const shell = new ProtonShell(this, this.shell)
+
     const componentPlaceholder = new WebComponentPlaceholder(shell, type)
+    const componentWrapper = new WebTempFragment
+    componentWrapper.append(componentPlaceholder)
 
     let currentView: Node = componentPlaceholder
     let lastAnimationFrame = -1
@@ -475,7 +479,7 @@ class WebInflator extends Inflator {
 
     ProtonShell.evaluate(shell, type, props)
 
-    return componentPlaceholder
+    return componentWrapper
   }
 }
 
