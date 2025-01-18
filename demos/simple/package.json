@@ -32,6 +32,6 @@
     "vite-bundle-visualizer": "^1.2.1"
   },
   "engines": {
-    "bun": "latest"
+    "bun": "1.1.45"
   }
 }
