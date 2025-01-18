@@ -393,6 +393,7 @@ class WebInflator extends Inflator {
       if (currentView instanceof WebTempFragment) {
         replace(currentView.target)
         currentView.target = actualNextView
+        return
       }
 
       if (currentView.replaceWith instanceof Function) {
