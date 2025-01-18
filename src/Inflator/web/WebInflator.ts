@@ -373,6 +373,8 @@ class WebInflator extends Inflator {
       }
       if (nextView instanceof Node === false) return
 
+      if (currentView instanceof WebTempFragment) currentView = currentView.target
+
       // if (nextView instanceof WebComponentPlaceholder === false) {
       //   // @ts-expect-error by design.
       //   nextView = nextView?.shell?.getView?.() ?? nextView
@@ -388,13 +390,6 @@ class WebInflator extends Inflator {
 
       currentView = resolveReplacement(currentView)
       currentView.toBeReplacedWith = actualNextView
-
-
-      if (currentView instanceof WebTempFragment) {
-        replace(currentView.target)
-        currentView.target = actualNextView
-        return
-      }
 
       if (currentView.replaceWith instanceof Function) {
         if (currentView.parentNode != null) {
