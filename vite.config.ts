@@ -21,7 +21,7 @@ export default defineConfig({
     modulePreload: false,
 
     lib: {
-      entry: [path.resolve(__dirname, "./src/index.ts"), path.resolve(__dirname, "./src/jsx-runtime.ts")],
+      entry: [path.resolve(__dirname, "./src/index.ts"), path.resolve(__dirname, "./src/jsx/jsx-runtime.ts")],
       formats: ["es"]
     }
   },

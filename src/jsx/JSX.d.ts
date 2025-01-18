@@ -1,8 +1,8 @@
 import { IsEqual, LiteralUnion } from "type-fest"
 
-import { Accessible, AccessorGet } from "./Accessor"
-import Guarded from "./Guarded"
-import Observable from "./Observable"
+import { Accessible, AccessorGet } from "../Accessor"
+import Guarded from "../Guarded"
+import Observable from "../Observable"
 
 
 type Any = object | null | undefined
@@ -68,18 +68,18 @@ declare global {
 
     interface IntrinsicAttributes {
       mounted?: AccessorGet<T> & Observable<T>
+      children?: unknown
     }
 
-    interface SpecialAttributes {
+    interface CustomAttributes {
       ns?: LiteralUnion<string, "http://www.w3.org/1999/xhtml" | "http://www.w3.org/2000/svg" | "http://www.w3.org/1998/Math/MathML">
       on?: HTMLElementEvents
       style?: Attribute<Record<string, Attribute<string | CSSStyleValue>> | { [K in keyof CSSStyleDeclaration]?: Attribute<CSSStyleDeclaration[K] | CSSStyleValue | null | undefined> } | string>
-      children?: unknown
     }
 
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]
 
-    type HTMLElementAttributes<T> = Partial<AttributesOf<T>> & SpecialAttributes & IntrinsicAttributes
+    type HTMLElementAttributes<T> = Partial<AttributesOf<T>> & CustomAttributes & IntrinsicAttributes
     type SVGElementAttributes<T> = HTMLElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : never) & { class?: Attribute<string> }
 
     type SVGURIReferenceAttribute = SVGURIReference | { href?: Attribute<string> }

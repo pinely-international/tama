@@ -1,6 +1,6 @@
 import { Flow, Flowable } from "@denshya/flow"
 
-import ProtonJSX from "@/ProtonJSX"
+import ProtonJSX from "@/jsx/ProtonJSX"
 
 import { ProtonShell } from "./ProtonShell"
 

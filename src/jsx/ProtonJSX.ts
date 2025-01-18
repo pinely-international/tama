@@ -3,7 +3,7 @@ import { Primitive } from "type-fest"
 
 /** @isolated */
 namespace ProtonJSX {
-  type Props = Record<keyof never, unknown> & JSX.SpecialAttributes
+  type Props = Record<keyof never, unknown> & JSX.CustomAttributes
   type Children = (Node | Primitive) | (Node | Primitive)[]
   type ChildrenExtrinsic = (Component | Primitive)[]
 

@@ -1,4 +1,4 @@
-import ProtonJSX from "../ProtonJSX"
+import ProtonJSX from "../jsx/ProtonJSX"
 
 export function ProtonLazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise<{ default: T } | T>) {
   return async () => {

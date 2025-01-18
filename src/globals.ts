@@ -1,2 +1,2 @@
-import "./JSX"
+import "./jsx/JSX"
 import "./Symbol"

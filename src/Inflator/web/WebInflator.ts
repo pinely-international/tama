@@ -1,9 +1,10 @@
 import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
+import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
+import ProtonJSX from "@/jsx/ProtonJSX"
 import Observable from "@/Observable"
 import { ProtonShell } from "@/Proton/ProtonShell"
-import ProtonJSX from "@/ProtonJSX"
 import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
@@ -23,7 +24,13 @@ type WebInflateResult<T> =
   Text
 
 class WebInflator extends Inflator {
-  protected clone() { return new WebInflator }
+  customAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
+
+  protected clone() {
+    const clone = new WebInflator
+    clone.customAttributes = new Map(this.customAttributes)
+    return clone
+  }
 
   public inflate<T>(subject: T): WebInflateResult<T> {
     if (subject instanceof Node) return subject as never
@@ -154,7 +161,7 @@ class WebInflator extends Inflator {
 
     try {
       const properties = Object.entries(props)
-      const overridden = this.bindSpecialProperties(props, inflated)
+      const overridden = this.bindCustomProperties(props, inflated)
 
       for (const [key, value] of properties) {
         if (key === "children") continue
@@ -253,7 +260,7 @@ class WebInflator extends Inflator {
   }
 
   /** @returns property names that were overridden. */
-  protected bindSpecialProperties(properties: any, element: Element): Set<string> {
+  protected bindCustomProperties(properties: any, element: Element): Set<string> {
     const overrides = new Set<string>()
 
     if (isRecord(properties.on)) {
@@ -297,6 +304,15 @@ class WebInflator extends Inflator {
     if (element instanceof HTMLSelectElement) {
       WebNodeBinding.dualSignalBind(element, "value", properties.value, "change")
       overrides.add("value")
+    }
+
+
+
+    for (const [key, attributeSetup] of this.customAttributes.entries()) {
+      if (key in properties === false) continue
+
+      attributeSetup(properties[key], { element })
+      overrides.add(key)
     }
 
     return overrides
@@ -456,7 +472,8 @@ export default WebInflator
 
 // const asd = new WebInflator
 // const element = asd.inflateIntrinsic("div", { mounted: false })
-// asd.inflateJSX(<p>123</p>)
+// asd.inflateJSX(<p>123 </p>)
+// asd.jsx.attributes.set("classMods", (value) => 123)
 
 
 function resolveReplacement(value: any): any {
