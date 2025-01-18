@@ -14,7 +14,7 @@ declare global {
 }
 
 const inflator = new WebInflator
-inflator.customAttributes.set("classMods", (value, context) => context.bindAttribute("className", bemFlow(...value)))
+inflator.customAttributes.set("classMods", context => context.bind("className", bemFlow(...context.value)))
 
 
 const inflated = inflator.inflate(<App />)
