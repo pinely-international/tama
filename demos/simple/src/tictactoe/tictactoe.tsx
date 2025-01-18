@@ -1,6 +1,6 @@
-import { Flow } from "@denshya/flow"
 import "./tictactoe.scss"
-import { Proton } from "@denshya/proton"
+
+import { Flow, FlowArray } from "@denshya/flow"
 
 
 
@@ -60,14 +60,14 @@ function Board(props: { xIsNext: Flow<boolean>, squares: Flow<string[]>, onPlay(
 }
 
 export default function Game() {
-  const history = new Flow<string[][]>([Array(9).fill("")])
+  const history = new FlowArray<string[]>([Array(9).fill("")])
   const currentMove = new Flow(0)
 
   const xIsNext = currentMove.to(it => it % 2 === 0)
-  const currentSquares = Flow.compute((currentMove, history) => history[currentMove], [currentMove, history])
+  const currentSquares = history.at(currentMove)
 
   function onPlay(nextSquares: string[]) {
-    const nextHistory = [...history.get().slice(0, currentMove.get() + 1), nextSquares]
+    const nextHistory = history.get().slice(0, currentMove.get() + 1).concat(nextSquares)
 
     history.set(nextHistory)
     currentMove.set(nextHistory.length - 1)
@@ -77,9 +77,7 @@ export default function Game() {
     currentMove.set(nextMove)
   }
 
-  const historyIndex = new Proton.List(history)
-
-  const moves = historyIndex.map((squares, move) => {
+  const moves = history.map((squares, move) => {
     let description = "Go to game start"
     if (move > 0) {
       description = "Go to move #" + move

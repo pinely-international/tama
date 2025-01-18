@@ -2,7 +2,7 @@ import "./DropDown.scss"
 
 
 import { bemFlow } from "@/utils/bem"
-import { Flow } from "@denshya/flow"
+import { Flow, FlowArray } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
 
 
@@ -16,7 +16,7 @@ interface DropDownProps<T> {
 }
 
 function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
-  const optionsIndex = new Proton.List(props.children)
+  const optionsList = new FlowArray(props.children)
 
   function onSelect(option: DropDownOption<T>) {
     props.selected.set(option)
@@ -49,7 +49,7 @@ function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
 
   return (
     <div className={bemFlow("drop-down", { expanded: props.expanded })} role="listbox" aria-expanded={props.expanded}>
-      {optionsIndex.map(option => (
+      {optionsList.map(option => (
         <button
           className={bemFlow("drop-down__option", { selected: isSelect(option) })}
           on={{ click: () => onSelect(option) }}

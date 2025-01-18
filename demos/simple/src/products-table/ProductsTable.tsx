@@ -1,8 +1,7 @@
 import "./ProductsTable.scss"
 
-import { Flow } from "@denshya/flow"
+import { Flow, FlowArray } from "@denshya/flow"
 
-import { Proton } from '@denshya/proton'
 
 
 function FilterableProductTable(props: { products: Product[] }) {
@@ -40,14 +39,14 @@ function ProductRow(props: { product: Product }) {
 
 function ProductTable(props: { products: Product[], filterText: Flow<string>, inStockOnly: Flow<boolean> }) {
   let lastCategory: string | null = null
-  const productsIndex = new Proton.List(props.products)
+  const productsList = new FlowArray(props.products)
 
   Flow.compute(() => {
     lastCategory = null
-    productsIndex.rebase()
+    productsList.set(it => it)
   }, [props.filterText, props.inStockOnly])
 
-  const rows = productsIndex.map(product => {
+  const rows = productsList.map(product => {
     if (product.name.toLowerCase().indexOf(props.filterText.get().toLowerCase()) === -1) return
     if (props.inStockOnly.get() && !product.stocked) return
 

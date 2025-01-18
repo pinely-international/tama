@@ -1,9 +1,10 @@
-import { WebInflator, Proton } from "@denshya/proton"
+import { WebInflator } from "@denshya/proton"
 
 import App from "./App"
 
 const inflator = new WebInflator
-inflator.adapters.add(Proton.ListWebInflator)
+inflator.jsx.addAttributeInitializer("bem")
+
 
 const inflated = inflator.inflate(<App />)
 
