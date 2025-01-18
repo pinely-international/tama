@@ -260,28 +260,28 @@ class WebInflator extends Inflator {
   }
 
   /** @returns property names that were overridden. */
-  protected bindCustomProperties(properties: any, element: Element): Set<string> {
+  protected bindCustomProperties(props: any, element: Element): Set<string> {
     const overrides = new Set<string>()
 
-    if (isRecord(properties.on)) {
-      this.bindEventListeners(properties.on, element)
+    if (isRecord(props.on)) {
+      this.bindEventListeners(props.on, element)
       overrides.add("on")
     }
 
-    if (element instanceof HTMLElement && "style" in properties) {
-      this.bindStyle(properties.style, element)
+    if (element instanceof HTMLElement && "style" in props) {
+      this.bindStyle(props.style, element)
       overrides.add("style")
     }
 
     if (element instanceof SVGElement) {
-      if (properties.class != null) {
-        this.bindPropertyCallback(properties.class, value => element.setAttribute("class", String(value)))
+      if (props.class != null) {
+        this.bindPropertyCallback(props.class, value => element.setAttribute("class", String(value)))
         overrides.add("class")
       }
     }
 
     if (element instanceof SVGUseElement) {
-      this.bindPropertyCallback(properties.href, (href: any) => {
+      this.bindPropertyCallback(props.href, (href: any) => {
         if (typeof href === "string") element.href.baseVal = href
         if (typeof href === "object") element.href.baseVal = href.baseVal
       })
@@ -290,30 +290,32 @@ class WebInflator extends Inflator {
     }
     if (element instanceof HTMLInputElement) {
       // Ensures correct type beforehand.
-      this.bindProperty("type", properties.type, element)
+      this.bindProperty("type", props.type, element)
 
-      WebNodeBinding.dualSignalBind(element, "valueAsDate", properties.valueAsDate, "input")
-      WebNodeBinding.dualSignalBind(element, "valueAsNumber", properties.valueAsNumber, "input")
+      WebNodeBinding.dualSignalBind(element, "valueAsDate", props.valueAsDate, "input")
+      WebNodeBinding.dualSignalBind(element, "valueAsNumber", props.valueAsNumber, "input")
 
       overrides.add("type").add("valueAsDate").add("valueAsNumber")
     }
     if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-      WebNodeBinding.dualSignalBind(element, "value", properties.value, "input")
+      WebNodeBinding.dualSignalBind(element, "value", props.value, "input")
       overrides.add("value")
     }
     if (element instanceof HTMLSelectElement) {
-      WebNodeBinding.dualSignalBind(element, "value", properties.value, "change")
+      WebNodeBinding.dualSignalBind(element, "value", props.value, "change")
       overrides.add("value")
     }
 
 
 
     for (const [key, attributeSetup] of this.customAttributes.entries()) {
-      if (key in properties === false) continue
+      if (key in props === false) continue
 
       attributeSetup({
+        props,
+
         key,
-        value: properties[key],
+        value: props[key],
         element,
 
         bind: (key, value) => this.bindProperty(key, value, element),

@@ -1,4 +1,6 @@
 interface AttributeSetupContext<T> {
+  props: Record<string, unknown> & JSX.CustomAttributes & JSX.IntrinsicAttributes
+
   key: string
   value: T
   element: Element
