@@ -318,7 +318,10 @@ class WebInflator extends Inflator {
         value: props[key],
         element,
 
-        bind: (key, value) => this.bindProperty(key, value, element),
+        bind: (key, value) => {
+          this.bindProperty(key, value, element)
+          overrides.add(key)
+        },
         set: {} as never // Not sure if should be implemented.
       })
       overrides.add(key)
