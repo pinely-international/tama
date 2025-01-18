@@ -7,14 +7,14 @@ import { Flowable } from "@denshya/flow"
 
 declare global {
   namespace JSX {
-    interface SpecialAttributes {
+    interface CustomAttributes {
       classMods?: Record<keyof never, Flowable<unknown>>
     }
   }
 }
 
 const inflator = new WebInflator
-inflator.jsx.attribute("classBem", (value, context) => context.element.className = bemFlow(...value))
+inflator.customAttributes.set("classMods", (value, context) => context.bindAttribute("className", bemFlow(...value)))
 
 
 const inflated = inflator.inflate(<App />)
