@@ -360,7 +360,7 @@ class WebInflator extends Inflator {
     componentWrapper.append(componentPlaceholder)
     componentWrapper.fixedNodes = [componentPlaceholder]
 
-    let currentView: Node = componentPlaceholder
+    let currentView: Node = componentWrapper
     let lastAnimationFrame = -1
 
     const replace = (view: unknown) => {
@@ -372,10 +372,6 @@ class WebInflator extends Inflator {
         nextView.replacedWith = null
       }
       if (nextView instanceof Node === false) return
-
-      if (nextView instanceof WebTempFragment) nextView = nextView.fixedNodes[0]
-      if (currentView instanceof WebTempFragment) currentView = currentView.fixedNodes[0]
-
 
       // if (nextView instanceof WebComponentPlaceholder === false) {
       //   // @ts-expect-error by design.
