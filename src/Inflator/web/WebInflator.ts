@@ -358,6 +358,7 @@ class WebInflator extends Inflator {
     const componentPlaceholder = new WebComponentPlaceholder(shell, type)
     const componentWrapper = new WebTempFragment
     componentWrapper.append(componentPlaceholder)
+    componentWrapper.fixedNodes = [componentPlaceholder]
 
     let currentView: Node = componentPlaceholder
     let lastAnimationFrame = -1
