@@ -69,7 +69,7 @@ class WebInflator extends Inflator {
     const inflateItem = (item: unknown) => this.inflate(item)
 
 
-    fragment.append(...iterable.filter(Boolean).map(inflateItem).map(unwrapNode))
+    fragment.append(...iterable[Symbol.iterator].filter(Boolean).map(inflateItem).map(unwrapNode))
     let inflatedIndexedItems: unknown[] = [...fragment.childNodes]
     fragment.append(comment)
 
@@ -81,7 +81,7 @@ class WebInflator extends Inflator {
       // Moves known nodes to the fragment.
       fragment.replaceChildren(...inflatedIndexedItems.map(unwrapNode))
       // Previous nodes will be lost at this point.
-      fragment.replaceChildren(...newIterable.filter(Boolean).map(inflateItem).map(unwrapNode))
+      fragment.replaceChildren(...newIterable[Symbol.iterator].filter(Boolean).map(inflateItem).map(unwrapNode))
 
       inflatedIndexedItems = [...fragment.childNodes]
 
