@@ -9,7 +9,7 @@ import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { disconnectNode, isNode, nonGuard } from "./helpers"
+import { isNode, nonGuard } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
 import WebMountPlaceholder from "./WebMountPlaceholder"
 import WebTempFragment from "./WebTempFragment"
@@ -79,13 +79,13 @@ class WebInflator extends Inflator {
     iterable?.[Symbol.subscribe](replace)
 
     function replace(newIterable: IteratorObject<T>) {
-      inflatedIndexedItems.forEach(disconnectNode)
-
-      const newInflatedItems = newIterable.map(inflateItem)
-      inflatedIndexedItems = [...newInflatedItems]
-
+      // Moves known nodes to the fragment.
+      fragment.replaceChildren(...inflatedIndexedItems.filter(isNode))
       // Previous nodes will be lost at this point.
-      fragment.replaceChildren(...newInflatedItems.filter(isNode))
+      fragment.replaceChildren(...newIterable.map(inflateItem))
+
+      inflatedIndexedItems = [...fragment.childNodes]
+
       comment.before(fragment)
     }
 
