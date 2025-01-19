@@ -12,4 +12,4 @@ applyCustomAttributes(inflator)
 
 
 const inflated = inflator.inflate(<App />)
-setTimeout(() => document.getElementById("root")!.replaceChildren(inflated), 1000)
+document.getElementById("root")!.replaceChildren(inflated)

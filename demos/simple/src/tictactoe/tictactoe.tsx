@@ -67,7 +67,7 @@ export default function Game() {
   const currentSquares = history.at(currentMove)
 
   function onPlay(nextSquares: string[]) {
-    const nextHistory = history.get().slice(0, currentMove.get() + 1).concat(nextSquares)
+    const nextHistory = [...history.get().slice(0, currentMove.get() + 1), nextSquares]
 
     history.set(nextHistory)
     currentMove.set(nextHistory.length - 1)
