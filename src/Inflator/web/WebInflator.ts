@@ -68,9 +68,9 @@ class WebInflator extends Inflator {
 
     const inflateItem = (item: unknown) => this.inflate(item)
 
-    let inflatedIndexedItems: unknown[] = [...iterable.map(inflateItem)]
 
-    fragment.append(...inflatedIndexedItems.filter(isNode))
+    fragment.append(...iterable.filter(Boolean).map(inflateItem).map(unwrapNode))
+    let inflatedIndexedItems: unknown[] = [...fragment.childNodes]
     fragment.append(comment)
 
 
