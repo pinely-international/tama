@@ -9,10 +9,9 @@ import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { isNode, nonGuard } from "./helpers"
+import { isNode, nonGuard, resolveReplacement, unwrapNode } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
 import WebMountPlaceholder from "./WebMountPlaceholder"
-import WebTempFragment from "./WebTempFragment"
 
 import Inflator from "../Inflator"
 
@@ -80,9 +79,9 @@ class WebInflator extends Inflator {
 
     function replace(newIterable: IteratorObject<T>) {
       // Moves known nodes to the fragment.
-      fragment.replaceChildren(...inflatedIndexedItems.filter(isNode))
+      fragment.replaceChildren(...inflatedIndexedItems.map(unwrapNode))
       // Previous nodes will be lost at this point.
-      fragment.replaceChildren(...newIterable.map(inflateItem))
+      fragment.replaceChildren(...newIterable.map(unwrapNode).map(inflateItem))
 
       inflatedIndexedItems = [...fragment.childNodes]
 
@@ -353,12 +352,7 @@ class WebInflator extends Inflator {
     // }
 
     const shell = new ProtonShell(this, this.shell)
-
     const componentPlaceholder = new WebComponentPlaceholder(shell, type)
-    const componentWrapper = new WebTempFragment
-    componentWrapper.append(componentPlaceholder)
-    componentWrapper.target = componentPlaceholder
-    componentWrapper.fixedNodes = [componentPlaceholder]
 
     let currentView: Node = componentPlaceholder
     let lastAnimationFrame = -1
@@ -372,10 +366,6 @@ class WebInflator extends Inflator {
         nextView.replacedWith = null
       }
       if (nextView instanceof Node === false) return
-
-      if (nextView instanceof WebTempFragment) nextView = nextView.target
-      if (currentView instanceof WebTempFragment) currentView = currentView.target
-
 
       // if (nextView instanceof WebComponentPlaceholder === false) {
       //   // @ts-expect-error by design.
@@ -484,7 +474,7 @@ class WebInflator extends Inflator {
 
     ProtonShell.evaluate(shell, type, props)
 
-    return componentWrapper
+    return componentPlaceholder
   }
 }
 
@@ -494,15 +484,6 @@ export default WebInflator
 // const element = asd.inflateIntrinsic("div", { mounted: false })
 // asd.inflateJSX(<p>123</p>)
 // asd.customAttributes.set("classMods", context => context.bind("className", context.value))
-
-
-function resolveReplacement(value: any): any {
-  if (value == null) return value
-  if (value.replacedWith == null) return value
-  if (value === value.replacedWith) return value
-
-  return resolveReplacement(value.replacedWith)
-}
 
 
 // interface WebInflateChunk<T> {

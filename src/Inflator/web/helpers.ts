@@ -4,6 +4,19 @@ import WebComponentPlaceholder from "./WebComponentPlaceholder"
 export const isNode = (value: unknown) => value instanceof Node
 export const nonGuard = (value: unknown) => value
 
+export function unwrapNode(node: unknown) {
+  if (node instanceof Node === false) return
+
+  return resolveReplacement(node)
+}
+
+export function resolveReplacement(value: any): any {
+  if (value == null) return value
+  if (value.replacedWith == null) return value
+  if (value === value.replacedWith) return value
+
+  return resolveReplacement(value.replacedWith)
+}
 
 export function disconnectNode(item: unknown) {
   if (item instanceof Node === false) return
