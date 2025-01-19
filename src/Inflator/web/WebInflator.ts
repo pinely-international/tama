@@ -11,7 +11,6 @@ import WebNodeBinding from "@/utils/WebNodeBinding"
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
 import { isNode, nonGuard, resolveReplacement, unwrapNode } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
-import WebMountPlaceholder from "./WebMountPlaceholder"
 
 import Inflator from "../Inflator"
 
@@ -150,7 +149,7 @@ class WebInflator extends Inflator {
     return document.createElement(type)
   }
 
-  public inflateIntrinsic(type: unknown, props?: any): Element | WebMountPlaceholder {
+  public inflateIntrinsic(type: unknown, props?: any): Element | Comment {
     if (typeof type !== "string") {
       throw new TypeError(typeof type + " type of intrinsic element is not supported", { cause: { type: type } })
     }
@@ -179,7 +178,7 @@ class WebInflator extends Inflator {
   }
 
   protected applyGuardMounting(element: Element, properties: [string, unknown][], type: string) {
-    let mountPlaceholder: WebMountPlaceholder | null = null
+    let mountPlaceholder: Comment | null = null
 
     function toggleMount(condition: unknown) {
       if (condition) {
@@ -215,7 +214,7 @@ class WebInflator extends Inflator {
       if (accessor == null) continue
 
       if (mountPlaceholder == null) {
-        mountPlaceholder = new WebMountPlaceholder(element, type)
+        mountPlaceholder = new Comment(element, type)
       }
       if (guards == null) guards = new Map<string, boolean>()
 
