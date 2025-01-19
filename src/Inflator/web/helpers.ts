@@ -5,7 +5,7 @@ export const isNode = (value: unknown) => value instanceof Node
 export const nonGuard = (value: unknown) => value
 
 export function unwrapNode(node: unknown) {
-  if (node instanceof Node === false) return
+  if (node instanceof Node === false) return node
 
   return resolveReplacement(node)
 }

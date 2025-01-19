@@ -81,7 +81,7 @@ class WebInflator extends Inflator {
       // Moves known nodes to the fragment.
       fragment.replaceChildren(...inflatedIndexedItems.map(unwrapNode))
       // Previous nodes will be lost at this point.
-      fragment.replaceChildren(...newIterable.map(unwrapNode).map(inflateItem))
+      fragment.replaceChildren(...newIterable.filter(Boolean).map(inflateItem).map(unwrapNode))
 
       inflatedIndexedItems = [...fragment.childNodes]
 
