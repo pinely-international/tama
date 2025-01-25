@@ -1,40 +1,18 @@
 # Proton
 
-- [Proton](#proton)
-  - [Install](#install)
-  - [Getting Started](#getting-started)
-  - [JSX](#jsx)
-  - [Components](#components)
-  - [Special Attributes (Events, Styles, Namespaces)](#special-attributes-events-styles-namespaces)
-  - [States (Observables)](#states-observables)
-    - [Dual binding](#dual-binding)
-  - [Lists (Iterables)](#lists-iterables)
-  - [Conditional Rendering (Mounting)](#conditional-rendering-mounting)
-    - [Attribute `mounted`](#attribute-mounted)
-      - [Example](#example)
-    - [Guards](#guards)
-      - [Pattern](#pattern)
-    - [JSX Attribute Guarding](#jsx-attribute-guarding)
-    - [Real-World Example](#real-world-example)
-  - [Shell](#shell)
-  - [View API](#view-api)
-    - [Caching Elements](#caching-elements)
-  - [Async/Await](#asyncawait)
-  - [Suspense Boundaries](#suspense-boundaries)
-  - [Error Boundaries](#error-boundaries)
-  - [Context API](#context-api)
-  - [Inflator](#inflator)
-    - [JSX Custom Attributes](#jsx-custom-attributes)
-      - [Real-world Example](#real-world-example-1)
-    - [Inflator Adapters](#inflator-adapters)
-      - [Abstract example](#abstract-example)
-    - [Inflator Extension](#inflator-extension)
-  - [Built-in Helpers](#built-in-helpers)
-    - [`Reconcile`](#reconcile)
-    - [`Dynamic`](#dynamic)
-    - [`Switch`](#switch)
-    - [`Lazy`](#lazy)
-  - [TypeScript](#typescript)
+This documentation built to be read from top to bottom in one go, gradually introducing you the library and its abilities.
+
+## Motivation
+
+Other libraries provide their own built-in “primitives” that you **must** to stick to.
+They restrict extensibility in a favor of concealing implementation details.
+
+## Pillars
+
+- [No Framework](https://dev.to/framemuse/no-framework-principle-arised-2n39)
+- Open Internals
+- Fault Tolerance
+- Customization
 
 ## Install
 
