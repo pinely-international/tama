@@ -549,10 +549,91 @@ document.getElementById("root").replaceChildren(MyAppInflated)
 
 ### `Reconcile`
 
+Currently not implemented, but this is a desired syntax
+
+```tsx
+const array = Observable([{a:1}, {a:2}, {a:3}])
+array.set([{a:0}, {a:2}, {a:4}]) // Will trigger list reconciling, which will create 2 new elements, but will **reuse** the one with unchanged key (`{a:2}`).
+
+const list = new Proton.Reconcile(array, { key: it => it.a })
+list.key = it => it.b // Assigns a new `key` selector.
+
+<div>{list.map((observableValue, index) => <span>{observableValue} {index}</span>)}</div>
+```
+
 ### `Dynamic`
+
+Instead of creating one component and observables to be handled internally, thus making it "Static".
+You can make it "Dynamic" by swapping components/elements based on observables passed as `props`.
+
+This is extremely useful, if you have nested observables.
+
+```tsx
+<span>{Proton.Dynamic(Component, { id: observableId })}</span>
+```
 
 ### `Switch`
 
+It can be used both for Component View swapping and as a part of any JSX element.
+In case of being part of JSX, you should connect `ProtonSwitchWebInflator`.
+
+```tsx
+const inflator = new WebInflator
+inflator.adapters.add(ProtonSwitchWebInflator)
+
+function SwitchComponent(this: Proton.Shell) {
+  const switcher = new ProtonSwitch({
+    banned: <span>Banned</span>,
+    pending: <span>Pending</span>,
+    default: <span>Loading...</span>
+  })
+
+  switcher.set("banned") // View will change to <span>Banned</span>.
+  switcher.set("pending") // View will change to <span>Pending</span>.
+  switcher.set("default") // View will change to <span>Loading...</span>.
+
+  switcher.sets(this.view)
+  return switcher.current.value
+}
+
+async function UserProfile() {
+  const userStatusSwitch = new Proton.Switch({
+    banned: <Status color="red">Banned</Status>,
+    pending: <Status color="yellow">Pending</Status>,
+    default: <Status color="green">Active</Status>
+  })
+
+  const user = await requestCurrentUser()
+  user.status.sets(userStatusSwitch)
+
+  return (
+    <div>
+      ...
+      <div>Status: {userStatusSwitch}</div>
+      ...
+    </div>
+  )
+}
+```
+
 ### `Lazy`
 
+It can be used for dynamic imports, but it is strongly recommended to implement this one in your own way as it's very simple and will give your users a much better UX.
+
+```tsx
+function Lazy(importFactory: () => Promise<unknown>) {
+  return async function (this: Proton.Shell) {
+    this.view.set(<Loader />)
+    const Module = await importFactory()
+    return <Module />
+  }
+}
+
+const UserProfile = Lazy(async () => (await import("pages/user-profile")).default)
+<UserProfile />
+
+```
+
 ## TypeScript
+
+Report if there are any uncovered TypeScript related issues.
