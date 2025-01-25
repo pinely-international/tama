@@ -1,6 +1,10 @@
 # Proton
 
-This documentation built to be read from top to bottom in one go, gradually introducing you the library and its abilities.
+It is light weight (~5kb gzip) library for parsing JSX in SolidJs way, but based on Observables rather than Signals and it's extremely customizable and open.
+
+This documentation built to be read from top to bottom in one go, gradually introducing you the library and its abilities and eventually you should understand 100% of Proton.
+
+_I know "Proton" is already used for many things, but I wasn't able to come up with a more unique name :(_
 
 ## Motivation
 
