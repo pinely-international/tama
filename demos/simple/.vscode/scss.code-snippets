@@ -1,0 +1,18 @@
+{
+  "1": {
+    "prefix": "use bundle",
+    "body": [
+      "@use \"@/assets/scss/bundle\" as *;"
+    ],
+    "description": ""
+  },
+  "2": {
+    "prefix": "scss",
+    "body": [
+      "@use \"@/assets/scss/bundle\" as *;",
+      "",
+      ".${TM_FILENAME_BASE/^([A-Z]+)([a-z]+)([A-Z]+)|([A-Z]+)/${1:/downcase}$2-${3:/downcase}${4:/downcase}/g} {$0}"
+    ],
+    "description": ""
+  }
+}

@@ -10,15 +10,16 @@ export default defineConfig({
     },
   },
   build: {
+    target: false,
     sourcemap: true,
+    modulePreload: false
   },
   esbuild: {
-    treeShaking: true,
-    minifyIdentifiers: false,
-    minifyWhitespace: true,
-    ignoreAnnotations: false,
+    jsxDev: false,
+    keepNames: true,
+
+    supported: {
+      "top-level-await": true
+    },
   },
-  optimizeDeps: {
-    exclude: ["@denshya/proton"]
-  }
 })

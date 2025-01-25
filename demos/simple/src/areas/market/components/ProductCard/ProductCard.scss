@@ -1,0 +1,130 @@
+@use "@/assets/scss/bundle" as *;
+
+.product-card {
+	position: relative;
+
+	display: grid;
+	gap: 0.25em;
+
+	padding: 0.5em;
+	border: 1px solid rgba(black, 0.1);
+	border-radius: 0.5em;
+
+	transition: 250ms ease box-shadow;
+
+	&:hover {
+		box-shadow: 0 4px 8px 0px rgba(darken($color-blue, 30), 0.25);
+	}
+}
+
+.product-card__like {
+	--icon-size: 1.375rem;
+
+	display: grid;
+	width: fit-content;
+
+	padding: 0.375em;
+	border-radius: 0.25em;
+
+	transition: 150ms ease background-color, 250ms ease color;
+
+	&:not(:hover, &--active) {
+		opacity: 0.7;
+	}
+
+	&:hover:not(&--active) {
+		color: rgba($color-red, 0.75);
+		background: rgba(black, 0.1);
+	}
+
+	&--active {
+		color: $color-red;
+		background: rgba(black, 0.1);
+	}
+}
+
+.product-card__banner {
+	position: relative;
+
+	display: grid;
+	gap: 0.25em;
+
+	border-radius: inherit;
+}
+
+.product-card__image {
+	width: 100%;
+
+	aspect-ratio: 1;
+
+	background: rgba(black, 0.1);
+	border-radius: inherit;
+	object-fit: cover;
+}
+
+.product-card__title {
+	margin-top: 0.75em;
+	font-weight: 500;
+	line-height: 1.25;
+
+	@include line-clamp(2);
+	@include Highlightable;
+}
+
+.product-card__pricing {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5em;
+
+	margin-bottom: 0.5em;
+
+	font-weight: bolder;
+}
+
+.product-card__price {
+	font-size: 1.25rem;
+	font-weight: bold;
+}
+
+.product-card__price-old {
+	color: rgba(black, 0.5);
+	text-decoration: line-through;
+	font-size: $font-size-text-small;
+}
+
+.product-card__discount {
+	color: $color-red-pale;
+	font-size: $font-size-text-small;
+}
+
+.product-card__reviews {
+	position: relative;
+
+	--icon-color: #{$color-orange};
+
+	display: flex;
+	align-items: center;
+	gap: 0.25em;
+
+	margin-bottom: 0.75em;
+
+	strong {
+		font-size: 0.875rem;
+		vertical-align: baseline;
+	}
+
+	span {
+		font-size: 0.875rem;
+	}
+}
+
+.product-card__asd {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.product-card__buy {
+	flex: 1;
+	display: grid;
+}

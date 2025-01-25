@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "vite",
+    "dev:profile": "vite --profile",
     "build": "vite build",
     "preview": "vite preview",
     "stats": "bun stats:treemap && bun stats:sunburst",
@@ -13,18 +14,24 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "dependencies": {
-    "@denshya/proton": "^0.1.7"
+    "@denshya/flow": "^0.1.43",
+    "@denshya/observable": "^0.1.0",
+    "@denshya/proton": "^0.1.253",
+    "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.13.1",
-    "@typescript-eslint/parser": "^6.13.1",
-    "eslint": "8.55.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-simple-import-sort": "^10.0.0",
-    "eslint-plugin-unused-imports": "^3.0.0",
-    "sass": "^1.69.5",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "eslint": "9.16.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "sass": "^1.82.0",
+    "type-fest": "^4.30.0",
     "typescript": "^5.7.2",
-    "vite": "^4.5.0",
+    "vite": "^6.0.7",
     "vite-bundle-visualizer": "^1.2.1"
+  },
+  "engines": {
+    "bun": "1.1.45"
   }
 }

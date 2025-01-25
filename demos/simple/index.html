@@ -7,29 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Proton</title>
     <!-- Fonts -->
-    <!-- <link rel="stylesheet" href="/static/fonts/Inter/stylesheet.css" />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" /> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
   </head>
 
   <body>
-    <div id="root"></div>
-    <script>
-      // REGISTER ERROR OVERLAY
-      const showErrorOverlay = err => {
-        // must be within function call because that's when the element is defined for sure.
-        const ErrorOverlay = customElements.get('vite-error-overlay')
-        // don't open outside vite environment
-        if (!ErrorOverlay) { return }
-        console.log(err)
-        const overlay = new ErrorOverlay(err)
-        document.body.appendChild(overlay)
-      }
-
-      window.addEventListener('error', showErrorOverlay)
-      window.addEventListener('unhandledrejection', ({ reason }) => showErrorOverlay(reason))
-    </script>
+    <div id="root">Loading...</div>
     <script type="module" src="/src/index.tsx"></script>
   </body>
 

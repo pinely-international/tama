@@ -1,10 +1,15 @@
-import { Proton, WebInflator } from "@denshya/proton"
+import "./polyfills"
+import "./error-overlay"
+
+import { WebInflator } from "@denshya/proton"
 
 import App from "./App"
+import applyCustomAttributes from "./custom-attributes"
 
-Proton
 
 const inflator = new WebInflator
-const inflated = inflator.inflate(<App />)
+applyCustomAttributes(inflator)
 
-document.getElementById("root")!.appendChild(inflated)
+
+const inflated = inflator.inflate(<App />)
+document.getElementById("root")!.replaceChildren(inflated)

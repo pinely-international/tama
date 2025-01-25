@@ -17,7 +17,7 @@
     },
     "types": [
       "vite/client",
-      "@denshya/proton/globals",
+      "@denshya/proton/globals"
     ],
     "verbatimModuleSyntax": false,
     "experimentalDecorators": true,
@@ -30,9 +30,8 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "jsxFactory": "Proton.JSX.Element",
-    "jsxFragmentFactory": "Proton.JSX.Fragment",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@denshya/proton",
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true

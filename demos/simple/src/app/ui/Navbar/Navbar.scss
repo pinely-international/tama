@@ -1,0 +1,31 @@
+@use "@/assets/scss/bundle" as *;
+
+.navbar {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+}
+
+.navbar__link {
+	padding: 0.75em 1em;
+	background: white;
+	border: 1px solid #eaeaea;
+	border-radius: 0.25em;
+
+	color: $color-dark;
+	cursor: pointer;
+	text-decoration: none;
+	transition: 250ms ease background-color, 100ms ease opacity;
+
+	&:hover:not(&--active) {
+		background: #eaeaea;
+	}
+
+	&:active {
+		opacity: 0.7;
+	}
+
+	&--active {
+		background: $color-blue-light;
+	}
+}

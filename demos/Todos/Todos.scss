@@ -1,0 +1,51 @@
+button {
+	font-size: 1rem;
+	line-height: 1;
+
+	padding: 0.375em 0.75em;
+	background: rgb(205, 219, 230);
+	border: 1px solid rgb(124, 141, 154);
+	border-radius: 0.25em;
+
+	cursor: pointer;
+	transition: 200ms ease opacity;
+
+	&:hover {
+		opacity: 0.8;
+	}
+
+	&:active {
+		opacity: 0.6;
+	}
+}
+
+input {
+	padding: 0.375em 0.75em;
+	background: white;
+	border: 1px solid rgb(124, 141, 154);
+	border-radius: 0.25em;
+}
+
+
+.todos {
+	width: fit-content;
+
+	display: grid;
+	gap: 1em;
+
+	padding: 1.25em;
+	border: 1px solid #ccc;
+	border-radius: 0.5em;
+
+	resize: horizontal;
+	overflow: auto;
+}
+
+.todo {
+	display: flex;
+	gap: 1em;
+
+	&>* {
+		flex-shrink: 0;
+	}
+}

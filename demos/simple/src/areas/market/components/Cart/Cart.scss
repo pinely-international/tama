@@ -1,0 +1,48 @@
+@use "@/assets/scss/bundle" as *;
+
+.cart {
+	display: grid;
+	gap: 1em;
+
+	padding: 1em;
+	border: 1px solid rgba(black, 0.1);
+	border-radius: 0.5em;
+}
+
+.cart__title {
+	font-size: 1.25rem;
+	font-weight: bold;
+}
+
+.cart__properties {
+	display: grid;
+	gap: 0.5em;
+}
+
+.cart__property {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	span {
+		color: $color-gray-light;
+		font-weight: 500;
+	}
+
+	b {}
+
+	em {
+		font-style: normal;
+		font-weight: bold;
+
+		color: $color-red-pale;
+	}
+}
+
+
+.cart__button {
+	display: flex;
+	justify-content: space-between;
+
+	flex: 1;
+}

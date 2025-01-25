@@ -1,0 +1,23 @@
+@use "@/assets/scss/bundle" as *;
+
+.button {
+	padding: 0.675em 1.125em;
+	background: $color-dark;
+	border-radius: 0.375em;
+
+	color: white;
+	transition: 150ms ease background-color, 100ms ease opacity;
+
+	&:not(:disabled):active {
+		opacity: 0.75;
+	}
+
+	&--green {
+		background: $color-green-new;
+	}
+}
+
+a.button {
+	display: inline-flex;
+	text-decoration: none;
+}

@@ -1,0 +1,87 @@
+@use "@/assets/scss/bundle" as *;
+
+
+$page-indent: 1em;
+$scrollbar-width: 0.675rem;
+$option-padding-inline: 0.675rem;
+
+.drop-down {
+	--translate: 0.25em;
+
+	position: absolute;
+	top: 100%;
+	left: 0;
+
+	display: grid;
+
+	width: calc(var(--max-option-width) * 1px + $scrollbar-width);
+	max-width: calc(var(--max-visible-width) * 1px - $page-indent);
+	min-width: 100%;
+	max-height: 80vh;
+	overflow: auto;
+	overscroll-behavior: contain;
+
+	@include Scrollbar(0.675em);
+
+	background: white;
+	border: 1px solid $color-gray;
+	border-radius: 0.375em;
+	box-shadow: 0px 0px 4px -5px rgba(39, 45, 58, 0.12);
+
+	color: $color-dark;
+
+	transform: translateY(var(--translate));
+	transition: 200ms ease opacity, 200ms ease transform, 200ms ease display, 300ms ease width;
+	transition-behavior: allow-discrete;
+	z-index: 1;
+
+	contain: paint;
+
+	@starting-style {
+		--translate: 0em;
+
+		opacity: 0;
+	}
+
+	&:not(&--expanded) {
+		--translate: 0.5em;
+
+		opacity: 0;
+		display: none;
+	}
+
+	&--upwards {
+		--translate: -0.25em;
+
+		top: unset;
+		bottom: 100%;
+	}
+
+	&--dark {
+		background: $color-dark;
+		border-color: rgba(white, 0.25);
+
+		color: white;
+	}
+}
+
+.drop-down__option {
+	padding: 0.5rem 1rem;
+
+	font-size: $font-size-h5;
+
+	transition: 100ms ease font-weight, 200ms ease background-color, 200ms ease color;
+	cursor: pointer;
+
+	&:not(:last-child) {
+		// border-bottom: 1px solid $color-gray;
+	}
+
+	&:hover {
+		background: rgba($color-gray, 0.5);
+	}
+
+	&--selected {
+		font-weight: 700;
+	}
+}
