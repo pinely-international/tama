@@ -8,7 +8,7 @@ _I know "Proton" is already used for many things, but I wasn't able to come up w
 
 ## Motivation
 
-Other libraries provide their own built-in “primitives” that you **must** to stick to.
+Other libraries provide their own built-in “primitives” that you **have to** stick to.
 They restrict extensibility in a favor of concealing implementation details.
 
 ## Pillars
