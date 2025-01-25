@@ -1,18 +1,39 @@
-import { FlowRead, Signal } from "@denshya/flow"
+import { Notifier } from "@denshya/flow"
 
+import { AccessorSet } from "@/Accessor"
 import { InflatorAdapter } from "@/Inflator/InflatorAdapter"
 
 import { Unsubscribe } from "../Observable"
 
 /**
+ * It can be used both for Component View swapping and as a part of any JSX element.
+ * In case of being part of JSX, you should connect `ProtonSwitchWebInflator`.
+ *
  * @example
-  function UserProfile() {
+ * function SwitchComponent(this: Proton.Shell) {
+    const switcher = new ProtonSwitch({
+      banned: <span>Banned</span>,
+      pending: <span>Pending</span>,
+      default: <span>Loading...</span>
+    })
+
+    switcher.set("banned") // View will change to <span>Banned</span>.
+    switcher.set("pending") // View will change to <span>Pending</span>.
+    switcher.set("default") // View will change to <span>Loading...</span>.
+
+    switcher.sets(this.view)
+    return switcher.current.value
+  }
+ * @example
+  async function UserProfile() {
     const userStatusSwitch = new Proton.Switch({
       banned: <Status color="red">Banned</Status>,
       pending: <Status color="yellow">Pending</Status>,
       default: <Status color="green">Active</Status>
     })
-    userStatusSwitch.observer.set(user.status)
+
+    const user = await requestCurrentUser()
+    user.status.sets(userStatusSwitch)
 
     return (
       <div>
@@ -24,46 +45,60 @@ import { Unsubscribe } from "../Observable"
   }
  *
  */
-class ProtonSwitch<T extends Record<keyof never | "default", unknown> = any> {
+export class ProtonSwitch<T extends Record<keyof never | "default", unknown> = any> {
+  private readonly notifier = new Notifier
+
+  readonly current: { key: keyof T, value: T[keyof T] }
   constructor(readonly cases: T | Record<"default", unknown>) {
-    let subscription: Unsubscribe | null = null
-
-    this.observer[Symbol.subscribe](signal => {
-      subscription?.unsubscribe()
-      subscription = signal[Symbol.subscribe](status => this.selected.set(status))
-    })
-
-    this.active = new Signal(cases["default"]) as never
-    this.selected[Symbol.subscribe](it => this.active.set(cases[it as never]))
+    this.current = { key: "default", value: cases["default"] as never }
   }
 
-  readonly selected = new Signal<keyof T>("default")
-  readonly observer = new Signal<FlowRead<keyof T>>(this.selected)
-  readonly active: Signal<T[keyof T]>
+  set(key: keyof T) {
+    this.current.key = key
+    this.current.value = this.cases[key as never]
+
+    this.notifier.dispatch()
+  }
+
+  sets<U>(other: AccessorSet<T[keyof T] | U>): Unsubscribe
+  sets(callback: (value: T[keyof T]) => void): Unsubscribe
+  sets<U>(arg: AccessorSet<T[keyof T] | U> | ((value: T[keyof T]) => void)): Unsubscribe {
+    return this.notifier.subscribe(() => {
+      if (arg instanceof Function) {
+        arg(this.current.value)
+      } else {
+        arg.set(this.current.value)
+      }
+    })
+  }
+
+  [Symbol.subscribe](next: () => void) { return this.notifier.subscribe(next) }
 }
 
-
-
-export { }
-
-class ProtonSwitchWebInflator extends InflatorAdapter {
-  test(value: unknown) { return value instanceof ProtonSwitch }
+export class ProtonSwitchWebInflator extends InflatorAdapter {
   inflate(switcher: unknown) {
-    if (switcher instanceof ProtonSwitch === false) return null
+    if (switcher instanceof ProtonSwitch === false) return
 
-    const current = this.inflator.inflate(switcher.active.get())
-
-    const inflationMap = {
-      [switcher.selected.get()]: current
+    let previousKey = switcher.current.key
+    const inflatedCache: Record<keyof never, unknown> = {
+      [switcher.current.key]: this.inflator.inflate(switcher.current.value)
     }
 
-    switcher.active[Symbol.subscribe](it => {
-      const nextCase = switcher.cases[it]
+    switcher[Symbol.subscribe](() => {
+      if (switcher.current.key in inflatedCache === false) {
+        inflatedCache[switcher.current.key] = this.inflator.inflate(switcher.current.value)
+      }
 
+      const previousInflated = inflatedCache[previousKey]
+      const currentInflated = inflatedCache[switcher.current.key]
+
+      if (previousInflated instanceof Element && currentInflated instanceof Element) {
+        previousInflated.replaceWith(currentInflated)
+      }
+
+      previousKey = switcher.current.key
     })
 
-    return current
+    return inflatedCache[switcher.current.key]
   }
 }
-
-// { new ProtonSwitchWebInflator().adapt(new ProtonSwitch({ default: 1 })) }
