@@ -4,7 +4,7 @@ It is light weight (~5kb gzip), zero-configuration library for parsing JSX in So
 
 This documentation built to be read from top to bottom in one go, gradually introducing you the library and its abilities and eventually you should understand 100% of Proton.
 
-_I know "Proton" is already used for many things, but I wasn't able to come up with a more unique name :(_
+_"Proton" is already used for many things, but I wasn't able to come up with a more unique name :(_
 
 ## Motivation
 
@@ -26,7 +26,7 @@ bun i @denshya/proton
 
 For the JSX and types to work properly, you should add this to your `tsconfig.json`/`jsconfig.json`
 
-```json
+```jsonc
 {
   "compilerOptions": {
     // ...
@@ -231,7 +231,7 @@ function ProductCard() {
 
 ## Lists (Iterables)
 
-Another built support is for `Iterable`, any object that has `Symbol.iterator` will be treated as an iterable, which will be iterated to inflate (render/create).
+Another built-in support is for `Iterable`, any object that has `Symbol.iterator` will be treated as an iterable, which will be iterated and inflated.
 
 If it is an Observable Iterable, it will follow changes by iterating again and replacing all previous elements with **no reconciliation**.
 
@@ -292,7 +292,7 @@ const Component = () => (
 )
 ```
 
-As you can see even the children can be guarded. The `guard` method can be implement by your State library or you can create your own utility function do that to cover your special cases.
+As you can see even the children can be guarded. The `guard` method can be implemented by your State library or you can create your own utility function do that to cover your special cases.
 
 ---
 
@@ -363,7 +363,7 @@ function MyView(this: Proton.Shell) {
 
 That's why a component can return nothing - it may set a view via `this.view.set`.
 
-Return defines a `default` view for a component under `this.view.default` property.
+`return` defines a `default` view for a component under `this.view.default` property.
 
 ### Caching Elements
 
@@ -413,7 +413,7 @@ function MyView(this: Proton.Shell) {
 }
 ```
 
-Make sure your component OR parent does something like that
+Make sure a parent catches it by using `suspense` and `unsuspense`. This is an experimental API, so don't rely on it too much.
 
 ```tsx
 function Parent(this: Proton.Shell) {
@@ -514,7 +514,7 @@ export default applyCustomAttributes
 
 ### Inflator Adapters
 
-This is a "strong" customization since it allows you to override the end output of `inflate` method.
+This kind of customization allows you to override the output of `inflate` method.
 
 #### Abstract example
 
@@ -640,4 +640,15 @@ const UserProfile = Lazy(async () => (await import("pages/user-profile")).defaul
 
 ## TypeScript
 
-Report if there are any uncovered TypeScript related issues.
+Report if there are anything uncovered for TypeScript.
+
+## FAQ
+
+<details>
+  <summary>Does React hooks work in Proton?</summary>
+  No, but it's very extesible so probably some enthusiasts might implement it. BTW, even though libraries from other "frameworks" won't work in Proton, libraries for Proton are supposed to work in other frameworks too.
+</details>
+<!-- <details>
+  <summary>question?</summary>
+  answer
+</details> -->
