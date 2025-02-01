@@ -42,7 +42,10 @@ class WebInflator extends Inflator {
   }
 
   protected inflateFragment() {
-    return document.createElement(WebContentsFragment.TAG)
+    const contentsFragment = document.createElement(WebContentsFragment.TAG)
+    contentsFragment.style.display = "contents"
+
+    return contentsFragment
   }
 
   public inflateJSX(jsx: ProtonJSX.Node): Node {

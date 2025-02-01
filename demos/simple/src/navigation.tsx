@@ -1,5 +1,5 @@
-import { Proton } from "@denshya/proton"
 import { Flow, Flowable } from "@denshya/flow"
+import { Proton } from "@denshya/proton"
 
 
 
@@ -92,7 +92,7 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
     result.set(navigation.result.get())
 
     if (children == null) {
-      children = this.inflator.inflate(<>{props.children}</>)
+      children = this.inflator.inflate(props.children)
     }
 
     this.view.set(children)
