@@ -74,7 +74,7 @@ class WebInflator extends Inflator {
     contentsFragment.replaceChildren(...iterable[Symbol.iterator]().filter(Boolean).map(inflateItem).map(unwrapNode))
 
     // @ts-expect-error fine.
-    iterable?.[Symbol.subscribe](replace)
+    iterable[Symbol.subscribe]?.(replace)
 
     function replace(newIterable: IteratorObject<T>) {
       // Previous nodes will be lost at this point.

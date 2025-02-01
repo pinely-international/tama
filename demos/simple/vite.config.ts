@@ -15,7 +15,6 @@ export default defineConfig({
     modulePreload: false
   },
   esbuild: {
-    jsxDev: false,
     keepNames: true,
 
     supported: {
