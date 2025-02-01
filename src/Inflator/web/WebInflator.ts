@@ -9,7 +9,7 @@ import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { isNode, nonGuard, resolveReplacement, unwrapNode } from "./helpers"
+import { isNode, nonGuard, unwrapNode } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
 
 import Inflator from "../Inflator"
@@ -89,27 +89,18 @@ class WebInflator extends Inflator {
     throw new TypeError("Async Iterator is not supported", { cause: { asyncIterable } })
   }
 
-  protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
-    if (isRecord(style)) {
-      for (const property in style) {
-        this.bindProperty(property, style[property], element.style)
-      }
-
-      return
-    }
-
-    this.bindPropertyCallback(style, value => element.style.cssText = String(value))
-  }
-
   private inflateJSXDeeply(jsx: ProtonJSX.Node): Element | DocumentFragment | Node {
     const inflated = this.inflateJSX(jsx)
     // Inflation of Component children is handled by the component itself.
     if (jsx instanceof ProtonJSX.Component) return inflated
 
-    return this.inflateJSXIntrinsicDeeply(jsx, inflated)
+    this.inflateJSXIntrinsicChildren(jsx, inflated)
+
+    return inflated
   }
 
-  private inflateJSXIntrinsicDeeply(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): Element | DocumentFragment | Node {
+  private inflateJSXIntrinsicChildren(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): void {
+    // @ts-expect-error 123
     const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
 
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
@@ -129,8 +120,6 @@ class WebInflator extends Inflator {
 
     if (jsx.children instanceof Array) jsx.children.forEach(appendChildObject)
     if (jsx.childrenExtrinsic != null) jsx.childrenExtrinsic.forEach(appendChildObject)
-
-    return inflated
   }
 
   protected inflateElement(type: string, namespaceOverride?: string) {
@@ -142,9 +131,12 @@ class WebInflator extends Inflator {
     return document.createElement(type)
   }
 
+  /**
+   * Creates element and binds properties.
+   */
   public inflateIntrinsic(type: unknown, props?: any): Element | Comment {
     if (typeof type !== "string") {
-      throw new TypeError(typeof type + " type of intrinsic element is not supported", { cause: { type: type } })
+      throw new TypeError(typeof type + " type of intrinsic element is not supported", { cause: { type } })
     }
 
     const inflated = this.inflateElement(type, props.ns)
@@ -158,7 +150,7 @@ class WebInflator extends Inflator {
         if (key === "children") continue
         if (overridden.has(key)) continue
 
-        this.bindProperty(key, value, inflated)
+        WebInflator.bindProperty(key, value, inflated)
       }
 
       const immediateGuard = this.applyGuardMounting(inflated, properties, type)
@@ -174,24 +166,38 @@ class WebInflator extends Inflator {
     return inflated
   }
 
+  public inflateComponent(type: Function, props?: any) {
+    const componentView = document.createElement(WebComponentView.TAG)
+    componentView.setAttribute("name", type.name)
+    componentView.style.display = "contents"
+
+    const replace = (view: unknown) => {
+      if (view === null) componentView.replaceChildren()
+      if (view instanceof Node) componentView.replaceChildren(view)
+    }
+
+
+    let lastAnimationFrame = -1
+    const shell = new ProtonShell(this, this.shell)
+    shell.on("view").subscribe(view => {
+      cancelAnimationFrame(lastAnimationFrame)
+      lastAnimationFrame = requestAnimationFrame(() => replace(view))
+    })
+    ProtonShell.evaluate(shell, type, props)
+
+    return componentView
+  }
+
   protected applyGuardMounting(element: Element, properties: [string, unknown][], type: string) {
     let mountPlaceholder: Comment | null = null
 
     function toggleMount(condition: unknown) {
       if (condition) {
-        mountPlaceholder.toBeReplacedWith = element
-
         if (mountPlaceholder?.parentElement == null) return
         mountPlaceholder!.replaceWith(element)
-
-        mountPlaceholder.toBeReplacedWith = null
       } else {
-        element.toBeReplacedWith = mountPlaceholder
-
         if (element.parentElement == null) return
         element.replaceWith(mountPlaceholder!)
-
-        element.toBeReplacedWith = null
       }
     }
 
@@ -211,7 +217,7 @@ class WebInflator extends Inflator {
       if (accessor == null) continue
 
       if (mountPlaceholder == null) {
-        mountPlaceholder = new Comment(element, type)
+        mountPlaceholder = new Comment(type)
       }
       if (guards == null) guards = new Map<string, boolean>()
 
@@ -230,6 +236,18 @@ class WebInflator extends Inflator {
     }
 
     if (immediateGuard) return mountPlaceholder
+  }
+
+  protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
+    if (isRecord(style)) {
+      for (const property in style) {
+        WebInflator.bindProperty(property, style[property], element.style)
+      }
+
+      return
+    }
+
+    WebInflator.bindPropertyCallback(style, value => element.style.cssText = String(value))
   }
 
   protected bindEventListeners(listeners: any, element: Element) {
@@ -270,13 +288,13 @@ class WebInflator extends Inflator {
 
     if (element instanceof SVGElement) {
       if (props.class != null) {
-        this.bindPropertyCallback(props.class, value => element.setAttribute("class", String(value)))
+        WebInflator.bindPropertyCallback(props.class, value => element.setAttribute("class", String(value)))
         overrides.add("class")
       }
     }
 
     if (element instanceof SVGUseElement) {
-      this.bindPropertyCallback(props.href, (href: any) => {
+      WebInflator.bindPropertyCallback(props.href, (href: any) => {
         if (typeof href === "string") element.href.baseVal = href
         if (typeof href === "object") element.href.baseVal = href.baseVal
       })
@@ -285,7 +303,7 @@ class WebInflator extends Inflator {
     }
     if (element instanceof HTMLInputElement) {
       // Ensures correct type beforehand.
-      this.bindProperty("type", props.type, element)
+      WebInflator.bindProperty("type", props.type, element)
 
       WebNodeBinding.dualSignalBind(element, "valueAsDate", props.valueAsDate, "input")
       WebNodeBinding.dualSignalBind(element, "valueAsNumber", props.valueAsNumber, "input")
@@ -314,7 +332,7 @@ class WebInflator extends Inflator {
         element,
 
         bind: (key, value) => {
-          this.bindProperty(key, value, element)
+          WebInflator.bindProperty(key, value, element)
           overrides.add(key)
         }
       })
@@ -324,12 +342,15 @@ class WebInflator extends Inflator {
     return overrides
   }
 
-  protected bindProperty(key: keyof never, value: unknown, target: unknown): void {
-    this.bindPropertyCallback(value, value => (target as any)[key] = value)
+  /**
+   * Binds a property
+   */
+  static bindProperty(key: keyof never, source: unknown, target: unknown): void {
+    WebInflator.bindPropertyCallback(source, value => (target as any)[key] = value)
   }
 
-  protected bindPropertyCallback(source: unknown, targetBindCallback: (value: unknown) => void): void {
-    if (typeof source === "string" || typeof source === "number" || typeof source === "boolean" || typeof source === "bigint") {
+  static bindPropertyCallback(source: unknown, targetBindCallback: (value: unknown) => void): void {
+    if (source == null || (typeof source !== "object" && typeof source !== "function")) {
       targetBindCallback(source)
       return
     }
@@ -340,162 +361,6 @@ class WebInflator extends Inflator {
 
     if (accessor.get) targetBindCallback(accessor.get())
     if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get!() ?? value))
-  }
-  public inflateComponent(type: Function, props?: any) {
-    return this.inflateComponentSafe(type, props)
-  }
-  public inflateComponentSafe(type: Function, props?: any) {
-    const componentView = document.createElement(WebComponentView.TAG)
-    componentView.setAttribute("name", type.name)
-    componentView.style.display = "contents"
-
-    const replace = (view: unknown) => {
-      if (view === null) componentView.replaceChildren()
-      if (view instanceof Node) componentView.replaceChildren(view)
-    }
-
-
-    let lastAnimationFrame = -1
-    const shell = new ProtonShell(this, this.shell)
-    shell.on("view").subscribe(view => {
-      cancelAnimationFrame(lastAnimationFrame)
-      lastAnimationFrame = requestAnimationFrame(() => replace(view))
-    })
-    ProtonShell.evaluate(shell, type, props)
-
-    return componentView
-  }
-
-  /**
-   * Uses no custom elements to store current view, replaces views by references.
-   *
-   * @note it might not work properly since weak referencing is prone to bugs (_for now_).
-   */
-  protected inflateComponentWeak(type: Function, props?: any) {
-    const shell = new ProtonShell(this, this.shell)
-    const componentPlaceholder = new WebComponentPlaceholder(shell, type)
-
-    let currentView: Node = componentPlaceholder
-    let lastAnimationFrame = -1
-
-    const replace = (view: unknown) => {
-      let nextView = view
-
-      if (view === null) {
-        nextView = componentPlaceholder
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-      }
-      if (nextView instanceof Node === false) return
-
-      // if (nextView instanceof WebComponentPlaceholder === false) {
-      //   // @ts-expect-error by design.
-      //   nextView = nextView?.shell?.getView?.() ?? nextView
-      // }
-      // let actualNextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
-      let actualNextView = nextView
-      if (actualNextView.toBeReplacedWith != null) {
-        const toBeReplacedWith = actualNextView.toBeReplacedWith
-
-        actualNextView.toBeReplacedWith = null
-        actualNextView = toBeReplacedWith
-      }
-
-      currentView = resolveReplacement(currentView)
-      currentView.toBeReplacedWith = actualNextView
-
-      if (currentView.replaceWith instanceof Function) {
-        if (currentView.parentNode != null) {
-          if (actualNextView instanceof DocumentFragment && actualNextView.childNodes.length === 0) {
-            actualNextView.replaceChildren(...actualNextView.fixedNodes)
-          }
-
-          currentView.replaceWith(actualNextView)
-          currentView.toBeReplacedWith = null
-        }
-
-        if (view !== null) {
-          // @ts-expect-error by design.
-          currentView.replacedWith = nextView
-        } else {
-          // @ts-expect-error by design.
-          currentView.replacedWith = null
-        }
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-        // @ts-expect-error by design.
-        actualNextView.replacedWith = null
-
-        // if (currentView instanceof WebComponentPlaceholder === false) {
-        //   currentView.shell = null
-        // }
-        // if (nextView instanceof WebComponentPlaceholder === false) {
-        //   nextView.shell = shell
-        // }
-
-        currentView = nextView
-
-        return
-      }
-
-      if (currentView instanceof DocumentFragment) {
-        // @ts-expect-error by design.
-        const fixed = currentView.fixedNodes as Node[]
-        const fixedNodes = fixed.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
-
-        const anchor = fixedNodes[0]
-
-        if (actualNextView instanceof DocumentFragment) {
-          // @ts-expect-error by design.
-          const firstFixed = actualNextView.fixedNodes[0]
-          const actualAnchor = WebComponentPlaceholder.actualOf(firstFixed) ?? firstFixed
-
-          if (actualAnchor === anchor) return
-        }
-
-        if (anchor.parentElement != null) {
-          anchor.parentElement.replaceChild(actualNextView, anchor)
-          currentView.toBeReplacedWith = null
-        }
-        currentView.replaceChildren(...fixedNodes)
-
-        if (view !== null) {
-          // @ts-expect-error by design.
-          currentView.replacedWith = nextView
-        } else {
-          // @ts-expect-error by design.
-          currentView.replacedWith = null
-        }
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-        // @ts-expect-error by design.
-        actualNextView.replacedWith = null
-
-        // if (currentView instanceof WebComponentPlaceholder === false) {
-        //   currentView.shell = null
-        // }
-        // if (nextView instanceof WebComponentPlaceholder === false) {
-        //   nextView.shell = shell
-        // }
-        currentView = nextView
-
-        if (anchor instanceof WebComponentPlaceholder) {
-          // @ts-expect-error no another way.
-          anchor.shell.events.dispatch("unmount")
-        }
-
-        return
-      }
-    }
-
-    shell.on("view").subscribe(view => {
-      cancelAnimationFrame(lastAnimationFrame)
-      lastAnimationFrame = requestAnimationFrame(() => replace(view))
-    })
-
-    ProtonShell.evaluate(shell, type, props)
-
-    return componentPlaceholder
   }
 }
 
