@@ -16,7 +16,7 @@
   "dependencies": {
     "@denshya/flow": "^0.1.43",
     "@denshya/observable": "^0.1.0",
-    "@denshya/proton": "^0.1.267",
+    "@denshya/proton": "^0.1.268",
     "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {

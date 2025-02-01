@@ -345,7 +345,7 @@ class WebInflator extends Inflator {
       }
       return type.__isAsync
     }
-    if (maybeArrowFunction && isAsyncFunction()) {
+    if (maybeArrowFunction && !isAsyncFunction()) {
       return this.inflate(type())
     }
 
