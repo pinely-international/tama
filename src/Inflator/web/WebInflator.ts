@@ -371,7 +371,7 @@ class WebInflator extends Inflator {
    *
    * @note it might not work properly since weak referencing is prone to bugs (_for now_).
    */
-  public inflateComponentWeak(type: Function, props?: any) {
+  protected inflateComponentWeak(type: Function, props?: any) {
     const shell = new ProtonShell(this, this.shell)
     const componentPlaceholder = new WebComponentPlaceholder(shell, type)
 
