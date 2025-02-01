@@ -338,9 +338,16 @@ class WebInflator extends Inflator {
   }
 
   public inflateComponent(type: Function, props?: any) {
-    // if (component.type.prototype == null) { // Assume it's arrow function.
-    //   return this.inflate(component.type(component.props))
-    // }
+    const maybeArrowFunction = type.prototype == null // Assume it's arrow function.
+    const isAsyncFunction = () => {
+      if (type.__isAsync == null) {
+        type.__isAsync = type.toString().startsWith("async")
+      }
+      return type.__isAsync
+    }
+    if (maybeArrowFunction && isAsyncFunction()) {
+      return this.inflate(type())
+    }
 
     const shell = new ProtonShell(this, this.shell)
     const componentView = document.createElement(WebComponentView.TAG)
