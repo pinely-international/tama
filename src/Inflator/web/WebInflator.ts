@@ -41,11 +41,11 @@ class WebInflator extends Inflator {
     return new Text(String(primitive))
   }
 
-  protected inflateFragment(): DocumentFragment {
-    return document.createDocumentFragment()
+  protected inflateFragment() {
+    return document.createElement(WebContentsFragment.TAG)
   }
 
-  public inflateJSX(jsx: ProtonJSX.Node): Element | DocumentFragment | Node {
+  public inflateJSX(jsx: ProtonJSX.Node): Node {
     if (jsx instanceof ProtonJSX.Intrinsic) return this.inflateIntrinsic(jsx.type, jsx.props)
     if (jsx instanceof ProtonJSX.Component) return this.inflateComponent(jsx.type, jsx.props)
     if (jsx instanceof ProtonJSX.Fragment) return this.inflateFragment()
@@ -121,11 +121,6 @@ class WebInflator extends Inflator {
 
     if (jsx.children instanceof Array) jsx.children.forEach(appendChildObject)
     if (jsx.childrenExtrinsic != null) jsx.childrenExtrinsic.forEach(appendChildObject)
-
-    if (inflated instanceof DocumentFragment) {
-      // @ts-expect-error by design.
-      inflated.fixedNodes = [...inflated.childNodes]
-    }
 
     return inflated
   }
