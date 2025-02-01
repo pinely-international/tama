@@ -342,11 +342,7 @@ class WebInflator extends Inflator {
     if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get!() ?? value))
   }
   public inflateComponent(type: Function, props?: any) {
-    if (this.flags.debug) {
-      return this.inflateComponentSafe(type, props)
-    }
-
-    return this.inflateComponentWeak(type, props)
+    return this.inflateComponentSafe(type, props)
   }
   public inflateComponentSafe(type: Function, props?: any) {
     const componentView = document.createElement(WebComponentView.TAG)
