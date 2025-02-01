@@ -23,7 +23,7 @@ export class ProtonShell {
   private viewElement: unknown = null
 
   /** Debug value for `constructor` which evaluated this shell. */
-  declare private evaluatedBy: Function
+  declare evaluatedBy: Function
 
   constructor(inflator: Inflator, private readonly parent?: ProtonShell) {
     this.inflator = Inflator.cloneWith(inflator, this)
@@ -108,11 +108,13 @@ export class ProtonShell {
   }
 
   static async evaluate(shell: ProtonShell, constructor: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
-    shell.evaluatedBy = constructor // Pure. For debugging.
-    constructor = await resolveShellConstructorModule(constructor)
+    shell.evaluatedBy = constructor // For debugging.
 
     try {
-      shell.view.default = shell.inflator.inflate(await Promise.resolve(constructor.call(shell, props)))
+      let returnResult = constructor.call(shell, props)
+      if (returnResult instanceof Promise) returnResult = await returnResult
+
+      shell.view.default = shell.inflator.inflate(returnResult)
     } catch (thrown) {
       if (shell.suspenseCallback != null && thrown instanceof Promise) {
         if (shell.suspenses.length === 0) shell.suspenseCallback(thrown)
@@ -149,14 +151,14 @@ interface ShellEvents {
   unmount: void
 }
 
-interface Module<T> {
-  default: T
-}
+// interface Module<T> {
+//   default: T
+// }
 
 
-async function resolveShellConstructorModule(moduleOrConstructor: Promise<Module<Function>> | Module<Function> | Function): Promise<Function> {
-  if (moduleOrConstructor instanceof Function) return moduleOrConstructor
-  if (moduleOrConstructor instanceof Promise) return (await moduleOrConstructor).default
+// async function resolveShellConstructorModule(moduleOrConstructor: Promise<Module<Function>> | Module<Function> | Function): Promise<Function> {
+//   if (moduleOrConstructor instanceof Function) return moduleOrConstructor
+//   if (moduleOrConstructor instanceof Promise) return (await moduleOrConstructor).default
 
-  return moduleOrConstructor.default
-}
+//   return moduleOrConstructor.default
+// }

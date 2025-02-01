@@ -4,7 +4,7 @@ import { Flow, FlowArray } from "@denshya/flow"
 
 
 
-const FilterableProductTable = (props: { products: Product[] }) => {
+function FilterableProductTable(props: { products: Product[] }) {
   const searchValue = new Flow("")
   const inStockOnly = new Flow(false)
 
@@ -16,7 +16,7 @@ const FilterableProductTable = (props: { products: Product[] }) => {
   )
 }
 
-const ProductCategoryRow = (props: { category: string }) => {
+function ProductCategoryRow(props: { category: string }) {
   return (
     <tr>
       <th colSpan={2}>{props.category}</th>
@@ -24,7 +24,7 @@ const ProductCategoryRow = (props: { category: string }) => {
   )
 }
 
-const ProductRow = (props: { product: Product }) => {
+function ProductRow(props: { product: Product }) {
   const name = props.product.stocked ? props.product.name : (
     <span style={{ color: "red" }}>{props.product.name}</span>
   )
@@ -37,7 +37,7 @@ const ProductRow = (props: { product: Product }) => {
   )
 }
 
-const ProductTable = (props: { products: Product[], filterText: Flow<string>, inStockOnly: Flow<boolean> }) => {
+function ProductTable(props: { products: Product[], filterText: Flow<string>, inStockOnly: Flow<boolean> }) {
   let lastCategory: string | null = null
   const productsList = new FlowArray(props.products)
 
@@ -77,7 +77,7 @@ const ProductTable = (props: { products: Product[], filterText: Flow<string>, in
   )
 }
 
-const SearchBar = (props: { value: Flow<string>, inStockOnly: Flow<boolean> }) => {
+function SearchBar(props: { value: Flow<string>, inStockOnly: Flow<boolean> }) {
   return (
     <form>
       <input value={props.value} placeholder="Search..." />
@@ -103,10 +103,9 @@ const PRODUCTS: Product[] = [
   { category: "Vegetables", price: "$1", stocked: true, name: "Peas" }
 ]
 
-const ProductsTableApp = () => {
+export default function ProductsTableApp() {
   return <FilterableProductTable products={PRODUCTS} />
 }
-export default ProductsTableApp
 
 
 interface Product {

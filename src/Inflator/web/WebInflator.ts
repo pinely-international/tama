@@ -43,6 +43,7 @@ class WebInflator extends Inflator {
 
   protected inflateFragment() {
     const contentsFragment = document.createElement(WebContentsFragment.TAG)
+    contentsFragment.setAttribute("within", this.shell?.evaluatedBy?.name ?? "[unknown]")
     contentsFragment.style.display = "contents"
 
     return contentsFragment
@@ -336,24 +337,17 @@ class WebInflator extends Inflator {
     if (accessor.get) targetBindCallback(accessor.get())
     if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get!() ?? value))
   }
-
   public inflateComponent(type: Function, props?: any) {
-    const maybeArrowFunction = type.prototype == null // Assume it's arrow function.
-    const isAsyncFunction = () => {
-      if (type.__isAsync == null) {
-        type.__isAsync = type.toString().startsWith("async")
-      }
-      return type.__isAsync
-    }
-    if (maybeArrowFunction && !isAsyncFunction()) {
-      return this.inflate(type(props))
+    if (import.meta.env.DEV) {
+      return this.inflateComponentSafe(type, props)
     }
 
-    const shell = new ProtonShell(this, this.shell)
+    return this.inflateComponentWeak(type, props)
+  }
+  public inflateComponentSafe(type: Function, props?: any) {
     const componentView = document.createElement(WebComponentView.TAG)
     componentView.setAttribute("name", type.name)
     componentView.style.display = "contents"
-
 
     const replace = (view: unknown) => {
       if (view === null) componentView.replaceChildren()
@@ -362,6 +356,142 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
+    const shell = new ProtonShell(this, this.shell)
+    shell.on("view").subscribe(view => {
+      cancelAnimationFrame(lastAnimationFrame)
+      lastAnimationFrame = requestAnimationFrame(() => replace(view))
+    })
+    ProtonShell.evaluate(shell, type, props)
+
+    return componentView
+  }
+
+  /**
+   * Uses no custom elements to store current view, replaces views by references.
+   *
+   * @note it might not work properly since weak referencing is prone to bugs (_for now_).
+   */
+  public inflateComponentWeak(type: Function, props?: any) {
+    // if (component.type.prototype == null) { // Assume it's arrow function.
+    //   return this.inflate(component.type(component.props))
+    // }
+
+    const shell = new ProtonShell(this, this.shell)
+    const componentPlaceholder = new WebComponentPlaceholder(shell, type)
+
+    let currentView: Node = componentPlaceholder
+    let lastAnimationFrame = -1
+
+    const replace = (view: unknown) => {
+      let nextView = view
+
+      if (view === null) {
+        nextView = componentPlaceholder
+        // @ts-expect-error by design.
+        nextView.replacedWith = null
+      }
+      if (nextView instanceof Node === false) return
+
+      // if (nextView instanceof WebComponentPlaceholder === false) {
+      //   // @ts-expect-error by design.
+      //   nextView = nextView?.shell?.getView?.() ?? nextView
+      // }
+      // let actualNextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
+      let actualNextView = nextView
+      if (actualNextView.toBeReplacedWith != null) {
+        const toBeReplacedWith = actualNextView.toBeReplacedWith
+
+        actualNextView.toBeReplacedWith = null
+        actualNextView = toBeReplacedWith
+      }
+
+      currentView = resolveReplacement(currentView)
+      currentView.toBeReplacedWith = actualNextView
+
+      if (currentView.replaceWith instanceof Function) {
+        if (currentView.parentNode != null) {
+          if (actualNextView instanceof DocumentFragment && actualNextView.childNodes.length === 0) {
+            actualNextView.replaceChildren(...actualNextView.fixedNodes)
+          }
+
+          currentView.replaceWith(actualNextView)
+          currentView.toBeReplacedWith = null
+        }
+
+        if (view !== null) {
+          // @ts-expect-error by design.
+          currentView.replacedWith = nextView
+        } else {
+          // @ts-expect-error by design.
+          currentView.replacedWith = null
+        }
+        // @ts-expect-error by design.
+        nextView.replacedWith = null
+        // @ts-expect-error by design.
+        actualNextView.replacedWith = null
+
+        // if (currentView instanceof WebComponentPlaceholder === false) {
+        //   currentView.shell = null
+        // }
+        // if (nextView instanceof WebComponentPlaceholder === false) {
+        //   nextView.shell = shell
+        // }
+
+        currentView = nextView
+
+        return
+      }
+
+      if (currentView instanceof DocumentFragment) {
+        // @ts-expect-error by design.
+        const fixed = currentView.fixedNodes as Node[]
+        const fixedNodes = fixed.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
+
+        const anchor = fixedNodes[0]
+
+        if (actualNextView instanceof DocumentFragment) {
+          // @ts-expect-error by design.
+          const firstFixed = actualNextView.fixedNodes[0]
+          const actualAnchor = WebComponentPlaceholder.actualOf(firstFixed) ?? firstFixed
+
+          if (actualAnchor === anchor) return
+        }
+
+        if (anchor.parentElement != null) {
+          anchor.parentElement.replaceChild(actualNextView, anchor)
+          currentView.toBeReplacedWith = null
+        }
+        currentView.replaceChildren(...fixedNodes)
+
+        if (view !== null) {
+          // @ts-expect-error by design.
+          currentView.replacedWith = nextView
+        } else {
+          // @ts-expect-error by design.
+          currentView.replacedWith = null
+        }
+        // @ts-expect-error by design.
+        nextView.replacedWith = null
+        // @ts-expect-error by design.
+        actualNextView.replacedWith = null
+
+        // if (currentView instanceof WebComponentPlaceholder === false) {
+        //   currentView.shell = null
+        // }
+        // if (nextView instanceof WebComponentPlaceholder === false) {
+        //   nextView.shell = shell
+        // }
+        currentView = nextView
+
+        if (anchor instanceof WebComponentPlaceholder) {
+          // @ts-expect-error no another way.
+          anchor.shell.events.dispatch("unmount")
+        }
+
+        return
+      }
+    }
+
     shell.on("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
@@ -369,7 +499,7 @@ class WebInflator extends Inflator {
 
     ProtonShell.evaluate(shell, type, props)
 
-    return componentView
+    return componentPlaceholder
   }
 }
 
