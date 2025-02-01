@@ -9,7 +9,7 @@ import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { isNode, nonGuard, resolveReplacement, unwrapNode } from "./helpers"
+import { isNode, nonGuard, unwrapNode } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
 
 import Inflator from "../Inflator"
@@ -54,7 +54,7 @@ class WebInflator extends Inflator {
   }
 
   protected inflateObservable<T>(observable: Observable<T> & AccessorGet<T>) {
-    const textNode = document.createTextNode(String(observable.get?.()))
+    const textNode = new Text(String(observable.get?.()))
 
     observable[Symbol.subscribe](value => textNode.textContent = String(observable.get?.() ?? value))
 
@@ -62,32 +62,22 @@ class WebInflator extends Inflator {
   }
 
   protected inflateIterable<T>(iterable: IteratorObject<T>): unknown {
-    const comment = new Comment("Iterable/" + iterable.constructor.name)
-    const fragment = new DocumentFragment
+    const contentsFragment = document.createElement(WebContentsFragment.TAG)
+    contentsFragment.style.display = "contents"
 
     const inflateItem = (item: unknown) => this.inflate(item)
 
-
-    fragment.append(...iterable[Symbol.iterator]().filter(Boolean).map(inflateItem).map(unwrapNode))
-    let inflatedIndexedItems: unknown[] = [...fragment.childNodes]
-    fragment.append(comment)
-
+    contentsFragment.replaceChildren(...iterable[Symbol.iterator]().filter(Boolean).map(inflateItem).map(unwrapNode))
 
     // @ts-expect-error fine.
     iterable?.[Symbol.subscribe](replace)
 
     function replace(newIterable: IteratorObject<T>) {
-      // Moves known nodes to the fragment.
-      fragment.replaceChildren(...inflatedIndexedItems.map(unwrapNode))
       // Previous nodes will be lost at this point.
-      fragment.replaceChildren(...newIterable[Symbol.iterator]().filter(Boolean).map(inflateItem).map(unwrapNode))
-
-      inflatedIndexedItems = [...fragment.childNodes]
-
-      comment.before(fragment)
+      contentsFragment.replaceChildren(...newIterable[Symbol.iterator]().filter(Boolean).map(inflateItem).map(unwrapNode))
     }
 
-    return fragment
+    return contentsFragment
   }
   protected inflateAsyncIterable<T>(asyncIterable: AsyncIteratorObject<T>): unknown {
     throw new TypeError("Async Iterator is not supported", { cause: { asyncIterable } })
@@ -351,119 +341,14 @@ class WebInflator extends Inflator {
     // }
 
     const shell = new ProtonShell(this, this.shell)
-    const componentPlaceholder = new WebComponentPlaceholder(shell, type)
+    const componentView = document.createElement(WebComponentView.TAG)
+    componentView.style.display = "contents"
 
-    let currentView: Node = componentPlaceholder
     let lastAnimationFrame = -1
 
     const replace = (view: unknown) => {
-      let nextView = view
-
-      if (view === null) {
-        nextView = componentPlaceholder
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-      }
-      if (nextView instanceof Node === false) return
-
-      // if (nextView instanceof WebComponentPlaceholder === false) {
-      //   // @ts-expect-error by design.
-      //   nextView = nextView?.shell?.getView?.() ?? nextView
-      // }
-      // let actualNextView = WebComponentPlaceholder.actualOf(nextView) ?? nextView
-      let actualNextView = nextView
-      if (actualNextView.toBeReplacedWith != null) {
-        const toBeReplacedWith = actualNextView.toBeReplacedWith
-
-        actualNextView.toBeReplacedWith = null
-        actualNextView = toBeReplacedWith
-      }
-
-      currentView = resolveReplacement(currentView)
-      currentView.toBeReplacedWith = actualNextView
-
-      if (currentView.replaceWith instanceof Function) {
-        if (currentView.parentNode != null) {
-          if (actualNextView instanceof DocumentFragment && actualNextView.childNodes.length === 0) {
-            actualNextView.replaceChildren(...actualNextView.fixedNodes)
-          }
-
-          currentView.replaceWith(actualNextView)
-          currentView.toBeReplacedWith = null
-        }
-
-        if (view !== null) {
-          // @ts-expect-error by design.
-          currentView.replacedWith = nextView
-        } else {
-          // @ts-expect-error by design.
-          currentView.replacedWith = null
-        }
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-        // @ts-expect-error by design.
-        actualNextView.replacedWith = null
-
-        // if (currentView instanceof WebComponentPlaceholder === false) {
-        //   currentView.shell = null
-        // }
-        // if (nextView instanceof WebComponentPlaceholder === false) {
-        //   nextView.shell = shell
-        // }
-
-        currentView = nextView
-
-        return
-      }
-
-      if (currentView instanceof DocumentFragment) {
-        // @ts-expect-error by design.
-        const fixed = currentView.fixedNodes as Node[]
-        const fixedNodes = fixed.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
-
-        const anchor = fixedNodes[0]
-
-        if (actualNextView instanceof DocumentFragment) {
-          // @ts-expect-error by design.
-          const firstFixed = actualNextView.fixedNodes[0]
-          const actualAnchor = WebComponentPlaceholder.actualOf(firstFixed) ?? firstFixed
-
-          if (actualAnchor === anchor) return
-        }
-
-        if (anchor.parentElement != null) {
-          anchor.parentElement.replaceChild(actualNextView, anchor)
-          currentView.toBeReplacedWith = null
-        }
-        currentView.replaceChildren(...fixedNodes)
-
-        if (view !== null) {
-          // @ts-expect-error by design.
-          currentView.replacedWith = nextView
-        } else {
-          // @ts-expect-error by design.
-          currentView.replacedWith = null
-        }
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-        // @ts-expect-error by design.
-        actualNextView.replacedWith = null
-
-        // if (currentView instanceof WebComponentPlaceholder === false) {
-        //   currentView.shell = null
-        // }
-        // if (nextView instanceof WebComponentPlaceholder === false) {
-        //   nextView.shell = shell
-        // }
-        currentView = nextView
-
-        if (anchor instanceof WebComponentPlaceholder) {
-          // @ts-expect-error no another way.
-          anchor.shell.events.dispatch("unmount")
-        }
-
-        return
-      }
+      if (view instanceof Node === false) return
+      componentView.replaceChildren(view)
     }
 
     shell.on("view").subscribe(view => {
@@ -473,7 +358,7 @@ class WebInflator extends Inflator {
 
     ProtonShell.evaluate(shell, type, props)
 
-    return componentPlaceholder
+    return componentView
   }
 }
 
@@ -492,3 +377,13 @@ export default WebInflator
 // interface WebInflateChunkComponent<T> extends WebInflateChunk<T> {
 //   shell: ProtonShell
 // }
+
+class WebContentsFragment extends HTMLElement {
+  static readonly TAG = "contents-fragment"
+}
+window.customElements.define(WebContentsFragment.TAG, WebContentsFragment)
+
+class WebComponentView extends HTMLElement {
+  static readonly TAG = "component-view"
+}
+window.customElements.define(WebComponentView.TAG, WebComponentView)
