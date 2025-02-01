@@ -89,6 +89,8 @@ declare global {
     type SVGElements = { [Tag in keyof SVGElementTagNameMap]: SVGElementAttributes<SVGElementTagNameMap[Tag]> }
     type MathMLElements = { [Tag in keyof MathMLElementTagNameMap]: HTMLElementAttributes<MathMLElementTagNameMap[Tag]> }
 
-    interface IntrinsicElements extends HTMLElements, SVGElements, MathMLElements { }
+    interface IntrinsicElements {
+      [x: string]: any
+    }
   }
 }
