@@ -8,6 +8,7 @@ import LoaderCover from "./app/ui/Loader/LoaderCover"
 import MiniProfile from "./app/ui/MiniProfile/MiniProfile"
 import Navbar from "./app/ui/Navbar/Navbar"
 import User from "./app/user/User"
+import Circles from "./Circles/Circles"
 import { NavRoute } from "./navigation"
 import UserContext from "./UserContext"
 
@@ -46,6 +47,9 @@ function App(this: Proton.Shell) {
       <main>
         <NavRoute path="/"><span>123</span></NavRoute>
         <NavRoute path="/documentation">Documentation</NavRoute>
+
+        <NavRoute path="/circles"><Circles /></NavRoute>
+
         <NavRoute path="/profile">
           <MiniProfile />
           <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />

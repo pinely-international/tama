@@ -106,16 +106,18 @@ class WebInflator extends Inflator {
     // Inflation of Component children is handled by the component itself.
     if (jsx instanceof ProtonJSX.Component) return inflated
 
-    return this.inflateJSXIntrinsicDeeply(jsx, inflated instanceof Comment ? inflated.inflated : inflated)
+    return this.inflateJSXIntrinsicDeeply(jsx, inflated)
   }
 
   private inflateJSXIntrinsicDeeply(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): Element | DocumentFragment | Node {
+    const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
+
     const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
       const childInflated = this.inflate(child)
       if (!isNode(childInflated)) return
 
       try {
-        inflated.appendChild(childInflated)
+        actualInflated.appendChild(childInflated)
       } catch (error) {
         console.debug("appendChildObject -> ", child, childInflated)
         console.trace(error)
@@ -374,10 +376,6 @@ class WebInflator extends Inflator {
    * @note it might not work properly since weak referencing is prone to bugs (_for now_).
    */
   public inflateComponentWeak(type: Function, props?: any) {
-    // if (component.type.prototype == null) { // Assume it's arrow function.
-    //   return this.inflate(component.type(component.props))
-    // }
-
     const shell = new ProtonShell(this, this.shell)
     const componentPlaceholder = new WebComponentPlaceholder(shell, type)
 
@@ -507,26 +505,9 @@ class WebInflator extends Inflator {
 
 export default WebInflator
 
-// const asd = new WebInflator
-// const element = asd.inflateIntrinsic("div", { mounted: false })
-// asd.inflateJSX(<p>123</p>)
-// asd.customAttributes.set("classMods", context => context.bind("className", context.value))
 
-
-// interface WebInflateChunk<T> {
-//   view: T
-// }
-
-// interface WebInflateChunkComponent<T> extends WebInflateChunk<T> {
-//   shell: ProtonShell
-// }
-
-class WebContentsFragment extends HTMLElement {
-  static readonly TAG = "contents-fragment"
-}
+class WebContentsFragment extends HTMLElement { static readonly TAG = "contents-fragment" }
 window.customElements.define(WebContentsFragment.TAG, WebContentsFragment)
 
-class WebComponentView extends HTMLElement {
-  static readonly TAG = "component-view"
-}
+class WebComponentView extends HTMLElement { static readonly TAG = "component-view" }
 window.customElements.define(WebComponentView.TAG, WebComponentView)

@@ -9,6 +9,8 @@ function Navbar() {
       <NavLink className="navbar__link" to="/">Home</NavLink>
       <NavLink className="navbar__link" to="/documentation">Documentation</NavLink>
 
+      <NavLink className="navbar__link" to="/circles">Circles</NavLink>
+
       <NavLink className="navbar__link" to="/profile">Profile</NavLink>
       <NavLink className="navbar__link" to="/blog">Blog</NavLink>
       <NavLink className="navbar__link" to="/messenger">Messenger</NavLink>
