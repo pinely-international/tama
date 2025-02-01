@@ -8,11 +8,11 @@ import LoaderCover from "./app/ui/Loader/LoaderCover"
 import MiniProfile from "./app/ui/MiniProfile/MiniProfile"
 import Navbar from "./app/ui/Navbar/Navbar"
 import User from "./app/user/User"
-import Circles from "./Circles/Circles"
 import { NavRoute } from "./navigation"
 import UserContext from "./UserContext"
 
 
+const Circles = Lazy(() => import("./Circles/Circles"))
 const TictactoeGame = Lazy(() => import("./tictactoe/tictactoe"))
 const ProductsTableApp = Lazy(() => import("./products-table/ProductsTable"))
 const Market = Lazy(() => import("./areas/market/components/Market/Market"))
@@ -64,13 +64,3 @@ function App(this: Proton.Shell) {
 }
 
 export default App
-
-function BaseRoutes() {
-  const router = new Router
-  router.a
-
-  const pattern = new URLPattern(pathPattern ?? undefined, window.location.href)
-  const result = pattern.exec(this.current.get().pathname, window.location.href)
-
-  return
-}

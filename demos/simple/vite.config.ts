@@ -15,7 +15,7 @@ export default defineConfig({
     modulePreload: false
   },
   esbuild: {
-    keepNames: true,
+    keepNames: false,
 
     supported: {
       "top-level-await": true

@@ -57,8 +57,8 @@ export class WebNavigation extends Navigation {
   readonly result = new Flow<URLPatternResult | null>(null)
 
   test(pathPattern: string | undefined | null): boolean {
-    const pattern = new URLPattern(pathPattern ?? undefined, window.location.origin)
-    const result = pattern.exec(this.current.get().pathname, window.location.origin)
+    const pattern = new URLPattern(`*://*:*${pathPattern ?? ""}`)
+    const result = pattern.exec(this.current.get())
 
     try {
       this.result.set(result)

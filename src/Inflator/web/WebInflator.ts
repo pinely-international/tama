@@ -350,7 +350,8 @@ class WebInflator extends Inflator {
   }
 
   static bindPropertyCallback(source: unknown, targetBindCallback: (value: unknown) => void): void {
-    if (source == null || (typeof source !== "object" && typeof source !== "function")) {
+    if (source == null) return
+    if (typeof source !== "object" && typeof source !== "function") {
       targetBindCallback(source)
       return
     }
