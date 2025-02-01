@@ -23,6 +23,7 @@ type WebInflateResult<T> =
   Text
 
 class WebInflator extends Inflator {
+  readonly flags = { debug: false }
   customAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
 
   protected clone() {
@@ -338,7 +339,7 @@ class WebInflator extends Inflator {
     if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get!() ?? value))
   }
   public inflateComponent(type: Function, props?: any) {
-    if (import.meta.env.DEV) {
+    if (this.flags.debug) {
       return this.inflateComponentSafe(type, props)
     }
 

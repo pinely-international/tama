@@ -1,15 +1,15 @@
 import "@/assets/scss/base.scss"
 
+import { Flow } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
 
-import Navbar from "./app/ui/Navbar/Navbar"
-import MiniProfile from "./app/ui/MiniProfile/MiniProfile"
-import User from "./app/user/User"
 import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
+import LoaderCover from "./app/ui/Loader/LoaderCover"
+import MiniProfile from "./app/ui/MiniProfile/MiniProfile"
+import Navbar from "./app/ui/Navbar/Navbar"
+import User from "./app/user/User"
 import { NavRoute } from "./navigation"
 import UserContext from "./UserContext"
-import { Flow } from "@denshya/flow"
-import LoaderCover from "./app/ui/Loader/LoaderCover"
 
 
 const TictactoeGame = Lazy(() => import("./tictactoe/tictactoe"))
@@ -60,3 +60,13 @@ function App(this: Proton.Shell) {
 }
 
 export default App
+
+function BaseRoutes() {
+  const router = new Router
+  router.a
+
+  const pattern = new URLPattern(pathPattern ?? undefined, window.location.href)
+  const result = pattern.exec(this.current.get().pathname, window.location.href)
+
+  return
+}

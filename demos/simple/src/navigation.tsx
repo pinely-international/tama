@@ -57,8 +57,8 @@ export class WebNavigation extends Navigation {
   readonly result = new Flow<URLPatternResult | null>(null)
 
   test(pathPattern: string | undefined | null): boolean {
-    const pattern = new URLPattern(pathPattern ?? undefined, window.location.href)
-    const result = pattern.exec(this.current.get().pathname, window.location.href)
+    const pattern = new URLPattern(pathPattern ?? undefined, window.location.origin)
+    const result = pattern.exec(this.current.get().pathname, window.location.origin)
 
     try {
       this.result.set(result)
@@ -76,7 +76,7 @@ export const navigation = new WebNavigation
 
 
 export function NavRoute(this: Proton.Shell, props: { path?: string; children: unknown; dynamic?: boolean }) {
-  let children: unknown
+  let view: unknown
 
   let result: RouteContext | null = null
 
@@ -91,11 +91,11 @@ export function NavRoute(this: Proton.Shell, props: { path?: string; children: u
 
     result.set(navigation.result.get())
 
-    if (children == null) {
-      children = this.inflator.inflate(props.children)
+    if (view == null) {
+      view = this.inflator.inflate(props.children)
     }
 
-    this.view.set(children)
+    this.view.set(view)
   }
 
   switchView()
