@@ -9,7 +9,7 @@ import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { isNode, nonGuard, unwrapNode } from "./helpers"
+import { isNode, nonGuard, resolveReplacement, unwrapNode } from "./helpers"
 import WebComponentPlaceholder from "./WebComponentPlaceholder"
 
 import Inflator from "../Inflator"
