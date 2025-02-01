@@ -159,9 +159,11 @@ class WebInflator extends Inflator {
       }
 
       const immediateGuard = this.applyGuardMounting(inflated, properties, type)
-      // @ts-expect-error 123
-      immediateGuard.inflated = inflated
-      if (immediateGuard != null) return immediateGuard
+      if (immediateGuard != null) {
+        // @ts-expect-error 123
+        immediateGuard.inflated = inflated
+        return immediateGuard
+      }
     } catch (error) {
       console.error("Element props binding failed -> ", error)
     }
