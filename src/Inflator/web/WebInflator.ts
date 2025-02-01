@@ -346,7 +346,7 @@ class WebInflator extends Inflator {
       return type.__isAsync
     }
     if (maybeArrowFunction && !isAsyncFunction()) {
-      return this.inflate(type())
+      return this.inflate(type(props))
     }
 
     const shell = new ProtonShell(this, this.shell)

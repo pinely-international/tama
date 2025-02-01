@@ -4,7 +4,7 @@ import { Flow, FlowArray } from "@denshya/flow"
 
 
 
-function FilterableProductTable(props: { products: Product[] }) {
+const FilterableProductTable = (props: { products: Product[] }) => {
   const searchValue = new Flow("")
   const inStockOnly = new Flow(false)
 
@@ -16,7 +16,7 @@ function FilterableProductTable(props: { products: Product[] }) {
   )
 }
 
-function ProductCategoryRow(props: { category: string }) {
+const ProductCategoryRow = (props: { category: string }) => {
   return (
     <tr>
       <th colSpan={2}>{props.category}</th>
@@ -24,7 +24,7 @@ function ProductCategoryRow(props: { category: string }) {
   )
 }
 
-function ProductRow(props: { product: Product }) {
+const ProductRow = (props: { product: Product }) => {
   const name = props.product.stocked ? props.product.name : (
     <span style={{ color: "red" }}>{props.product.name}</span>
   )
@@ -37,7 +37,7 @@ function ProductRow(props: { product: Product }) {
   )
 }
 
-function ProductTable(props: { products: Product[], filterText: Flow<string>, inStockOnly: Flow<boolean> }) {
+const ProductTable = (props: { products: Product[], filterText: Flow<string>, inStockOnly: Flow<boolean> }) => {
   let lastCategory: string | null = null
   const productsList = new FlowArray(props.products)
 
@@ -77,7 +77,7 @@ function ProductTable(props: { products: Product[], filterText: Flow<string>, in
   )
 }
 
-function SearchBar(props: { value: Flow<string>, inStockOnly: Flow<boolean> }) {
+const SearchBar = (props: { value: Flow<string>, inStockOnly: Flow<boolean> }) => {
   return (
     <form>
       <input value={props.value} placeholder="Search..." />
@@ -87,7 +87,7 @@ function SearchBar(props: { value: Flow<string>, inStockOnly: Flow<boolean> }) {
           checked={props.inStockOnly}
           on={{ change: event => props.inStockOnly.set((event.currentTarget as HTMLInputElement).checked) }}
         />
-        {' '}
+        {" "}
         Only show products in stock
       </label>
     </form>
@@ -103,9 +103,10 @@ const PRODUCTS: Product[] = [
   { category: "Vegetables", price: "$1", stocked: true, name: "Peas" }
 ]
 
-export default function ProductsTableApp() {
+const ProductsTableApp = () => {
   return <FilterableProductTable products={PRODUCTS} />
 }
+export default ProductsTableApp
 
 
 interface Product {

@@ -1,14 +1,16 @@
 import "./Market.scss"
 
-import ProductCard from "../ProductCard/ProductCard"
 import { Proton } from "@denshya/proton"
-import Cart from "../Cart/Cart"
-import MarketModel from "../../models/MarketModel"
-import { STATIC_PRODUCTS } from "../../mock"
-import Icon from "@/app/ui/Icon/Icon"
+
 import Button from "@/app/ui/Button/Button"
+import Icon from "@/app/ui/Icon/Icon"
 import SearchBar from "@/app/ui/SearchBar/SearchBar"
 import Selector from "@/app/ui/Selector/Selector"
+
+import { STATIC_PRODUCTS } from "../../mock"
+import MarketModel from "../../models/MarketModel"
+import Cart from "../Cart/Cart"
+import ProductCard from "../ProductCard/ProductCard"
 
 
 
