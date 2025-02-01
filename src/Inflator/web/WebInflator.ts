@@ -23,11 +23,12 @@ type WebInflateResult<T> =
   Text
 
 class WebInflator extends Inflator {
-  readonly flags = { debug: false }
+  flags = { debug: false }
   customAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
 
   protected clone() {
     const clone = new WebInflator
+    clone.flags = this.flags
     clone.customAttributes = new Map(this.customAttributes)
     return clone
   }
