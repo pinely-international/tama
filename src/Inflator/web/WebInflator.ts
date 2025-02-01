@@ -100,7 +100,7 @@ class WebInflator extends Inflator {
     // Inflation of Component children is handled by the component itself.
     if (jsx instanceof ProtonJSX.Component) return inflated
 
-    return this.inflateJSXIntrinsicDeeply(jsx, inflated)
+    return this.inflateJSXIntrinsicDeeply(jsx, inflated instanceof Comment ? inflated.inflated : inflated)
   }
 
   private inflateJSXIntrinsicDeeply(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): Element | DocumentFragment | Node {
@@ -159,6 +159,8 @@ class WebInflator extends Inflator {
       }
 
       const immediateGuard = this.applyGuardMounting(inflated, properties, type)
+      // @ts-expect-error 123
+      immediateGuard.inflated = inflated
       if (immediateGuard != null) return immediateGuard
     } catch (error) {
       console.error("Element props binding failed -> ", error)
@@ -342,15 +344,17 @@ class WebInflator extends Inflator {
 
     const shell = new ProtonShell(this, this.shell)
     const componentView = document.createElement(WebComponentView.TAG)
+    componentView.setAttribute("name", type.name)
     componentView.style.display = "contents"
 
-    let lastAnimationFrame = -1
 
     const replace = (view: unknown) => {
-      if (view instanceof Node === false) return
-      componentView.replaceChildren(view)
+      if (view === null) componentView.replaceChildren()
+      if (view instanceof Node) componentView.replaceChildren(view)
     }
 
+
+    let lastAnimationFrame = -1
     shell.on("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
