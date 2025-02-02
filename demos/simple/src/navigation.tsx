@@ -72,29 +72,21 @@ export class WebNavigation extends Navigation {
 
 
 
-export const navigation = new WebNavigation
+const navigation = new WebNavigation
 
 
-export function NavRoute(this: Proton.Shell, props: { path?: string; children: unknown; dynamic?: boolean }) {
+export function NavRoute(this: Proton.Shell, props: { path?: string; children: unknown }) {
   let view: unknown
 
-  let result: RouteContext | null = null
+  let context: RouteContext | null = null
 
   const switchView = () => {
-    if (!navigation.test(props.path)) {
-      return this.view.set(null)
-    }
+    if (!navigation.test(props.path)) return this.view.set(null)
 
-    if (result == null) {
-      result = this.context.provide(new RouteContext(null))
-    }
+    if (context == null) context = this.context.provide(new RouteContext(null))
+    context.set(navigation.result.get())
 
-    result.set(navigation.result.get())
-
-    if (view == null) {
-      view = this.inflator.inflate(props.children)
-    }
-
+    if (view == null) view = this.inflator.inflate(props.children)
     this.view.set(view)
   }
 
