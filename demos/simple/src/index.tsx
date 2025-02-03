@@ -9,7 +9,6 @@ import applyCustomAttributes from "./custom-attributes"
 
 const inflator = new WebInflator
 inflator.flags.debug = true
-inflator.flags.instanceSharing = true
 applyCustomAttributes(inflator)
 
 
