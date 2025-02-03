@@ -21,7 +21,12 @@ namespace ProtonJSX {
   export class Component extends Node { override type!: Function }
   export class Fragment extends Node { }
 
-  export function Element(type: keyof never | Function, props: Props | null, children: Children | null, ...childrenExtrinsic: ChildrenExtrinsic) {
+  export function Element(type: keyof never | Function | Node, props: Props | null, children: Children | null, ...childrenExtrinsic: ChildrenExtrinsic) {
+    if (type instanceof Node) {
+      // @ts-expect-error ok.
+      type.props = { ...type.props, ...props }
+      return type
+    }
     if (props?.children != null && children == null) children = props.children as Children
 
     if (type === FragmentSymbol) return new Fragment(type, props, children, childrenExtrinsic)

@@ -43,7 +43,7 @@ declare global {
     interface ElementTypeConstructor {
       (this: never, props: never): unknown
     }
-    type ElementType = string | ElementTypeConstructor
+    type ElementType = string | Element | ElementTypeConstructor
 
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ElementChildrenAttribute { children: {} }
@@ -68,7 +68,6 @@ declare global {
 
     interface IntrinsicAttributes {
       mounted?: AccessorGet<T> & Observable<T>
-      children?: unknown
     }
 
     interface CustomAttributes {
@@ -79,7 +78,8 @@ declare global {
 
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]
 
-    type HTMLElementAttributes<T> = Partial<AttributesOf<T>> & CustomAttributes & IntrinsicAttributes
+    type HTMLElementAttributes<T> = Partial<AttributesOf<T>> & CustomAttributes & IntrinsicAttributes & { children?: unknown }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     type SVGElementAttributes<T> = HTMLElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : {}) & { class?: Attribute<string> }
 
     type SVGURIReferenceAttribute = SVGURIReference | { href?: Attribute<string> }
