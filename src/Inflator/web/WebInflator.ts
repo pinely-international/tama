@@ -30,6 +30,7 @@ class WebInflator extends Inflator {
   flags: WebInflatorFlags = {
     debug: false,
   }
+  /** Custom JSX attributes. Adds or Overrides JSX attribute to provide new behavior. */
   jsxAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
 
   protected clone() {
@@ -335,18 +336,18 @@ class WebInflator extends Inflator {
     }
 
 
-    // Custom JSX Attributes
+    if (this.jsxAttributes.size > 0) {
+      function bind(key: string, value: unknown) {
+        WebInflator.bindProperty(key, value, element)
+        overrides.add(key)
+      }
 
-    function bind(key: string, value: unknown) {
-      WebInflator.bindProperty(key, value, element)
-      overrides.add(key)
-    }
+      for (const [key, attributeSetup] of this.jsxAttributes.entries()) {
+        if (key in props === false) continue
 
-    for (const [key, attributeSetup] of this.jsxAttributes.entries()) {
-      if (key in props === false) continue
-
-      attributeSetup({ props, key, value: props[key], element, bind })
-      overrides.add(key)
+        attributeSetup({ props, key, value: props[key], element, bind })
+        overrides.add(key)
+      }
     }
 
     return overrides

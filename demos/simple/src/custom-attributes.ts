@@ -1,7 +1,8 @@
-import { WebInflator } from "@denshya/proton"
-import { castArray } from "./utils/common"
-import { bemFlow } from "./utils/bem"
 import { Flowable } from "@denshya/flow"
+import { WebInflator } from "@denshya/proton"
+
+import { bemFlow } from "./utils/bem"
+import { castArray } from "./utils/common"
 
 declare global {
   namespace JSX {
@@ -13,7 +14,7 @@ declare global {
 }
 
 function applyCustomAttributes(inflator: WebInflator) {
-  inflator.customAttributes.set("classMods", context => {
+  inflator.jsxAttributes.set("classMods", context => {
     if (context.value == null) return
 
     context.bind("className", bemFlow(context.props.className as never, ...castArray(context.value)))
