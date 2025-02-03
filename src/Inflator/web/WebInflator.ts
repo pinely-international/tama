@@ -9,25 +9,43 @@ import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { isNode, nonGuard, unwrapNode } from "./helpers"
-import WebComponentPlaceholder from "./WebComponentPlaceholder"
+import { isNode, nonGuard } from "./helpers"
 
 import Inflator from "../Inflator"
 
 
 type WebInflateResult<T> =
   T extends Node ? T :
-  T extends JSX.Element ? (Element | WebComponentPlaceholder) :
+  T extends JSX.Element ? Element :
   T extends Observable<unknown> ? Text :
   T extends Primitive ? Text :
   Text
 
+
+interface WebInflatorFlags {
+  debug: boolean
+  /**
+   * Defines if the inflator instance should be shared or cloned.
+   *
+   * @default false
+   */
+  instanceSharing: boolean
+}
+
 class WebInflator extends Inflator {
+  flags: WebInflatorFlags = {
+    debug: false,
+    instanceSharing: false
+  }
   customAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
 
   protected clone() {
+    if (this.flags.instanceSharing) return this
+
     const clone = new WebInflator
+    clone.flags = { ...this.flags }
     clone.customAttributes = new Map(this.customAttributes)
+
     return clone
   }
 
@@ -42,7 +60,7 @@ class WebInflator extends Inflator {
   }
 
   protected inflateFragment() {
-    const contentsFragment = document.createElement(WebContentsFragment.TAG)
+    const contentsFragment = document.createElement("div")
     contentsFragment.setAttribute("within", this.shell?.evaluatedBy?.name ?? "[unknown]")
     contentsFragment.style.display = "contents"
 
@@ -61,24 +79,28 @@ class WebInflator extends Inflator {
     const textNode = new Text(String(observable.get?.()))
 
     observable[Symbol.subscribe](value => textNode.textContent = String(observable.get?.() ?? value))
+    // @ts-expect-error __observable
+    textNode.__observable = observable.constructor.name
 
     return textNode
   }
 
   protected inflateIterable<T>(iterable: IteratorObject<T>): unknown {
-    const contentsFragment = document.createElement(WebContentsFragment.TAG)
+    const contentsFragment = document.createElement("div")
     contentsFragment.style.display = "contents"
+    // @ts-expect-error __iterable
+    contentsFragment.__iterable = iterable.constructor.name
 
     const inflateItem = (item: unknown) => this.inflate(item)
 
-    contentsFragment.replaceChildren(...iterable[Symbol.iterator]().filter(Boolean).map(inflateItem).map(unwrapNode))
+    contentsFragment.replaceChildren(...iterable[Symbol.iterator]().filter(Boolean).map(inflateItem))
 
     // @ts-expect-error fine.
     iterable[Symbol.subscribe]?.(replace)
 
     function replace(newIterable: IteratorObject<T>) {
       // Previous nodes will be lost at this point.
-      contentsFragment.replaceChildren(...newIterable[Symbol.iterator]().filter(Boolean).map(inflateItem).map(unwrapNode))
+      contentsFragment.replaceChildren(...newIterable[Symbol.iterator]().filter(Boolean).map(inflateItem))
     }
 
     return contentsFragment
@@ -165,9 +187,10 @@ class WebInflator extends Inflator {
   }
 
   public inflateComponent(type: Function, props?: any) {
-    const componentView = document.createElement(WebComponentView.TAG)
-    componentView.setAttribute("name", type.name)
+    const componentView = document.createElement("div")
     componentView.style.display = "contents"
+    // @ts-expect-error __component
+    componentView.__component = type.name
 
     const replace = (view: unknown) => {
       if (view === null) componentView.replaceChildren()
@@ -364,10 +387,3 @@ class WebInflator extends Inflator {
 }
 
 export default WebInflator
-
-
-class WebContentsFragment extends HTMLElement { static readonly TAG = "contents-fragment" }
-window.customElements.define(WebContentsFragment.TAG, WebContentsFragment)
-
-class WebComponentView extends HTMLElement { static readonly TAG = "component-view" }
-window.customElements.define(WebComponentView.TAG, WebComponentView)
