@@ -1,4 +1,4 @@
-import { Flow, Flowable } from "@denshya/flow"
+import { Flowable, Signal } from "@denshya/flow"
 
 import ProtonJSX from "@/jsx/ProtonJSX"
 
@@ -38,7 +38,7 @@ export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown
   }
 
   function DynamicComponent(this: ProtonShell) {
-    const propsState = Flow.computeRecord(props)
+    const propsState = Signal.computeRecord(props)
     propsState.sets(it => this.view.set(getCachedFactory(this, it)))
     return getCachedFactory(this, propsState.get())
   }
