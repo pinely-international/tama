@@ -24,29 +24,34 @@ type WebInflateResult<T> =
 
 interface WebInflatorFlags {
   debug: boolean
-  /**
-   * Defines if the inflator instance should be shared or cloned.
-   *
-   * @default false
-   */
-  instanceSharing: boolean
 }
 
 class WebInflator extends Inflator {
   flags: WebInflatorFlags = {
     debug: false,
-    instanceSharing: false
   }
-  customAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
+  jsxAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
 
   protected clone() {
-    if (this.flags.instanceSharing) return this
-
     const clone = new WebInflator
     clone.flags = { ...this.flags }
-    clone.customAttributes = new Map(this.customAttributes)
-
+    clone.jsxAttributes = new Map(this.jsxAttributes)
     return clone
+  }
+
+  protected inflateGroup(name: string, debugValue: string) {
+    const group = document.createElement("div")
+    group.style.display = "contents"
+
+    this.setDebugMarker(group, name, debugValue)
+
+    return group
+  }
+
+  protected setDebugMarker(target: object, name: string, debugValue: string) {
+    // @ts-expect-error ok.
+    target["__" + name] = debugValue
+    if (this.flags.debug && target instanceof Element) target.setAttribute(name, debugValue)
   }
 
   public inflate<T>(subject: T): WebInflateResult<T> {
@@ -60,11 +65,7 @@ class WebInflator extends Inflator {
   }
 
   protected inflateFragment() {
-    const contentsFragment = document.createElement("div")
-    contentsFragment.setAttribute("within", this.shell?.evaluatedBy?.name ?? "[unknown]")
-    contentsFragment.style.display = "contents"
-
-    return contentsFragment
+    return this.inflateGroup("fragment", this.shell?.evaluatedBy?.name ?? "[unknown]")
   }
 
   public inflateJSX(jsx: ProtonJSX.Node): Node {
@@ -79,31 +80,27 @@ class WebInflator extends Inflator {
     const textNode = new Text(String(observable.get?.()))
 
     observable[Symbol.subscribe](value => textNode.textContent = String(observable.get?.() ?? value))
-    // @ts-expect-error __observable
-    textNode.__observable = observable.constructor.name
+    this.setDebugMarker(textNode, "observable", observable.constructor.name)
 
     return textNode
   }
 
   protected inflateIterable<T>(iterable: IteratorObject<T>): unknown {
-    const contentsFragment = document.createElement("div")
-    contentsFragment.style.display = "contents"
-    // @ts-expect-error __iterable
-    contentsFragment.__iterable = iterable.constructor.name
+    const iterableGroup = this.inflateGroup("iterable", iterable.constructor.name)
 
     const inflateItem = (item: unknown) => this.inflate(item)
 
-    contentsFragment.replaceChildren(...iterable[Symbol.iterator]().filter(Boolean).map(inflateItem))
+    iterableGroup.replaceChildren(...iterable[Symbol.iterator]().filter(Boolean).map(inflateItem))
 
     // @ts-expect-error fine.
     iterable[Symbol.subscribe]?.(replace)
 
     function replace(newIterable: IteratorObject<T>) {
       // Previous nodes will be lost at this point.
-      contentsFragment.replaceChildren(...newIterable[Symbol.iterator]().filter(Boolean).map(inflateItem))
+      iterableGroup.replaceChildren(...newIterable[Symbol.iterator]().filter(Boolean).map(inflateItem))
     }
 
-    return contentsFragment
+    return iterableGroup
   }
   protected inflateAsyncIterable<T>(asyncIterable: AsyncIteratorObject<T>): unknown {
     throw new TypeError("Async Iterator is not supported", { cause: { asyncIterable } })
@@ -186,15 +183,12 @@ class WebInflator extends Inflator {
     return inflated
   }
 
-  public inflateComponent(type: Function, props?: any) {
-    const componentView = document.createElement("div")
-    componentView.style.display = "contents"
-    // @ts-expect-error __component
-    componentView.__component = type.name
+  public inflateComponent(constructor: Function, props?: any) {
+    const componentGroup = this.inflateGroup("component", constructor.name)
 
     const replace = (view: unknown) => {
-      if (view === null) componentView.replaceChildren()
-      if (view instanceof Node) componentView.replaceChildren(view)
+      if (view === null) componentGroup.replaceChildren()
+      if (view instanceof Node) componentGroup.replaceChildren(view)
     }
 
 
@@ -204,9 +198,9 @@ class WebInflator extends Inflator {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
-    ProtonShell.evaluate(shell, type, props)
+    ProtonShell.evaluate(shell, constructor, props)
 
-    return componentView
+    return componentGroup
   }
 
   protected applyGuardMounting(element: Element, properties: [string, unknown][], type: string) {
@@ -341,22 +335,17 @@ class WebInflator extends Inflator {
     }
 
 
+    // Custom JSX Attributes
 
-    for (const [key, attributeSetup] of this.customAttributes.entries()) {
+    function bind(key: string, value: unknown) {
+      WebInflator.bindProperty(key, value, element)
+      overrides.add(key)
+    }
+
+    for (const [key, attributeSetup] of this.jsxAttributes.entries()) {
       if (key in props === false) continue
 
-      attributeSetup({
-        props,
-
-        key,
-        value: props[key],
-        element,
-
-        bind: (key, value) => {
-          WebInflator.bindProperty(key, value, element)
-          overrides.add(key)
-        }
-      })
+      attributeSetup({ props, key, value: props[key], element, bind })
       overrides.add(key)
     }
 

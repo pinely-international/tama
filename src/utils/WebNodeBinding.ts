@@ -42,8 +42,6 @@ namespace WebNodeBinding {
     }
     accessor.subscribe?.(value => descriptor.set!.call(node, accessor.get?.() ?? value))
   }
-
-  function bind() { }
 }
 
 export default WebNodeBinding

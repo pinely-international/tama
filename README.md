@@ -479,7 +479,7 @@ A class that is responsible for creating a view representation held in memory.
 
 This extends JSX attributes. It requires three steps to make it work.
 
-1. Declare custom attribute with `customAttributes.set`.
+1. Declare custom attribute with `jsxAttributes.set`.
 2. Bind attribute(s) to the element, this may override intrinsic attributes.
 3. Augment `JSX.CustomAttributes` interface to include the custom attribute if you're using TypeScript.
 
@@ -501,7 +501,7 @@ declare global {
 }
 
 function applyCustomAttributes(inflator: WebInflator) {
-  inflator.customAttributes.set("classMods", context => {
+  inflator.jsxAttributes.set("classMods", context => {
     if (context.value == null) return
 
     context.bind("className", bem(context.props.className as never, ...castArray(context.value)))
