@@ -185,6 +185,11 @@ class WebInflator extends Inflator {
   }
 
   public inflateComponent(constructor: Function, props?: any) {
+    // If arrow function, simplify inflation.
+    if (constructor.prototype == null && constructor instanceof AsyncFunction === false) {
+      return this.inflate(constructor(props))
+    }
+
     const componentGroup = this.inflateGroup("component", constructor.name)
 
     const replace = (view: unknown) => {
@@ -377,3 +382,6 @@ class WebInflator extends Inflator {
 }
 
 export default WebInflator
+
+
+const AsyncFunction = (async () => { }).constructor
