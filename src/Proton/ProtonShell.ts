@@ -115,6 +115,13 @@ export class ProtonShell {
       if (returnResult instanceof Promise) returnResult = await returnResult
       if (returnResult == null) return
 
+      if (returnResult instanceof AsyncGeneratorFunction) {
+        for await (const yieldResult of returnResult) {
+          shell.view.set(yieldResult)
+          returnResult = yieldResult
+        }
+      }
+
       shell.view.default = shell.inflator.inflate(returnResult)
       shell.view.set(shell.view.default)
     } catch (thrown) {
@@ -162,3 +169,6 @@ interface ShellEvents {
 
 //   return moduleOrConstructor.default
 // }
+
+
+const AsyncGeneratorFunction = (async function* () { }).constructor as AsyncGeneratorFunction
