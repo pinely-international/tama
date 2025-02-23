@@ -3,6 +3,7 @@ import { Primitive } from "type-fest"
 import Accessor, { AccessorGet } from "@/Accessor"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import ProtonJSX from "@/jsx/ProtonJSX"
+import Null from "@/Null"
 import Observable from "@/Observable"
 import { ProtonShell } from "@/Proton/ProtonShell"
 import { isRecord } from "@/utils/general"
@@ -152,16 +153,13 @@ class WebInflator extends Inflator {
   /**
    * Creates element and binds properties.
    */
-  public inflateIntrinsic(type: unknown, props?: any): Element | Comment {
-    if (typeof type !== "string") {
-      throw new TypeError(typeof type + " type of intrinsic element is not supported", { cause: { type } })
-    }
-
+  public inflateIntrinsic(type: string, props?: any): Element | Comment {
     const inflated = this.inflateElement(type, props.ns)
+
     if (props == null) return inflated
+    const properties = Object.entries(props)
 
     try {
-      const properties = Object.entries(props)
       const overridden = this.bindCustomProperties(props, inflated)
 
       for (const [key, value] of properties) {
@@ -170,15 +168,14 @@ class WebInflator extends Inflator {
 
         WebInflator.bindProperty(key, value, inflated)
       }
-
-      const immediateGuard = this.applyGuardMounting(inflated, properties, type)
-      if (immediateGuard != null) {
-        // @ts-expect-error 123
-        immediateGuard.inflated = inflated
-        return immediateGuard
-      }
     } catch (error) {
       console.error("Element props binding failed -> ", error)
+    }
+
+    try {
+      this.applyGuardMounting(inflated, properties)
+    } catch (error) {
+      console.error("Guard mounting failed -> ", error)
     }
 
     return inflated
@@ -209,21 +206,31 @@ class WebInflator extends Inflator {
     return componentGroup
   }
 
-  protected applyGuardMounting(element: Element, properties: [string, unknown][], type: string) {
-    let mountPlaceholder: Comment | null = null
+  protected applyGuardMounting(element: Element, properties: [string, unknown][]): void {
+    let tempDisplay = ""
+    let tempElementChildren: Node[] = Null.ARRAY
 
-    function toggleMount(condition: unknown) {
-      if (condition) {
-        if (mountPlaceholder?.parentElement == null) return
-        mountPlaceholder!.replaceWith(element)
+    function toggleMount(needMount: unknown) {
+      const style = "style" in element ? (element.style as CSSStyleDeclaration) : null
+
+      if (needMount) {
+        tempFragment.replaceChildren(...element.childNodes)
+        tempFragment.append(...tempElementChildren)
+
+        element.replaceChildren(tempFragment)
+        if (style) style.display = tempDisplay
       } else {
-        if (element.parentElement == null) return
-        element.replaceWith(mountPlaceholder!)
+        tempElementChildren = [...element.childNodes]
+        element.replaceChildren()
+
+        if (style) {
+          tempDisplay = style.display
+          style.display = "none"
+        }
       }
     }
 
     let guards: Map<string, boolean> | null = null
-    let immediateGuard = false
 
     for (const [key, property] of properties) {
       if (property instanceof Object === false) continue
@@ -237,9 +244,6 @@ class WebInflator extends Inflator {
       const accessor = Accessor.extractObservable(property)
       if (accessor == null) continue
 
-      if (mountPlaceholder == null) {
-        mountPlaceholder = new Comment(type)
-      }
       if (guards == null) guards = new Map<string, boolean>()
 
       accessor.subscribe?.(value => {
@@ -250,13 +254,7 @@ class WebInflator extends Inflator {
 
         toggleMount(guards!.values().every(Boolean))
       })
-
-      if (accessor.get && property.valid(accessor.get()) === false) {
-        immediateGuard = true
-      }
     }
-
-    if (immediateGuard) return mountPlaceholder
   }
 
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
@@ -383,5 +381,5 @@ class WebInflator extends Inflator {
 
 export default WebInflator
 
-
+const tempFragment = new DocumentFragment
 const AsyncFunction = (async () => { }).constructor
