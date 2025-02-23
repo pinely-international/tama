@@ -8,7 +8,7 @@ import { ProtonShell } from "@/Proton/ProtonShell"
 import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
-import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
+import { NAMESPACE_MATH, NAMESPACE_SVG } from "../../../jsx/consts"
 import { isNode, nonGuard } from "./helpers"
 
 import Inflator from "../Inflator"
