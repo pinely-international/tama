@@ -13,7 +13,7 @@ export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown
   const results = new Map<unknown[], unknown>()
   const resultsAge = new Map<unknown[], number>()
 
-  function getCachedFactory(shell: ProtonComponent, props: any) {
+  function getCachedFactory(component: ProtonComponent, props: any) {
     const propsValues = Object.values(props).sort()
 
     const cachedResultKey = results.keys().find(oldPropsValues => arrayEquals(propsValues, oldPropsValues))
@@ -29,7 +29,7 @@ export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown
       return cachedResult
     }
 
-    const newResult = shell.inflator.inflate(componentFactory(props))
+    const newResult = component.inflator.inflate(componentFactory(props))
 
     results.set(propsValues, newResult)
     resultsAge.set(propsValues, Date.now() + SECONDS_100)

@@ -49,13 +49,13 @@ abstract class Inflator {
 
   protected abstract clone(): Inflator
 
-  protected declare shell?: ProtonComponent
+  protected declare component?: ProtonComponent
 
 
-  static cloneWith(inflator: Inflator, shell: ProtonComponent): Inflator {
+  static cloneWith(inflator: Inflator, component: ProtonComponent): Inflator {
     const clone = inflator.clone()
 
-    clone.shell = shell
+    clone.component = component
     clone.adapters = new InflatorAdaptersMap(clone, inflator.adapters)
 
     return clone

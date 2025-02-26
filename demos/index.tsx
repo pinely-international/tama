@@ -22,7 +22,7 @@ function everySecond(callback: () => void): () => void {
 }
 
 
-function ComponentGod(this: Proton.Shell) {
+function ComponentGod(this: Proton.Component) {
   this.view.set(<>Component Initiated</>)
 
   let i = 0
@@ -46,7 +46,7 @@ const counter = new Events.State(0)
 setTimeout(() => setInterval(() => counter.set(it => it + 1)), 1000)
 
 
-async function Circle(this: Proton.Shell & { counter: number }, props: { offset?: string }) {
+async function Circle(this: Proton.Component & { counter: number }, props: { offset?: string }) {
   const left = Act.compute(counter => `calc(${(counter / 8)}px + ${props.offset})`, [counter])
   // alert(left.get())
   // const left = Act.string`calc(${counter} / 8px + ${props.offset})`
@@ -83,11 +83,11 @@ async function Circle(this: Proton.Shell & { counter: number }, props: { offset?
 }
 
 
-// class ClassComponentShell extends Proton.Shell {
+// class ClassComponent extends Proton.Component {
 //   constructor(inflator: Inflator) {
 //     super(inflator)
 
-//     this.tree.set(<div>ClassComponentShell</div>)
+//     this.tree.set(<div>ClassComponent</div>)
 //   }
 // }
 
@@ -105,7 +105,7 @@ const jsxSample = (
     <Circle offset="15em" />
     <Circle offset="20em" />
     <Circle offset="25em" />
-    {/* <ClassComponentShell /> */}
+    {/* <ClassComponent /> */}
   </div>
 )
 

@@ -22,7 +22,7 @@ export class ProtonComponent {
   private previousView: unknown = null
   private viewElement: unknown = null
 
-  /** Debug value for `constructor` which evaluated this shell. */
+  /** Debug value for `constructor` which evaluated this component. */
   declare factory: Function
 
   constructor(inflator: Inflator, private readonly parent?: ProtonComponent) {

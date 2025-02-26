@@ -66,7 +66,7 @@ class WebInflator extends Inflator {
   }
 
   protected inflateFragment() {
-    return this.inflateGroup("fragment", this.shell?.factory?.name ?? "[unknown]")
+    return this.inflateGroup("fragment", this.component?.factory?.name ?? "[unknown]")
   }
 
   public inflateJSX(jsx: ProtonJSX.Node): Node {
@@ -199,12 +199,12 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
-    const shell = new ProtonComponent(this, this.shell)
-    shell.on("view").subscribe(view => {
+    const component = new ProtonComponent(this, this.component)
+    component.on("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
-    ProtonComponent.evaluate(shell, factory, props)
+    ProtonComponent.evaluate(component, factory, props)
 
     return componentGroup
   }
@@ -273,7 +273,7 @@ class WebInflator extends Inflator {
 
   protected bindEventListeners(listeners: any, element: Element) {
     // @ts-expect-error by design.
-    const catchCallback = this.shell?.catchCallback
+    const catchCallback = this.component?.catchCallback
 
     if (catchCallback == null)
       for (const key in listeners) {
