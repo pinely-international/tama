@@ -67,9 +67,11 @@ You can switch between types per each file, to do that you add this annotation:
 This is useful when you're replacing parts of React with Proton and when you have to reevaluate component many times without a big performance impact.
 
 **`vite`**
+
 If you're using `vite`, that's all configuration you need.
 
 **Other bundlers**
+
 For other bundlers you will need to tell them that you want to use `@denshya/proton` as your JSX provider.
 
 ## Getting Started
