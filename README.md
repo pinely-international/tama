@@ -31,7 +31,7 @@ For the JSX and types to work properly, you should add this to your `tsconfig.js
   "compilerOptions": {
     // ...
     "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/proton/jsx/native", // Choose JSX style (`native` or `virtual`).
+    "jsxImportSource": "@denshya/proton/jsx/virtual", // Choose JSX style (`native` or `virtual`).
     // ...
   }
 }
