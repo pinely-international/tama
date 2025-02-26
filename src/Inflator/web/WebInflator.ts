@@ -66,7 +66,7 @@ class WebInflator extends Inflator {
   }
 
   protected inflateFragment() {
-    return this.inflateGroup("fragment", this.shell?.evaluatedBy?.name ?? "[unknown]")
+    return this.inflateGroup("fragment", this.shell?.factory?.name ?? "[unknown]")
   }
 
   public inflateJSX(jsx: ProtonJSX.Node): Node {

@@ -57,7 +57,7 @@ function App(this: Proton.Shell) {
         <NavRoute path="/tictactoe"><TictactoeGame /></NavRoute>
         <NavRoute path="/products-table"><ProductsTableApp /></NavRoute>
         <NavRoute path="/market"><Market /></NavRoute>
-        <NavRoute path="/market/product/:id" dynamic><ProductPage /></NavRoute>
+        <NavRoute path="/market/product/:id"><ProductPage /></NavRoute>
       </main>
     </>
   )
