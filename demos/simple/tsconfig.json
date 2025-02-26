@@ -16,8 +16,7 @@
       ]
     },
     "types": [
-      "vite/client",
-      "@denshya/proton/globals"
+      "vite/client"
     ],
     "verbatimModuleSyntax": false,
     "experimentalDecorators": true,
@@ -31,7 +30,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/proton",
+    "jsxImportSource": "@denshya/proton/jsx/virtual",
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true
