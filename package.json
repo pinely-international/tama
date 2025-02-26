@@ -1,20 +1,12 @@
 {
   "type": "module",
   "name": "@denshya/proton",
-  "version": "0.1.288",
-  "private": false,
-  "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com/denshya"
-  },
+  "version": "0.2.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
-    "build",
-    "globals.d.ts",
-    "jsx-runtime.js",
-    "jsx-runtime.d.ts",
-    "jsx-dev-runtime.js"
+    "jsx",
+    "build"
   ],
   "scripts": {
     "dev": "vite",
@@ -28,8 +20,8 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "peerDependencies": {
-    "type-fest": "^4.31.0",
-    "@denshya/flow": "^0.2.5"
+    "type-fest": ">=4.31.0",
+    "@denshya/flow": ">=0.3.0"
   },
   "devDependencies": {
     "@types/bun": "latest",

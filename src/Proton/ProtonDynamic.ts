@@ -39,7 +39,7 @@ export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown
 
   function DynamicComponent(this: ProtonComponent) {
     const propsState = Signal.computeRecord(props)
-    propsState.sets(it => this.view.set(getCachedFactory(this, it)))
+    propsState.subscribe(props => this.view.set(getCachedFactory(this, props)))
     return getCachedFactory(this, propsState.get())
   }
 

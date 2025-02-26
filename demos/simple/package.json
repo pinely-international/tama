@@ -14,9 +14,8 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "dependencies": {
-    "@denshya/flow": "^0.1.43",
-    "@denshya/observable": "^0.1.0",
-    "@denshya/proton": "../../denshya-proton-0.1.294.tgz",
+    "@denshya/flow": "^0.3.0",
+    "@denshya/proton": "^0.2.0",
     "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {
