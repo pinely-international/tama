@@ -4,7 +4,7 @@ import Accessor, { AccessorGet } from "@/Accessor"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import ProtonJSX from "@/jsx/ProtonJSX"
 import Observable from "@/Observable"
-import { ProtonShell } from "@/Proton/ProtonShell"
+import { ProtonComponent } from "@/Proton/ProtonComponent"
 import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
@@ -184,13 +184,13 @@ class WebInflator extends Inflator {
     return inflated
   }
 
-  public inflateComponent(constructor: Function, props?: any) {
+  public inflateComponent(factory: Function, props?: any) {
     // If arrow function, simplify inflation.
-    if (constructor.prototype == null && constructor instanceof AsyncFunction === false) {
-      return this.inflate(constructor(props))
+    if (factory.prototype == null && factory instanceof AsyncFunction === false) {
+      return this.inflate(factory(props))
     }
 
-    const componentGroup = this.inflateGroup("component", constructor.name)
+    const componentGroup = this.inflateGroup("component", factory.name)
 
     const replace = (view: unknown) => {
       if (view === null) componentGroup.replaceChildren()
@@ -199,12 +199,12 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
-    const shell = new ProtonShell(this, this.shell)
+    const shell = new ProtonComponent(this, this.shell)
     shell.on("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
-    ProtonShell.evaluate(shell, constructor, props)
+    ProtonComponent.evaluate(shell, factory, props)
 
     return componentGroup
   }

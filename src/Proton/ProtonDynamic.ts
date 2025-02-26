@@ -2,7 +2,7 @@ import { Flowable, Signal } from "@denshya/flow"
 
 import ProtonJSX from "@/jsx/ProtonJSX"
 
-import { ProtonShell } from "./ProtonShell"
+import { ProtonComponent } from "./ProtonComponent"
 
 /**
  *
@@ -13,7 +13,7 @@ export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown
   const results = new Map<unknown[], unknown>()
   const resultsAge = new Map<unknown[], number>()
 
-  function getCachedFactory(shell: ProtonShell, props: any) {
+  function getCachedFactory(shell: ProtonComponent, props: any) {
     const propsValues = Object.values(props).sort()
 
     const cachedResultKey = results.keys().find(oldPropsValues => arrayEquals(propsValues, oldPropsValues))
@@ -37,7 +37,7 @@ export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown
     return newResult
   }
 
-  function DynamicComponent(this: ProtonShell) {
+  function DynamicComponent(this: ProtonComponent) {
     const propsState = Signal.computeRecord(props)
     propsState.sets(it => this.view.set(getCachedFactory(this, it)))
     return getCachedFactory(this, propsState.get())

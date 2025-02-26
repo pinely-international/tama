@@ -10,7 +10,7 @@ interface ColoredLetterProps {
   baseHSL?: Flow<[number, number, number]>
 }
 
-function ColoredLetter(this: Proton.Shell, props: ColoredLetterProps) {
+function ColoredLetter(this: Proton.Component, props: ColoredLetterProps) {
   // const backgroundColor = Act.compute((letter, baseHSL) => {
   //   const [h, s, l] = baseHSL ?? [255, 50, 50]
 

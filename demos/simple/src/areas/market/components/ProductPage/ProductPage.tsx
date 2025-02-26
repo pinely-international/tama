@@ -23,7 +23,7 @@ const requireRouteParam = (id?: string | null) => {
   return id
 }
 
-async function* ProductPage(this: Proton.Shell) {
+async function* ProductPage(this: Proton.Component) {
   yield <LoaderCover />
   await new Promise(r => setTimeout(r, 1_000))
 

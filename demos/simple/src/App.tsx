@@ -19,7 +19,7 @@ const Market = Lazy(() => import("./areas/market/components/Market/Market"))
 const ProductPage = Lazy(() => import("./areas/market/components/ProductPage/ProductPage"))
 
 function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise<{ default: T } | T>) {
-  return async function lazy(this: Proton.Shell) {
+  return async function lazy(this: Proton.Component) {
     this.view.set(<LoaderCover />)
     const Module = await importFactory()
 
@@ -30,7 +30,7 @@ function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise
 }
 
 
-function App(this: Proton.Shell) {
+function App(this: Proton.Component) {
   const user = new Flow<User>({ email: "my@penis.big", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
   const userContext = new UserContext(user)
 

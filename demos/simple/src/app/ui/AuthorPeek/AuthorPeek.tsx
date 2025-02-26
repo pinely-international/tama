@@ -11,7 +11,7 @@ interface AuthorPeekProps {
   author: Flowable<Author>
 }
 
-function AuthorPeek(this: Proton.Shell, props: AuthorPeekProps) {
+function AuthorPeek(this: Proton.Component, props: AuthorPeekProps) {
   const author = Flow.from(props.author)
 
   return (

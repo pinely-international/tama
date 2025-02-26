@@ -5,7 +5,7 @@ import { Proton } from "@denshya/proton"
 
 
 
-function Row(this: Proton.Shell, props: { i: number, count: Flow<number> }) {
+function Row(this: Proton.Component, props: { i: number, count: Flow<number> }) {
   // const top = Act.compute(count => `${Math.sin(count / 10) * 10}px`, [props.count])
   // const left = Act.compute(count => `${Math.cos(count / 10) * 10}px`, [props.count])
   // const background = Act.compute(count => `rgb(0,0,${count % 255})`, [props.count])
@@ -26,7 +26,7 @@ function Row(this: Proton.Shell, props: { i: number, count: Flow<number> }) {
   )
 }
 
-function Circles(this: Proton.Shell) {
+function Circles(this: Proton.Component) {
   const count = new Flow(0)
   const timing = new Flow("")
 
