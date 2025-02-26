@@ -36,5 +36,22 @@
     "vite": "^6.0.6",
     "vite-bundle-visualizer": "^1.2.1",
     "vite-plugin-externalize-deps": "^0.8.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denshya/proton.git"
+  },
+  "description": "Light weight, zero-configuration, component-based Web Inflator (JSX parser) for building UI. | React/SolidJS alike library.",
+  "keywords": [
+    "framework",
+    "ui",
+    "inflator",
+    "web"
+  ],
+  "author": "FrameMuse",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/denshya/proton/issues"
+  },
+  "homepage": "https://github.com/denshya/proton#readme"
 }
