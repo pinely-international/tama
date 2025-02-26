@@ -23,7 +23,7 @@ export class ProtonShell {
   private viewElement: unknown = null
 
   /** Debug value for `constructor` which evaluated this shell. */
-  declare evaluatedBy: Function
+  declare factory: Function
 
   constructor(inflator: Inflator, private readonly parent?: ProtonShell) {
     this.inflator = Inflator.cloneWith(inflator, this)
@@ -107,11 +107,27 @@ export class ProtonShell {
     })
   }
 
-  static async evaluate(shell: ProtonShell, constructor: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
-    shell.evaluatedBy = constructor // For debugging.
+  static async evaluate(shell: ProtonShell, factory: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
+    shell.factory = factory // For debugging.
 
     try {
-      let returnResult = constructor.call(shell, props)
+      if (factory instanceof AsyncGeneratorFunction) {
+        const factoryAsyncGenerator = factory.call(shell, props)
+
+        let yieldResult: IteratorResult<unknown> = { done: false, value: undefined }
+        while (yieldResult.done === false) {
+          yieldResult = await factoryAsyncGenerator.next()
+          shell.view.set(yieldResult.value)
+        }
+
+        if (shell.viewElement != null) {
+          // Only assign default if generator was explicitly returned.
+          shell.view.default = shell.viewElement
+        }
+        return
+      }
+
+      let returnResult = factory.call(shell, props)
       if (returnResult instanceof Promise) returnResult = await returnResult
       if (returnResult == null) return
 
@@ -126,7 +142,7 @@ export class ProtonShell {
 
 
         await Promise.all(shell.suspenses)
-        shell.view.default = shell.inflator.inflate(await constructor.call(shell, props))
+        shell.view.default = shell.inflator.inflate(await factory.call(shell, props))
 
 
         if (length === shell.suspenses.length) {
@@ -162,3 +178,6 @@ interface ShellEvents {
 
 //   return moduleOrConstructor.default
 // }
+
+
+const AsyncGeneratorFunction = (async function* () { }).constructor as AsyncGeneratorFunctionConstructor
