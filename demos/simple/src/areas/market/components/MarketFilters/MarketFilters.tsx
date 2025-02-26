@@ -10,7 +10,7 @@ import Button from "@/app/ui/Button/Button"
 
 interface MarketFiltersProps { }
 
-function MarketFilters(this: Proton.Shell, props: MarketFiltersProps) {
+function MarketFilters(this: Proton.Component, props: MarketFiltersProps) {
   const market = this.context.require(MarketModel)
 
   const expanded = new Flow(false)

@@ -9,7 +9,7 @@ interface SearchBarProps {
   value: Flow<string>
 }
 
-function SearchBar(this: Proton.Shell, props: SearchBarProps) {
+function SearchBar(this: Proton.Component, props: SearchBarProps) {
   const value = Flow.from(props.value)
   const valueFilled = value.is(it => it === "")
 

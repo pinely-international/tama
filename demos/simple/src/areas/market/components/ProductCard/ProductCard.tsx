@@ -12,7 +12,7 @@ import { Flow, Flowable, FlowRead } from "@denshya/flow"
 
 interface ProductCardProps extends MarketProduct { }
 
-function ProductCard(this: Proton.Shell, props: ProductCardProps) {
+function ProductCard(this: Proton.Component, props: ProductCardProps) {
   const market = this.context.require(MarketModel)
 
   const amount = market.cart.$.get(props.id).to(it => it ?? -1).from(it => it < 0 ? 0 : it)

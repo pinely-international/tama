@@ -4,7 +4,7 @@ import Accessor, { AccessorGet } from "@/Accessor"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import ProtonJSX from "@/jsx/ProtonJSX"
 import Observable from "@/Observable"
-import { ProtonShell } from "@/Proton/ProtonShell"
+import { ProtonComponent } from "@/Proton/ProtonComponent"
 import { isRecord } from "@/utils/general"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
@@ -66,7 +66,7 @@ class WebInflator extends Inflator {
   }
 
   protected inflateFragment() {
-    return this.inflateGroup("fragment", this.shell?.factory?.name ?? "[unknown]")
+    return this.inflateGroup("fragment", this.component?.factory?.name ?? "[unknown]")
   }
 
   public inflateJSX(jsx: ProtonJSX.Node): Node {
@@ -184,13 +184,13 @@ class WebInflator extends Inflator {
     return inflated
   }
 
-  public inflateComponent(constructor: Function, props?: any) {
+  public inflateComponent(factory: Function, props?: any) {
     // If arrow function, simplify inflation.
-    if (constructor.prototype == null && constructor instanceof AsyncFunction === false) {
-      return this.inflate(constructor(props))
+    if (factory.prototype == null && factory instanceof AsyncFunction === false) {
+      return this.inflate(factory(props))
     }
 
-    const componentGroup = this.inflateGroup("component", constructor.name)
+    const componentGroup = this.inflateGroup("component", factory.name)
 
     const replace = (view: unknown) => {
       if (view === null) componentGroup.replaceChildren()
@@ -199,12 +199,12 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
-    const shell = new ProtonShell(this, this.shell)
-    shell.on("view").subscribe(view => {
+    const component = new ProtonComponent(this, this.component)
+    component.on("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
-    ProtonShell.evaluate(shell, constructor, props)
+    ProtonComponent.evaluate(component, factory, props)
 
     return componentGroup
   }
@@ -273,7 +273,7 @@ class WebInflator extends Inflator {
 
   protected bindEventListeners(listeners: any, element: Element) {
     // @ts-expect-error by design.
-    const catchCallback = this.shell?.catchCallback
+    const catchCallback = this.component?.catchCallback
 
     if (catchCallback == null)
       for (const key in listeners) {

@@ -16,7 +16,7 @@ interface SelectorProps<T> {
   children: JSX.Children<DropDownOption<T>>
 }
 
-function Selector<T = string | undefined>(this: Proton.Shell, props: SelectorProps<T>) {
+function Selector<T = string | undefined>(this: Proton.Component, props: SelectorProps<T>) {
   const expanded = new Flow(false)
   const selected = new Flow<DropDownOption<T> | null>(null)
 

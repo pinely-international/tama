@@ -11,21 +11,21 @@ import TreeContextAPI from "../TreeContextAPI"
 
 
 
-export class ProtonShell {
+export class ProtonComponent {
   public readonly view: ProtonViewAPI
   public readonly inflator: Inflator
   public readonly context: TreeContextAPI
 
-  private readonly events = new Emitter<ShellEvents>
+  private readonly events = new Emitter<ComponentEvents>
 
   private lastSubject: unknown = {} // Ensures first subject to be different.
   private previousView: unknown = null
   private viewElement: unknown = null
 
-  /** Debug value for `constructor` which evaluated this shell. */
+  /** Debug value for `constructor` which evaluated this component. */
   declare factory: Function
 
-  constructor(inflator: Inflator, private readonly parent?: ProtonShell) {
+  constructor(inflator: Inflator, private readonly parent?: ProtonComponent) {
     this.inflator = Inflator.cloneWith(inflator, this)
     this.context = new TreeContextAPI(parent?.context)
 
@@ -98,7 +98,7 @@ export class ProtonShell {
   unsuspense<T = void>(callback: (result: T) => void) { this.unsuspenseCallback = callback as never }
 
   getView() { return this.viewElement }
-  on<K extends keyof ShellEvents>(event: K): Subscriptable<ShellEvents[K]> { return this.events.observe(event) }
+  on<K extends keyof ComponentEvents>(event: K): Subscriptable<ComponentEvents[K]> { return this.events.observe(event) }
 
   use(subscribe: (view: unknown) => void | (() => void)) {
     this.events.observe("mount").subscribe(() => {
@@ -107,77 +107,67 @@ export class ProtonShell {
     })
   }
 
-  static async evaluate(shell: ProtonShell, factory: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
-    shell.factory = factory // For debugging.
+  /** @internal Use for debug only purposes. */
+  static async evaluate(component: ProtonComponent, factory: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
+    component.factory = factory // For debugging.
 
     try {
       if (factory instanceof AsyncGeneratorFunction) {
-        const factoryAsyncGenerator = factory.call(shell, props)
+        const factoryAsyncGenerator = factory.call(component, props)
 
         let yieldResult: IteratorResult<unknown> = { done: false, value: undefined }
         while (yieldResult.done === false) {
           yieldResult = await factoryAsyncGenerator.next()
-          shell.view.set(yieldResult.value)
+          component.view.set(yieldResult.value)
         }
 
-        if (shell.viewElement != null) {
+        if (component.viewElement != null) {
           // Only assign default if generator was explicitly returned.
-          shell.view.default = shell.viewElement
+          component.view.default = component.viewElement
         }
         return
       }
 
-      let returnResult = factory.call(shell, props)
+      let returnResult = factory.call(component, props)
       if (returnResult instanceof Promise) returnResult = await returnResult
       if (returnResult == null) return
 
-      shell.view.default = shell.inflator.inflate(returnResult)
-      shell.view.set(shell.view.default)
+      component.view.default = component.inflator.inflate(returnResult)
+      component.view.set(component.view.default)
     } catch (thrown) {
-      if (shell.suspenseCallback != null && thrown instanceof Promise) {
-        if (shell.suspenses.length === 0) shell.suspenseCallback(thrown)
-        if (!shell.suspenses.includes(thrown)) shell.suspenses.push(thrown)
+      if (component.suspenseCallback != null && thrown instanceof Promise) {
+        if (component.suspenses.length === 0) component.suspenseCallback(thrown)
+        if (!component.suspenses.includes(thrown)) component.suspenses.push(thrown)
 
-        const length = shell.suspenses.length
-
-
-        await Promise.all(shell.suspenses)
-        shell.view.default = shell.inflator.inflate(await factory.call(shell, props))
+        const length = component.suspenses.length
 
 
-        if (length === shell.suspenses.length) {
-          shell.unsuspenseCallback?.(thrown)
-          shell.suspenses = []
+        await Promise.all(component.suspenses)
+        component.view.default = component.inflator.inflate(await factory.call(component, props))
+
+
+        if (length === component.suspenses.length) {
+          component.unsuspenseCallback?.(thrown)
+          component.suspenses = []
         }
 
         return
       }
-      if (shell.catchCallback != null) return void shell.catchCallback(thrown)
+      if (component.catchCallback != null) return void component.catchCallback(thrown)
 
       throw thrown
     }
   }
 }
 
-interface ShellEvents {
+export type ProtonComponentPublic = InstanceType<typeof ProtonComponent>
+
+interface ComponentEvents {
   view: unknown
   suspend: Promise<unknown>
 
   mount: unknown
   unmount: void
 }
-
-// interface Module<T> {
-//   default: T
-// }
-
-
-// async function resolveShellConstructorModule(moduleOrConstructor: Promise<Module<Function>> | Module<Function> | Function): Promise<Function> {
-//   if (moduleOrConstructor instanceof Function) return moduleOrConstructor
-//   if (moduleOrConstructor instanceof Promise) return (await moduleOrConstructor).default
-
-//   return moduleOrConstructor.default
-// }
-
 
 const AsyncGeneratorFunction = (async function* () { }).constructor as AsyncGeneratorFunctionConstructor

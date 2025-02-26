@@ -10,7 +10,7 @@ interface ProductCardBuyProps {
   onClick?(): void
 }
 
-function ProductCardBuy(this: Proton.Shell, props: ProductCardBuyProps) {
+function ProductCardBuy(this: Proton.Component, props: ProductCardBuyProps) {
   props.amount.sets(amount => {
     if (amount === 0) this.view.set(this.view.default)
     if (amount > 0) this.view.set(LAYOUT_AMOUNT)
