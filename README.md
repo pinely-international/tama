@@ -6,6 +6,8 @@ This documentation built to be read from top to bottom in one go, gradually intr
 
 _"Proton" is already used for many things, but I wasn't able to come up with a more unique name :(_
 
+[Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
+
 ## Motivation
 
 Other libraries provide their own built-in “primitives” that you **have to** stick to.
