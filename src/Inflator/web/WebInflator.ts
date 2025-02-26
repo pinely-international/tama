@@ -262,6 +262,11 @@ class WebInflator extends Inflator {
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
     if (isRecord(style)) {
       for (const property in style) {
+        if (property.startsWith("--")) {
+          WebInflator.bindPropertyCallback(style[property], value => element.style.setProperty(property, String(value)))
+          continue
+        }
+
         WebInflator.bindProperty(property, style[property], element.style)
       }
 
