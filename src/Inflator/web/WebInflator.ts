@@ -317,16 +317,17 @@ class WebInflator extends Inflator {
         WebInflator.bindPropertyCallback(props.class, value => element.setAttribute("class", String(value)))
         overrides.add("class")
       }
+
+      if (props.href != null) {
+        WebInflator.bindPropertyCallback(props.href, (href: any) => {
+          if (typeof href === "string") element.setAttribute("href", href)
+          if (typeof href === "object") element.setAttribute("href", href.baseVal)
+        })
+
+        overrides.add("href")
+      }
     }
 
-    if (element instanceof SVGUseElement) {
-      WebInflator.bindPropertyCallback(props.href, (href: any) => {
-        if (typeof href === "string") element.href.baseVal = href
-        if (typeof href === "object") element.href.baseVal = href.baseVal
-      })
-
-      overrides.add("href")
-    }
     if (element instanceof HTMLInputElement) {
       // Ensures correct type beforehand.
       WebInflator.bindProperty("type", props.type, element)
