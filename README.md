@@ -11,7 +11,7 @@ _"Proton" is already used for many things, but I wasn't able to come up with a m
 ## Motivation
 
 Other libraries provide their own built-in “primitives” that you **have to** stick to.
-They restrict extensibility in a favor of concealing implementation details.
+They restrict extensibility in a favor of concealing implementation details and don't give any explicit controls.
 
 ## Pillars
 
@@ -33,40 +33,11 @@ For the JSX and types to work properly, you should add this to your `tsconfig.js
   "compilerOptions": {
     // ...
     "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/proton/jsx/virtual", // Choose JSX style (`native` or `virtual`).
+    "jsxImportSource": "@denshya/proton/jsx/virtual",
     // ...
   }
 }
 ```
-
-## JSX Style
-
-Proton supports two different JSX styles:
-
-|Name|Description|Serialized|
-|----|-----------|----------|
-|Virtual|Familiar React-like style, produces "virtual nodes"|`{ type: "div", props: { title: "Hello World" }, children: [] }`|
-|Native|Native DOM objects|`[HTMLDivElement object]`|
-
-You can switch between types per each file, to do that you add this annotation:
-
-`virtual.jsx`
-
-```jsx
-/** @jsxImportSource @denshya/proton/jsx/virtual */
-
-<div /> // { type: "div", props: null, children: [] }
-```
-
-`native.jsx`
-
-```jsx
-/** @jsxImportSource @denshya/proton/jsx/native */
-
-<div /> // HTMLDivElement
-```
-
-This is useful when you're replacing parts of React with Proton and when you have to reevaluate component many times without a big performance impact.
 
 **`vite`**
 
