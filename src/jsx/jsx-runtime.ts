@@ -1,5 +1,5 @@
-import ProtonJSX from "./ProtonJSX"
+import JSXVirtual from "./JSXVirtual"
 
-export const jsx = ProtonJSX.Element
-export const jsxs = ProtonJSX.Element
-export const Fragment = ProtonJSX.FragmentSymbol
+export const jsx = JSXVirtual.Element
+export const jsxs = JSXVirtual.Element
+export const Fragment = JSXVirtual.FragmentSymbol

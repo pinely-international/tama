@@ -2,7 +2,7 @@ import { Primitive } from "type-fest"
 
 
 /** @isolated */
-namespace ProtonJSX {
+namespace JSXVirtual {
   type Props = Record<keyof never, unknown> & JSX.CustomAttributes
   type Children = (Node | Primitive) | (Node | Primitive)[]
   type ChildrenExtrinsic = (Component | Primitive)[]
@@ -37,4 +37,4 @@ namespace ProtonJSX {
   export const FragmentSymbol = Symbol.for("Proton.Fragment")
 }
 
-export default ProtonJSX
+export default JSXVirtual

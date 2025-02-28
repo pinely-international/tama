@@ -1,6 +1,6 @@
 import { Flowable, Signal } from "@denshya/flow"
 
-import ProtonJSX from "@/jsx/ProtonJSX"
+import JSXVirtual from "@/jsx/JSXVirtual"
 
 import { ProtonComponent } from "./ProtonComponent"
 
@@ -44,7 +44,7 @@ export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown
   }
 
   DynamicComponent.for = componentFactory.name
-  return ProtonJSX.Element(DynamicComponent, null, null)
+  return JSXVirtual.Element(DynamicComponent, null, null)
 }
 
 

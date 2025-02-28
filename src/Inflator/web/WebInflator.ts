@@ -2,7 +2,7 @@ import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
-import ProtonJSX from "@/jsx/ProtonJSX"
+import JSXVirtual from "@/jsx/JSXVirtual"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
 import { isRecord } from "@/utils/general"
@@ -57,7 +57,7 @@ class WebInflator extends Inflator {
 
   public inflate<T>(subject: T): WebInflateResult<T> {
     if (subject instanceof Node) return subject as never
-    if (subject instanceof ProtonJSX.Node) return this.inflateJSXDeeply(subject) as never
+    if (subject instanceof JSXVirtual.Node) return this.inflateJSXDeeply(subject) as never
 
     return super.inflate(subject) as never
   }
@@ -69,10 +69,10 @@ class WebInflator extends Inflator {
     return this.inflateGroup("fragment", this.component?.factory?.name ?? "[unknown]")
   }
 
-  public inflateJSX(jsx: ProtonJSX.Node): Node {
-    if (jsx instanceof ProtonJSX.Intrinsic) return this.inflateIntrinsic(jsx.type, jsx.props)
-    if (jsx instanceof ProtonJSX.Component) return this.inflateComponent(jsx.type, jsx.props)
-    if (jsx instanceof ProtonJSX.Fragment) return this.inflateFragment()
+  public inflateJSX(jsx: JSXVirtual.Node): Node {
+    if (jsx instanceof JSXVirtual.Intrinsic) return this.inflateIntrinsic(jsx.type, jsx.props)
+    if (jsx instanceof JSXVirtual.Component) return this.inflateComponent(jsx.type, jsx.props)
+    if (jsx instanceof JSXVirtual.Fragment) return this.inflateFragment()
 
     throw new TypeError("Unsupported type of `jsx`", { cause: { jsx } })
   }
@@ -107,21 +107,21 @@ class WebInflator extends Inflator {
     throw new TypeError("Async Iterator is not supported", { cause: { asyncIterable } })
   }
 
-  private inflateJSXDeeply(jsx: ProtonJSX.Node): Element | DocumentFragment | Node {
+  private inflateJSXDeeply(jsx: JSXVirtual.Node): Element | DocumentFragment | Node {
     const inflated = this.inflateJSX(jsx)
     // Inflation of Component children is handled by the component itself.
-    if (jsx instanceof ProtonJSX.Component) return inflated
+    if (jsx instanceof JSXVirtual.Component) return inflated
 
     this.inflateJSXIntrinsicChildren(jsx, inflated)
 
     return inflated
   }
 
-  private inflateJSXIntrinsicChildren(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): void {
+  private inflateJSXIntrinsicChildren(jsx: JSXVirtual.Intrinsic | JSXVirtual.Fragment, inflated: Node): void {
     // @ts-expect-error 123
     const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
 
-    const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
+    const appendChildObject = (child: JSXVirtual.Node | Primitive) => {
       const childInflated = this.inflate(child)
       if (!isNode(childInflated)) return
 

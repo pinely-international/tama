@@ -1,10 +1,10 @@
-import ProtonJSX from "../jsx/ProtonJSX"
+import JSXVirtual from "../jsx/JSXVirtual"
 
 export function ProtonLazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise<{ default: T } | T>) {
   return async () => {
     const module = await importFactory()
-    if ("default" in module) return ProtonJSX.Element(module.default, null, null)
+    if ("default" in module) return JSXVirtual.Element(module.default, null, null)
 
-    return ProtonJSX.Element(module, null, null)
+    return JSXVirtual.Element(module, null, null)
   }
 }
