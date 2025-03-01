@@ -2,10 +2,6 @@
 
 It is light weight (~5kb gzip), zero-configuration, customizable library for parsing JSX with component controllers.
 
-This documentation built to be read from top to bottom in one go, gradually introducing you the library and its abilities and eventually you should understand 100% of Proton.
-
-_"Proton" is already used for many things, but I wasn't able to come up with a more unique name :(_
-
 [Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
 
 ## Motivation
