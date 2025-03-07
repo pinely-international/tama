@@ -31,7 +31,7 @@ function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise
 
 
 function App(this: Proton.Shell) {
-  const user = new Flow<User>({ email: "my@penis.big", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
+  const user = new Flow<User>({ email: "my@example.com", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
   const userContext = new UserContext(user)
 
   this.context.provide(userContext)
