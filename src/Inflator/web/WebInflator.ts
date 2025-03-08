@@ -1,11 +1,12 @@
 import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
+import { AsyncFunction } from "@/BuiltinObjects"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import ProtonJSX from "@/jsx/ProtonJSX"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
-import { isRecord } from "@/utils/general"
+import { isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
@@ -356,7 +357,7 @@ class WebInflator extends Inflator {
       for (const [key, attributeSetup] of this.jsxAttributes.entries()) {
         if (key in props === false) continue
 
-        attributeSetup({ props, key, value: props[key], element, bind })
+        attributeSetup({ props, key, bind })
         overrides.add(key)
       }
     }
@@ -388,6 +389,3 @@ class WebInflator extends Inflator {
 }
 
 export default WebInflator
-
-
-const AsyncFunction = (async () => { }).constructor
