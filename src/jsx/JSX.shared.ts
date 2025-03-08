@@ -33,7 +33,7 @@ declare global {
     interface Element {
       type: any
       props: any
-      children: any
+      children?: any
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type

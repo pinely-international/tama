@@ -1,5 +1,6 @@
 import { Emitter } from "@denshya/flow"
 
+import { AsyncGeneratorFunction } from "@/BuiltinObjects"
 import Inflator from "@/Inflator/Inflator"
 
 import Null from "../Null"
@@ -112,7 +113,7 @@ export class ProtonComponent {
     component.factory = factory // For debugging.
 
     try {
-      if (factory instanceof AsyncGeneratorFunction) {
+      if (factory instanceof AsyncGeneratorFunction.constructor) {
         const factoryAsyncGenerator = factory.call(component, props)
 
         let yieldResult: IteratorResult<unknown> = { done: false, value: undefined }
@@ -169,5 +170,3 @@ interface ComponentEvents {
   mount: unknown
   unmount: void
 }
-
-const AsyncGeneratorFunction = (async function* () { }).constructor as AsyncGeneratorFunctionConstructor
