@@ -91,7 +91,7 @@ class WebJSXSerializer {
           const attributeSetup = this.inflator.jsxAttributes.get(key)
           if (attributeSetup == null) continue
 
-          attributeSetup({ props: jsx.props, key, bind })
+          attributeSetup({ props: jsx.props, key, value: jsx.props[key], bind })
         }
       }
 

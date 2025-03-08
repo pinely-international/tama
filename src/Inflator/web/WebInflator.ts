@@ -187,7 +187,7 @@ class WebInflator extends Inflator {
 
   public inflateComponent(factory: Function, props?: any) {
     // If arrow function, simplify inflation.
-    if (factory.prototype == null && factory instanceof AsyncFunction === false) {
+    if (factory.prototype == null && factory instanceof AsyncFunction.constructor === false) {
       return this.inflate(factory(props))
     }
 
@@ -357,7 +357,7 @@ class WebInflator extends Inflator {
       for (const [key, attributeSetup] of this.jsxAttributes.entries()) {
         if (key in props === false) continue
 
-        attributeSetup({ props, key, bind })
+        attributeSetup({ props, key, value: props[key], bind })
         overrides.add(key)
       }
     }

@@ -1,7 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface AttributeSetupContext<T> {
   props: Record<string, unknown> & JSX.CustomAttributes & JSX.IntrinsicAttributes
   key: string
+  value: T
 
   /**
    * Sets and updates `element` attribute by `key` when `value` is changed. Discards existing `key` binding.
