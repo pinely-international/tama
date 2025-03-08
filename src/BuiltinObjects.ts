@@ -1,2 +1,2 @@
-export const AsyncFunction = function () { }
-export const AsyncGeneratorFunction = function* () { }
+export const AsyncFunction = async function () { }
+export const AsyncGeneratorFunction = async function* () { }
