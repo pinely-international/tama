@@ -16,6 +16,11 @@ They restrict extensibility in a favor of concealing implementation details and 
 - Fault Tolerance
 - Customization
 
+## Similar Libraries
+
+If you want manage your components in a somewhat complex way, you can continue reading this, but otherwise you may want to consider these alternatives:
+- https://github.com/kitajs/html
+
 ## Install
 
 ```bash
