@@ -31,7 +31,11 @@ class WebInflator extends Inflator {
   flags: WebInflatorFlags = {
     debug: false,
   }
-  /** Custom JSX attributes. Adds or Overrides JSX attribute to provide new behavior. */
+  /**
+   * Custom JSX attributes.
+   * Adds or Overrides JSX attribute to provide new behavior.
+   * These attributes are virtual and won't be presented in the element.
+   * */
   jsxAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
 
   protected clone() {
