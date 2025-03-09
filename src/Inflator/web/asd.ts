@@ -1,17 +1,3 @@
-import "./polyfills"
-import "./error-overlay"
-
-import { Proton, WebInflator } from "@denshya/proton"
-
-import App from "./App"
-import applyCustomAttributes from "./custom-attributes"
-
-/**
- * When faced, it is instructed to unwrap this fragment and use its target node as original.
- */
-class WebTempFragment extends DocumentFragment {
-  declare target: Node
-}
 class WebComponentPlaceholder extends Comment {
   /**
    * @returns actual node of `WebComponentPlaceholder` if `item` is of its instance.
@@ -64,15 +50,27 @@ class WebComponentPlaceholder extends Comment {
   }
 }
 
-class Gg extends WebInflator {
-  protected clone() {
-    const clone = new Gg
-    clone.flags = { ...this.flags }
-    clone.jsxAttributes = new Map(this.jsxAttributes)
-    return clone
-  }
-  override inflateComponent(factory: Function, props?: any) {
-    const shell = new Proton.Shell(this, this.shell)
+/**
+ * When faced, it is instructed to unwrap this fragment and use its target node as original.
+ */
+class WebTempFragment extends DocumentFragment {
+  declare target: Node
+}
+
+
+function resolveReplacement(value: any): any {
+  if (value == null) return value
+  if (value.replacedWith == null) return value
+  if (value === value.replacedWith) return value
+
+  return resolveReplacement(value.replacedWith)
+}
+
+
+class Inflator {
+  // ...
+  inflateComponent(factory: Function, props: any) {
+    const shell = new ProtonShell(this, this.shell)
 
     const componentPlaceholder = new WebComponentPlaceholder(shell, factory)
     const componentWrapper = new WebTempFragment
@@ -80,20 +78,19 @@ class Gg extends WebInflator {
     componentWrapper.target = componentPlaceholder
     componentWrapper.fixedNodes = [componentPlaceholder]
 
-    const asd = shell.getView()
-    if (asd != null) componentWrapper.append(asd)
-
+    const lastAnimationFrame = -1
     let currentView: Node = componentPlaceholder
-    let lastAnimationFrame = -1
 
-    const replace = (view: unknown) => {
+    function replace(view: unknown) {
       let nextView = view
+
       if (view === null) {
         nextView = componentPlaceholder
         // @ts-expect-error by design.
         nextView.replacedWith = null
       }
       if (nextView instanceof Node === false) return
+
 
       let actualNextView = nextView
       if (actualNextView.toBeReplacedWith != null) {
@@ -108,10 +105,6 @@ class Gg extends WebInflator {
 
       if (currentView.replaceWith instanceof Function) {
         if (currentView.parentNode != null) {
-          if (actualNextView instanceof DocumentFragment && actualNextView.childNodes.length === 0) {
-            actualNextView.replaceChildren(...actualNextView.fixedNodes)
-          }
-
           currentView.replaceWith(actualNextView)
           currentView.toBeReplacedWith = null
         }
@@ -132,78 +125,16 @@ class Gg extends WebInflator {
 
         return
       }
-
-      if (currentView instanceof DocumentFragment) {
-        // @ts-expect-error by design.
-        const fixed = currentView.fixedNodes as Node[]
-        const fixedNodes = fixed.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
-
-        const anchor = fixedNodes[0]
-
-        if (actualNextView instanceof DocumentFragment) {
-          // @ts-expect-error by design.
-          const firstFixed = actualNextView.fixedNodes[0]
-          const actualAnchor = WebComponentPlaceholder.actualOf(firstFixed) ?? firstFixed
-
-          if (actualAnchor === anchor) return
-        }
-
-        if (anchor.parentElement != null) {
-          anchor.parentElement.replaceChild(actualNextView, anchor)
-          currentView.toBeReplacedWith = null
-        }
-        currentView.replaceChildren(...fixedNodes)
-
-        if (view !== null) {
-          // @ts-expect-error by design.
-          currentView.replacedWith = nextView
-        } else {
-          // @ts-expect-error by design.
-          currentView.replacedWith = null
-        }
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-        // @ts-expect-error by design.
-        actualNextView.replacedWith = null
-
-        currentView = nextView
-
-        if (anchor instanceof WebComponentPlaceholder) {
-          // @ts-expect-error no another way.
-          anchor.shell.events.dispatch("unmount")
-        }
-
-        return
-      }
     }
+
 
     shell.on("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
 
-    Proton.Shell.evaluate(shell, factory, props)
+    ProtonShell.evaluate(shell, factory, props)
 
     return componentWrapper
   }
-}
-
-
-const inflator = new WebInflator
-inflator.flags.debug = true
-applyCustomAttributes(inflator)
-
-
-const inflated = inflator.inflate(<App />)
-document.getElementById("root")!.replaceChildren(inflated)
-
-
-function resolveReplacement(value: any): any {
-  const seen = new Set()
-  while (value?.replacedWith) {
-    if (seen.has(value)) return value
-    seen.add(value)
-    value = value.replacedWith
-  }
-  return value
 }
