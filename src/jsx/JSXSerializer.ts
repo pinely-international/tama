@@ -72,49 +72,57 @@ class WebJSXSerializer {
     return String(value)
   }
 
+  private applyCustomJSXAttributes(props: any) {
+    if (this.inflator == null) return
+    if (this.inflator.jsxAttributes.size === 0) return
+
+    const bind = (key: string, value: unknown) => {
+      props[key] = this.observableToString(value)
+    }
+
+    for (const key of this.inflator.jsxAttributes.keys()) {
+      if (key in props === false) continue
+
+      const attributeSetup = this.inflator.jsxAttributes.get(key)
+      if (attributeSetup == null) continue
+
+      attributeSetup({ props, key, value: props[key], bind })
+    }
+  }
+
+  jsxAttributesToString(props: any): string {
+    if (props == null) return ""
+
+    this.applyCustomJSXAttributes(props)
+
+    let attributes = "", key, value
+    for (key in props) {
+      if (key === "on") continue
+      if (key === "ns") continue
+      if (key === "children") continue
+
+      if (this.inflator?.jsxAttributes.has(key)) continue
+
+      value = props[key]
+      if (value == null) continue
+
+      if (key === "className") key = "class"
+      if (key === "style") value = this.styleToString(value)
+
+      value = this.observableToString(value)
+      if (value == null) continue
+
+      attributes += " " + key + "=\"" + value + "\""
+    }
+    return attributes
+  }
+
   jsxToString(jsx: { type: keyof never, props: any }) {
     const children = this.toString(jsx.props.children)
     if (jsx.type.constructor === Symbol) return children
 
     const type = String(jsx.type)
-
-    let attributes = ""
-    if (jsx.props != null) {
-      if (this.inflator && this.inflator.jsxAttributes.size > 0) {
-        const bind = (key: string, value: unknown) => {
-          jsx.props[key] = this.observableToString(value)
-        }
-
-        for (const key of this.inflator.jsxAttributes.keys()) {
-          if (key in jsx.props === false) continue
-
-          const attributeSetup = this.inflator.jsxAttributes.get(key)
-          if (attributeSetup == null) continue
-
-          attributeSetup({ props: jsx.props, key, value: jsx.props[key], bind })
-        }
-      }
-
-      let key, value
-      for (key in jsx.props) {
-        if (key === "on") continue
-        if (key === "ns") continue
-        if (key === "children") continue
-
-        if (this.inflator?.jsxAttributes.has(key)) continue
-
-        value = jsx.props[key]
-        if (value == null) continue
-
-        if (key === "className") key = "class"
-        if (key === "style") value = this.styleToString(value)
-
-        value = this.observableToString(value)
-        if (value == null) continue
-
-        attributes += " " + key + "=\"" + value + "\""
-      }
-    }
+    const attributes = this.jsxAttributesToString(jsx.props)
 
     if (selfClosingTags.has(type)) {
       return "<" + type + attributes + "/>"
