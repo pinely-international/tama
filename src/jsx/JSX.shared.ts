@@ -5,8 +5,6 @@ import Guarded from "../Guarded"
 import Observable from "../Observable"
 
 
-type Any = object | null | undefined
-
 /** https://github.com/type-challenges/type-challenges/issues/139 */
 type GetReadonlyKeys<
   T,
@@ -35,7 +33,7 @@ declare global {
     interface Element {
       type: any
       props: any
-      children: any
+      children?: any
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -67,7 +65,7 @@ declare global {
     }
 
     interface IntrinsicAttributes {
-      mounted?: AccessorGet<T> & Observable<T>
+      mounted?: AccessorGet<unknown> & Observable<unknown>
     }
 
     interface CustomAttributes {
@@ -92,3 +90,5 @@ declare global {
     interface IntrinsicElements extends HTMLElements, SVGElements, MathMLElements { }
   }
 }
+
+export { }

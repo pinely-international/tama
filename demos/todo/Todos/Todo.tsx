@@ -11,9 +11,9 @@ class TodoProps {
   onRemove?(): void
 }
 
-const deferreds = new WeakMap<Proton.Shell, Deferred<unknown>>()
+const deferreds = new WeakMap<Proton.Component, Deferred<unknown>>()
 
-async function Todo(this: Proton.Shell, props = new TodoProps) {
+async function Todo(this: Proton.Component, props = new TodoProps) {
   await new Promise(resolve => setTimeout(resolve, Math.random() * 1000))
   // const deferred = deferreds.has(this) ? deferreds.get(this)! : deferreds.set(this, new Deferred).get(this)!
   // if (!deferred.awaited) {

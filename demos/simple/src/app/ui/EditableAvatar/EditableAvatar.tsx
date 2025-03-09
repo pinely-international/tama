@@ -13,7 +13,7 @@ interface EditableAvatarProps {
   onChange?(file: File): void | Promise<unknown>
 }
 
-function EditableAvatar(this: Proton.Shell, props: EditableAvatarProps) {
+function EditableAvatar(this: Proton.Component, props: EditableAvatarProps) {
   const image = new Flow(props.image)
   const pending = new Flow(false)
 

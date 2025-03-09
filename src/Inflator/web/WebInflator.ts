@@ -1,11 +1,12 @@
 import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
+import { AsyncFunction } from "@/BuiltinObjects"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import ProtonJSX from "@/jsx/ProtonJSX"
 import Observable from "@/Observable"
-import { ProtonShell } from "@/Proton/ProtonShell"
-import { isRecord } from "@/utils/general"
+import { ProtonComponent } from "@/Proton/ProtonComponent"
+import { isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
@@ -30,7 +31,11 @@ class WebInflator extends Inflator {
   flags: WebInflatorFlags = {
     debug: false,
   }
-  /** Custom JSX attributes. Adds or Overrides JSX attribute to provide new behavior. */
+  /**
+   * Custom JSX attributes.
+   * Adds or Overrides JSX attribute to provide new behavior.
+   * These attributes are virtual and won't be presented in the element.
+   * */
   jsxAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
 
   protected clone() {
@@ -67,7 +72,7 @@ class WebInflator extends Inflator {
 
   protected inflateFragment() {
     return new DocumentFragment
-    return this.inflateGroup("fragment", this.shell?.evaluatedBy?.name ?? "[unknown]")
+    return this.inflateGroup("fragment", this.component?.factory?.name ?? "[unknown]")
   }
 
   public inflateJSX(jsx: ProtonJSX.Node): Node {
@@ -186,19 +191,23 @@ class WebInflator extends Inflator {
   }
 
   public inflateComponent(factory: Function, props?: any) {
-    const shell = new ProtonShell(this, this.shell)
+    const component = new ProtonComponent(this, this.component)
 
-    const componentPlaceholder = new WebComponentPlaceholder(shell, factory)
+    const componentPlaceholder = new WebComponentPlaceholder(component, factory)
     const componentWrapper = new WebTempFragment
     componentWrapper.append(componentPlaceholder)
     componentWrapper.target = componentPlaceholder
     componentWrapper.fixedNodes = [componentPlaceholder]
 
-    const asd = shell.getView()
+    const asd = component.getView()
     if (asd != null) componentWrapper.append(asd)
 
     let currentView: Node = componentPlaceholder
-    let lastAnimationFrame = -1
+
+    // If arrow function, simplify inflation.
+    if (factory.prototype == null && factory instanceof AsyncFunction.constructor === false) {
+      return this.inflate(factory(props))
+    }
 
     const replace = (view: unknown) => {
       let nextView = view
@@ -291,12 +300,13 @@ class WebInflator extends Inflator {
       }
     }
 
-    shell.on("view").subscribe(view => {
+
+    let lastAnimationFrame = -1
+    component.on("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
-
-    ProtonShell.evaluate(shell, factory, props)
+    ProtonComponent.evaluate(component, factory, props)
 
     return componentWrapper
   }
@@ -354,6 +364,11 @@ class WebInflator extends Inflator {
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
     if (isRecord(style)) {
       for (const property in style) {
+        if (property.startsWith("--")) {
+          WebInflator.bindPropertyCallback(style[property], value => element.style.setProperty(property, String(value)))
+          continue
+        }
+
         WebInflator.bindProperty(property, style[property], element.style)
       }
 
@@ -365,7 +380,7 @@ class WebInflator extends Inflator {
 
   protected bindEventListeners(listeners: any, element: Element) {
     // @ts-expect-error by design.
-    const catchCallback = this.shell?.catchCallback
+    const catchCallback = this.component?.catchCallback
 
     if (catchCallback == null)
       for (const key in listeners) {
@@ -404,16 +419,17 @@ class WebInflator extends Inflator {
         WebInflator.bindPropertyCallback(props.class, value => element.setAttribute("class", String(value)))
         overrides.add("class")
       }
+
+      if (props.href != null) {
+        WebInflator.bindPropertyCallback(props.href, (href: any) => {
+          if (typeof href === "string") element.setAttribute("href", href)
+          if (typeof href === "object") element.setAttribute("href", href.baseVal)
+        })
+
+        overrides.add("href")
+      }
     }
 
-    if (element instanceof SVGUseElement) {
-      WebInflator.bindPropertyCallback(props.href, (href: any) => {
-        if (typeof href === "string") element.href.baseVal = href
-        if (typeof href === "object") element.href.baseVal = href.baseVal
-      })
-
-      overrides.add("href")
-    }
     if (element instanceof HTMLInputElement) {
       // Ensures correct type beforehand.
       WebInflator.bindProperty("type", props.type, element)
@@ -442,7 +458,7 @@ class WebInflator extends Inflator {
       for (const [key, attributeSetup] of this.jsxAttributes.entries()) {
         if (key in props === false) continue
 
-        attributeSetup({ props, key, value: props[key], element, bind })
+        attributeSetup({ props, key, value: props[key], bind })
         overrides.add(key)
       }
     }
@@ -475,10 +491,7 @@ class WebInflator extends Inflator {
 
 export default WebInflator
 
-
-const AsyncFunction = (async () => { }).constructor
-
-function resolveReplacedNode(node) {
+function resolveReplacedNode(node: Node) {
   const seen = new Set()
   seen.add(node)
 

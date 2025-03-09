@@ -5,19 +5,10 @@ import { Proton } from "@denshya/proton"
 
 
 
-function Row(this: Proton.Shell, props: { i: number, count: Flow<number> }) {
-  // const top = Act.compute(count => `${Math.sin(count / 10) * 10}px`, [props.count])
-  // const left = Act.compute(count => `${Math.cos(count / 10) * 10}px`, [props.count])
-  // const background = Act.compute(count => `rgb(0,0,${count % 255})`, [props.count])
-
-  // const top = (`${Math.sin(+props.count / 10) * 10}px`)
-  // const left = (`${Math.cos(+props.count / 10) * 10}px`)
-  // const background = (`rgb(0,0,${+props.count % 255})`)
-
+function Row(this: Proton.Component, props: { i: number, count: Flow<number> }) {
   const top = props.count.to(count => `${Math.sin(count / 10) * 10}px`)
   const left = props.count.to(count => `${Math.cos(count / 10) * 10}px`)
   const background = props.count.to(count => `rgb(0,0,${count % 255})`)
-  // const background = props.count.in`rgb(0,0,${+props.count.it % 255})`
 
   this.view.set(
     <div className="box-view">
@@ -26,7 +17,7 @@ function Row(this: Proton.Shell, props: { i: number, count: Flow<number> }) {
   )
 }
 
-function Circles(this: Proton.Shell) {
+function Circles(this: Proton.Component) {
   const count = new Flow(0)
   const timing = new Flow("")
 

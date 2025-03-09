@@ -2,14 +2,12 @@
 
 It is light weight (~5kb gzip), zero-configuration, customizable library for parsing JSX with component controllers.
 
-This documentation built to be read from top to bottom in one go, gradually introducing you the library and its abilities and eventually you should understand 100% of Proton.
-
-_"Proton" is already used for many things, but I wasn't able to come up with a more unique name :(_
+[Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
 
 ## Motivation
 
 Other libraries provide their own built-in “primitives” that you **have to** stick to.
-They restrict extensibility in a favor of concealing implementation details.
+They restrict extensibility in a favor of concealing implementation details and don't give any explicit controls.
 
 ## Pillars
 
@@ -17,6 +15,11 @@ They restrict extensibility in a favor of concealing implementation details.
 - Open Internals
 - Fault Tolerance
 - Customization
+
+## Similar Libraries
+
+If you want manage your components in a somewhat complex way, you can continue reading this, but otherwise you may want to consider these alternatives:
+- https://github.com/kitajs/html
 
 ## Install
 
@@ -30,21 +33,19 @@ For the JSX and types to work properly, you should add this to your `tsconfig.js
 {
   "compilerOptions": {
     // ...
-    "types": [
-      // ...
-      "@denshya/proton/globals"
-      ],
     "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/proton",
+    "jsxImportSource": "@denshya/proton/jsx/virtual",
     // ...
   }
 }
 ```
 
 **`vite`**
+
 If you're using `vite`, that's all configuration you need.
 
 **Other bundlers**
+
 For other bundlers you will need to tell them that you want to use `@denshya/proton` as your JSX provider.
 
 ## Getting Started
@@ -339,11 +340,11 @@ function MiniProfile(props: MiniProfileProps) {
 }
 ```
 
-## Shell
+## Component API
 
-The components are not actually components, they are constructors and evaluators for `Proton.Shell`, this is a heart of every component.
+The components are not actually components, they are constructors and evaluators for `Proton.Component`, this is a heart of every component.
 
-However, it doesn't mean component **creates** a `Proton.Shell`, actually it is created **before** constructor is invoked, but when it's done the shell is passed as `this` argument.
+However, it doesn't mean component **creates** a `Proton.Component`, actually it is created **before** constructor is invoked, but when it's done the component instance is passed as `this` argument.
 
 Which opens controls to the APIs of component behavior.
 
@@ -352,7 +353,7 @@ Which opens controls to the APIs of component behavior.
 This controls which element is displayed under a component.
 
 ```tsx
-function MyView(this: Proton.Shell) {
+function MyView(this: Proton.Component) {
   this.view.set(<div>Hello World!</div>)
 
   setTimeout(() => {
@@ -370,7 +371,7 @@ That's why a component can return nothing - it may set a view via `this.view.set
 Optionally, you can optimize your elements by inflating them beforehand.
 
 ```tsx
-function MyView(this: Proton.Shell) {
+function MyView(this: Proton.Component) {
   const helloWorldView = this.inflator.inflate(<div>Hello World!</div>)
   const replacedView = this.inflator.inflate(<div>I'm Replaced!</div>)
 
@@ -388,8 +389,20 @@ Every component can by an async function. That's where `ViewAPI` comes in handy.
 First we set a loader placeholder to be displayed, then when the promise is resolved the default view will be set.
 
 ```tsx
-async function MyView(this: Proton.Shell) {
+async function MyView(this: Proton.Component) {
   this.view.set(<Loader />)
+
+  await new Promise(resolve => setTimeout(resolve, 1_000))
+
+  return <div>I'm loaded!</div>
+}
+```
+
+Alternatively, you can use `AsyncGeneratorFunction` to avoid `this`
+
+```tsx
+async function MyView() {
+  yield <Loader />
 
   await new Promise(resolve => setTimeout(resolve, 1_000))
 
@@ -404,7 +417,7 @@ async function MyView(this: Proton.Shell) {
 Well... Why not.
 
 ```tsx
-function MyView(this: Proton.Shell) {
+function MyView(this: Proton.Component) {
   this.view.set(<Loader />)
 
   throw new Promise(resolve => setTimeout(resolve, 1_000))
@@ -416,7 +429,7 @@ function MyView(this: Proton.Shell) {
 Make sure a parent catches it by using `suspense` and `unsuspense`. This is an experimental API, so don't rely on it too much.
 
 ```tsx
-function Parent(this: Proton.Shell) {
+function Parent(this: Proton.Component) {
   this.suspense(() => this.view.set(<Loader />))
   this.unsuspense(() => this.view.set(this.view.default))
 
@@ -431,7 +444,7 @@ Just like React, Proton provides an interface to catch errors thrown in children
 ```tsx
 function Child() { throw new Error("Test") }
 
-function Parent(this: Proton.Shell) {
+function Parent(this: Proton.Component) {
   this.catch(thrown => { /* Do something */ })
 
   return <div><Child /></div>
@@ -441,7 +454,7 @@ function Parent(this: Proton.Shell) {
 But the difference is event handlers. They are caught as well.
 
 ```tsx
-function Child(this: Proton.Shell) {
+function Child(this: Proton.Component) {
   // This will catch a event handler error.
   this.catch(thrown => { /* Do something */ })
 
@@ -458,13 +471,13 @@ This means you create your contexts by creating classes.
 ```tsx
 class MyContext { constructor(readonly value: string) {} }
 
-function Child(this: Proton.Shell) {
+function Child(this: Proton.Component) {
   const context = this.context.require(MyContext)
 
   return <span>{context.value}</span>
 }
 
-function Parent(this: Proton.Shell) {
+function Parent(this: Proton.Component) {
   this.context.provide(new MyContext("Cool"))
 
   return <div><Child /></div>
@@ -585,7 +598,7 @@ In case of being part of JSX, you should connect `ProtonSwitchWebInflator`.
 const inflator = new WebInflator
 inflator.adapters.add(ProtonSwitchWebInflator)
 
-function SwitchComponent(this: Proton.Shell) {
+function SwitchComponent(this: Proton.Component) {
   const switcher = new ProtonSwitch({
     banned: <span>Banned</span>,
     pending: <span>Pending</span>,
@@ -626,7 +639,7 @@ It can be used for dynamic imports, but it is strongly recommended to implement 
 
 ```tsx
 function Lazy(importFactory: () => Promise<unknown>) {
-  return async function (this: Proton.Shell) {
+  return async function (this: Proton.Component) {
     this.view.set(<Loader />)
     const Module = await importFactory()
     return <Module />

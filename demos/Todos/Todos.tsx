@@ -7,7 +7,7 @@ import Todo from "./Todo"
 import TodoContext from "./Todo.context"
 
 
-async function Todos(this: Proton.Shell) {
+async function Todos(this: Proton.Component) {
   this.view.set(<div>Parent Loading...</div>)
   await new Promise(resolve => setTimeout(resolve, 1000))
 
@@ -61,7 +61,7 @@ async function Todos(this: Proton.Shell) {
   )
 
 
-  function ControlButtons(this: Proton.Shell) {
+  function ControlButtons(this: Proton.Component) {
     this.view.set(
       <div>
         <button type="button" on={{ click: onAdd }}>+</button>

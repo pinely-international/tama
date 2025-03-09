@@ -9,7 +9,7 @@ import { Flow } from "@denshya/flow"
 
 interface MiniProfileProps { }
 
-function MiniProfile(this: Proton.Shell, props: MiniProfileProps) {
+function MiniProfile(this: Proton.Component, props: MiniProfileProps) {
   const userContext = this.context.require(UserContext)
 
   const user = userContext.user

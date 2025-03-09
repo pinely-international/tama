@@ -1,12 +1,14 @@
 import "./ProductPage.scss"
 
-import { RouteContext, NavLink } from "@/navigation"
-import { STATIC_PRODUCTS } from "../../mock"
-import Icon from "@/app/ui/Icon/Icon"
 import { Flow } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
-import Price from "@/utils/price"
+
+import Icon from "@/app/ui/Icon/Icon"
 import LoaderCover from "@/app/ui/Loader/LoaderCover"
+import { NavLink, RouteContext } from "@/navigation"
+import Price from "@/utils/price"
+
+import { STATIC_PRODUCTS } from "../../mock"
 
 const getProductById = (id: string) => {
   const value = STATIC_PRODUCTS.find(product => product.id === id)
@@ -21,14 +23,14 @@ const requireRouteParam = (id?: string | null) => {
   return id
 }
 
-async function ProductPage(this: Proton.Shell) {
+async function* ProductPage(this: Proton.Component) {
+  yield <LoaderCover />
+  await new Promise(r => setTimeout(r, 1_000))
+
   const route = this.context.require(RouteContext)
 
   const id = route.$.pathname.$.groups.$.id.to(requireRouteParam)
   const product = id.to(getProductById)
-
-  this.view.set(<LoaderCover />)
-  await new Promise(r => setTimeout(r, 1000))
 
   return (
     <div className="product-page">

@@ -1,25 +1,18 @@
 {
   "type": "module",
   "name": "@denshya/proton",
-  "version": "0.3.7",
   "private": false,
-  "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com/denshya"
-  },
+  "version": "0.3.4",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
-    "build",
-    "globals.d.ts",
-    "jsx-runtime.js",
-    "jsx-runtime.d.ts",
-    "jsx-dev-runtime.js"
+    "jsx",
+    "build"
   ],
   "scripts": {
     "dev": "vite",
     "build": "vite build && bun build:types",
-    "build:types": "tsup src/index.ts src/globals.ts --outDir build --format esm --dts-only --tsconfig tsconfig.build.json",
+    "build:types": "tsup src/index.ts src/jsx/JSX.shared.ts --outDir build --format esm --dts-only --tsconfig tsconfig.build.json",
     "preview": "vite preview",
     "release:patch": "npm version patch && bun run build && export GITHUB_TOKEN=${GITHUB_TOKEN} && npm publish",
     "stats": "bun stats:treemap && bun stats:sunburst",
@@ -28,8 +21,8 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "peerDependencies": {
-    "type-fest": "^4.31.0",
-    "@denshya/flow": "^0.2.5"
+    "type-fest": ">=4.31.0",
+    "@denshya/flow": ">=0.3.0"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -43,5 +36,22 @@
     "vite": "^6.0.6",
     "vite-bundle-visualizer": "^1.2.1",
     "vite-plugin-externalize-deps": "^0.8.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denshya/proton.git"
+  },
+  "description": "Light weight, zero-configuration, component-based Web Inflator (JSX parser) for building UI. | React/SolidJS alike library.",
+  "keywords": [
+    "framework",
+    "ui",
+    "inflator",
+    "web"
+  ],
+  "author": "FrameMuse",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/denshya/proton/issues"
+  },
+  "homepage": "https://github.com/denshya/proton#readme"
 }

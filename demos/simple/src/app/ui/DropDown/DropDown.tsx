@@ -14,7 +14,7 @@ interface DropDownProps<T> {
   children: JSX.Children<DropDownOption<T>>
 }
 
-function DropDown<T>(this: Proton.Shell, props: DropDownProps<T>) {
+function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
   const optionsList = new FlowArray(props.children)
 
   function onSelect(option: DropDownOption<T>) {

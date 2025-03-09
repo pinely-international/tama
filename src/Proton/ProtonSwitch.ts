@@ -10,7 +10,7 @@ import { Unsubscribe } from "../Observable"
  * In case of being part of JSX, you should connect `ProtonSwitchWebInflator`.
  *
  * @example
- * function SwitchComponent(this: Proton.Shell) {
+ * function SwitchComponent(this: Proton.Component) {
     const switcher = new ProtonSwitch({
       banned: <span>Banned</span>,
       pending: <span>Pending</span>,
