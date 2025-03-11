@@ -19,7 +19,8 @@ They restrict extensibility in a favor of concealing implementation details and 
 ## Similar Libraries
 
 If you want manage your components in a somewhat complex way, you can continue reading this, but otherwise you may want to consider these alternatives:
-- https://github.com/kitajs/html
+
+- <https://github.com/kitajs/html>
 
 ## Install
 
@@ -650,6 +651,12 @@ const UserProfile = Lazy(async () => (await import("pages/user-profile")).defaul
 <UserProfile />
 
 ```
+
+## Serializer
+
+`WebJSXSerializer` serves the purpose of serializing given JSX, Components and Primitives (including adopted).
+
+Currently supports only sync serialization to string, but it is planned to support async components and data streaming.
 
 ## TypeScript
 
