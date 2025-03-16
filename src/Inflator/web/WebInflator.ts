@@ -170,7 +170,7 @@ class WebInflator extends Inflator {
       throw new TypeError(typeof type + " type of intrinsic element is not supported", { cause: { type } })
     }
 
-    const inflated = this.inflateElement(type, props.ns)
+    const inflated = this.inflateElement(type, props?.ns)
     if (props == null) return inflated
 
     try {
