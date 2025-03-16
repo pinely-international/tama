@@ -80,6 +80,13 @@ class WebInflator extends Inflator {
     if (jsx instanceof ProtonJSX.Component) return this.inflateComponent(jsx.type, jsx.props)
     if (jsx instanceof ProtonJSX.Fragment) return this.inflateFragment()
 
+    // Alternatives checks.
+    switch (typeof jsx.type) {
+      case "string": return this.inflateIntrinsic(jsx.type, jsx.props)
+      case "function": return this.inflateComponent(jsx.type, jsx.props)
+      default: break
+    }
+
     throw new TypeError("Unsupported type of `jsx`", { cause: { jsx } })
   }
 
