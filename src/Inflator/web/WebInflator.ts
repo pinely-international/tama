@@ -6,7 +6,7 @@ import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAP
 import ProtonJSX from "@/jsx/ProtonJSX"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
-import { isRecord } from "@/utils/testers"
+import { isJSX, isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
@@ -62,7 +62,7 @@ class WebInflator extends Inflator {
 
   public inflate<T>(subject: T): WebInflateResult<T> {
     if (subject instanceof Node) return subject as never
-    if (subject instanceof ProtonJSX.Node) return this.inflateJSXDeeply(subject) as never
+    if (isJSX(subject)) return this.inflateJSXDeeply(subject) as never
 
     return super.inflate(subject) as never
   }

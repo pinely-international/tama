@@ -30,6 +30,6 @@ export function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
 
 export function isJSX(value: unknown): value is JSX.Element {
   if (value instanceof ProtonJSX.Node) return true
-  // @ts-expect-error ok to check this way.
-  return value instanceof Object && value.type != null
+
+  return isRecord(value) && value.type != null
 }
