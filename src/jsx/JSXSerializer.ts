@@ -118,6 +118,10 @@ class WebJSXSerializer {
   }
 
   jsxToString(jsx: { type: keyof never, props: any }) {
+    if (jsx.props == null) {
+      return "<" + String(jsx.type) + "/>"
+    }
+
     const children = this.toString(jsx.props.children)
     if (jsx.type.constructor === Symbol) return children
 
