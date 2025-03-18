@@ -119,7 +119,12 @@ class WebJSXSerializer {
 
   jsxToString(jsx: { type: keyof never, props: any }) {
     if (jsx.props == null) {
-      return "<" + String(jsx.type) + "/>"
+      const type = String(jsx.type)
+
+      if (selfClosingTags.has(type)) {
+        return "<" + type + "/>"
+      }
+      return "<" + type + "></" + type + ">"
     }
 
     const children = this.toString(jsx.props.children)
