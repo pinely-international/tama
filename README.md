@@ -1,4 +1,4 @@
-# Proton
+# Proton 🔵
 
 Fast, Light weight (~5kb gzip), Component-based, JSX UI library.
 
