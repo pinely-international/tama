@@ -131,6 +131,8 @@ class WebInflator extends Inflator {
   }
 
   private inflateJSXIntrinsicChildren(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): void {
+    if (jsx.props?.children == null) return
+
     // @ts-expect-error 123
     const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
 
@@ -147,10 +149,8 @@ class WebInflator extends Inflator {
       }
     }
 
-    if (jsx.children instanceof Array === false) appendChildObject(jsx.children)
-
-    if (jsx.children instanceof Array) jsx.children.forEach(appendChildObject)
-    if (jsx.childrenExtrinsic != null) jsx.childrenExtrinsic.forEach(appendChildObject)
+    if (jsx.props.children instanceof Array === false) appendChildObject(jsx.props.children)
+    if (jsx.props.children instanceof Array) jsx.props.children.forEach(appendChildObject)
   }
 
   protected inflateElement(type: string, namespaceOverride?: string) {
