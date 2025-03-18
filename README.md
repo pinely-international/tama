@@ -1,6 +1,6 @@
 # Proton
 
-It is light weight (~5kb gzip), zero-configuration, customizable library for parsing JSX with component controllers.
+Fast, Light weight (~5kb gzip), Component-based, JSX UI library.
 
 [Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
 
@@ -18,7 +18,7 @@ They restrict extensibility in a favor of concealing implementation details and 
 
 ## Similar Libraries
 
-If you want manage your components in a somewhat complex way, you can continue reading this, but otherwise you may want to consider these alternatives:
+If you want manage your components in a somewhat complex way (like in React), you can continue reading this, but otherwise you may want to consider these alternatives:
 
 - <https://github.com/kitajs/html>
 
