@@ -1,10 +1,11 @@
 import "./MiniProfile.scss"
 
+import { Flow } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
 
-import ColoredLetter from "../ColoredLetter/ColoredLetter"
 import UserContext from "@/UserContext"
-import { Flow } from "@denshya/flow"
+
+import ColoredLetter from "../ColoredLetter/ColoredLetter"
 
 
 interface MiniProfileProps { }

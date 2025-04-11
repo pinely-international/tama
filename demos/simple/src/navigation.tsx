@@ -91,7 +91,7 @@ export function NavRoute(this: Proton.Component, props: { path?: string; childre
   }
 
   switchView()
-  navigation.current.sets(switchView)
+  navigation.current.subscribe(switchView)
 }
 
 

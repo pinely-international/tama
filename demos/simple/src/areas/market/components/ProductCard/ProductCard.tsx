@@ -1,13 +1,16 @@
 import "./ProductCard.scss"
 
-import { MarketProduct } from "../../types"
-import { Proton } from "@denshya/proton"
-import Price from "@/utils/price"
-import MarketModel from "../../models/MarketModel"
-import Icon from "@/app/ui/Icon/Icon"
-import ProductCardBuy from "./ProductCardBuyButton"
-import { NavLink } from "@/navigation"
 import { Flow, Flowable, FlowRead } from "@denshya/flow"
+import { Proton } from "@denshya/proton"
+
+import Icon from "@/app/ui/Icon/Icon"
+import { NavLink } from "@/navigation"
+import Price from "@/utils/price"
+
+import ProductCardBuy from "./ProductCardBuyButton"
+
+import MarketModel from "../../models/MarketModel"
+import { MarketProduct } from "../../types"
 
 
 interface ProductCardProps extends MarketProduct { }
@@ -18,7 +21,7 @@ function ProductCard(this: Proton.Component, props: ProductCardProps) {
   const amount = market.cart.$.get(props.id).to(it => it ?? -1).from(it => it < 0 ? 0 : it)
   const liked = market.liked.$.has(props.id)
 
-  amount.sets(it => market.cart.$.set(props.id, it))
+  amount.subscribe(it => market.cart.$.set(props.id, it))
 
   return (
     <div className="product-card">
@@ -42,7 +45,7 @@ function ProductCard(this: Proton.Component, props: ProductCardProps) {
         <div className="product-card__buy">
           <ProductCardBuy amount={amount} onClick={() => market.cart.$.set(props.id, 1)} />
         </div>
-        <button className="product-card__like" classMods={{ active: liked }} type="button" on={{ click: () => market.liked.set(it => liked.it ? (it.delete(props.id), it) : it.add(props.id)) }}>
+        <button className="product-card__like" classMods={{ active: liked }} type="button" on={{ click: () => market.liked.set(it => liked.current ? (it.delete(props.id), it) : it.add(props.id)) }}>
           <Icon name="heart" />
         </button>
       </div>
@@ -63,7 +66,7 @@ function useSearch(value: FlowRead<string | null | undefined>) {
 
   function highlight(searchable: Flowable<string | null | undefined>) {
     function HighlightComponent() {
-      const range = Flow.compute((searchable, value) => {
+      const range = Flow.from(Flow.compute((searchable, value) => {
 
         const index = search(searchable, value)
 
@@ -72,7 +75,7 @@ function useSearch(value: FlowRead<string | null | undefined>) {
           highlight: searchable?.slice(index, index + value.length),
           end: searchable?.slice(index + value.length)
         }
-      }, [Flow.from(searchable), valueNormalized])
+      }, [Flow.from(searchable), valueNormalized]))
 
       return (
         <>

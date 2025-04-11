@@ -1,6 +1,7 @@
 
-import { castArray } from "@/utils/common"
 import { Flow, Flowable } from "@denshya/flow"
+
+import { castArray } from "@/utils/common"
 
 
 
@@ -34,9 +35,9 @@ interface SelectorControllerConfig<T> {
 
 class SelectorController<T> {
   constructor(readonly options: T[], readonly config: SelectorControllerConfig<T>) {
-    this.search.sets(() => this.expanded.set(true))
-    config.search && this.search.sets(config.search)
+    this.search.subscribe(() => this.expanded.set(true))
 
+    if (config.search != null) this.search.sets(config.search)
     if (config.expanded instanceof Flow) config.expanded.sets(this.expanded)
   }
 

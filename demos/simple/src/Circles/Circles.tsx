@@ -42,11 +42,11 @@ function Circles(this: Proton.Component) {
 
   loop()
 
-  const grid = this.inflator.inflate(<div className="boxes-grid" />)
+  const grid = this.inflator.inflate(<div className="boxes-grid" />) as HTMLDivElement
 
   Array(300)
     .fill(0)
-    .forEach((_, i) => grid.appendChild(this.inflator.inflate(<Row i={i} count={count} />)))
+    .forEach((_, i) => grid.appendChild(this.inflator.inflate(<Row i={i} count={count} />) as Node))
 
   this.view.set(
     <div>

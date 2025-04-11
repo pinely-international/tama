@@ -1,8 +1,9 @@
 import "./SearchBar.scss"
 
-import Icon from "../Icon/Icon"
-import { Proton } from "@denshya/proton"
 import { Flow } from "@denshya/flow"
+import { Proton } from "@denshya/proton"
+
+import Icon from "../Icon/Icon"
 
 
 interface SearchBarProps {
@@ -51,7 +52,7 @@ function SearchBar(this: Proton.Component, props: SearchBarProps) {
     } catch (error) { /** Ignore animation cancels. */ }
   }
 
-  value.sets(animateDebounce)
+  value.subscribe(animateDebounce)
 
 
   return (

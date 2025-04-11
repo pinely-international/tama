@@ -1,11 +1,10 @@
 import "./DropDown.scss"
 
-
 import { Flow, FlowArray } from "@denshya/flow"
 import { Proton } from "@denshya/proton"
 
 
-export type DropDownOption<V = unknown> = { type: "option", props: JSX.HTMLElements["option"] & { value?: V }, children: unknown }
+export type DropDownOption<V = unknown> = { type: "option", props: JSX.HTMLElements["option"] & { value?: V }, children?: unknown }
 
 interface DropDownProps<T> {
   expanded: Flow<boolean>
@@ -37,7 +36,7 @@ function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
   this.use(view => {
     if (view instanceof HTMLElement === false) return
 
-    const expandedSubscription = props.expanded.sets(it => !it && contain(view))
+    const expandedSubscription = props.expanded.subscribe(it => !it && contain(view))
     mutation.observe(view, { subtree: true, childList: true, characterData: true })
 
     return () => {
