@@ -20,7 +20,7 @@ type WebInflateResult<T> =
   T extends JSX.Element ? Element :
   T extends Observable<unknown> ? Text :
   T extends Primitive ? Text :
-  Text
+  Node
 
 
 interface WebInflatorFlags {

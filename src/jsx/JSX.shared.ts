@@ -32,7 +32,7 @@ declare global {
   namespace JSX {
     interface Element {
       type: any
-      props: any
+      props?: any
       children?: any
     }
 
@@ -65,7 +65,7 @@ declare global {
     }
 
     interface IntrinsicAttributes {
-      mounted?: AccessorGet<unknown> & Observable<unknown>
+      mounted?: AccessorGet<any> | Observable<any>
     }
 
     interface CustomAttributes {
@@ -90,5 +90,3 @@ declare global {
     interface IntrinsicElements extends HTMLElements, SVGElements, MathMLElements { }
   }
 }
-
-export { }
