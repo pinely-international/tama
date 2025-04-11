@@ -9,6 +9,8 @@ Fast, Light weight (~5kb gzip), Component-based, JSX UI library.
 Other libraries provide their own built-in “primitives” that you **have to** stick to.
 They restrict extensibility in a favor of concealing implementation details and don't give any explicit controls.
 
+This all makes it very difficult to build Web GAMES - this is the intial intention to build this package, eventually a potentiall to compete with React.
+
 ## Pillars
 
 - [No Framework](https://dev.to/framemuse/no-framework-principle-arised-2n39)
