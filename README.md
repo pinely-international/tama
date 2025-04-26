@@ -10,6 +10,7 @@ Other libraries provide their own built-in “primitives” that you **have to**
 They restrict extensibility in a favor of concealing implementation details and don't give any explicit controls.
 
 This all makes it very difficult to build Web GAMES - this is the intial intention to build this package, eventually a potentiall to compete with React.
+Another point is to create a library that can be used alongside with VanilaJS intuitively without deep learning.
 
 ## Pillars
 
