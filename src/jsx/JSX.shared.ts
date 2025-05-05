@@ -5,6 +5,28 @@ import Guarded from "../Guarded"
 import Observable from "../Observable"
 
 
+type AriaBooleanKeys =
+  | "ariaChecked"
+  | "ariaDisabled"
+  | "ariaExpanded"
+  | "ariaHidden"
+  | "ariaInvalid"
+  | "ariaPressed"
+  | "ariaReadOnly"
+  | "ariaRequired"
+  | "ariaSelected"
+
+type OtherString = string & {}
+
+type BooleanLike =
+  | (true | false)
+  | ("true" | "false")
+
+type AugmentedAria<T> = Omit<T, keyof ARIAMixin> & {
+  [K in keyof ARIAMixin]: K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K]
+}
+
+
 /** https://github.com/type-challenges/type-challenges/issues/139 */
 type GetReadonlyKeys<
   T,
@@ -16,15 +38,16 @@ type GetReadonlyKeys<
 type AnyFunction = ((...args: any[]) => unknown)
 
 
+type NonFunctionKeysOnly<K, V, R> = (
+  K extends R ? never :
+  AnyFunction extends V ? never :
+  V extends AnyFunction ? never :
+  K
+)
 interface _AttributesOf<T> {
   ReadonlyKeys: GetReadonlyKeys<T>
   Attributes: {
-    [K in (keyof T) as (
-      K extends this["ReadonlyKeys"] ? never :
-      AnyFunction extends T[K] ? never :
-      T[K] extends AnyFunction ? never :
-      K
-    )]: JSX.Attribute<T[K]>
+    [K in (keyof T) as NonFunctionKeysOnly<K, T[K], this["ReadonlyKeys"]>]: JSX.Attribute<T[K]>
   }
 }
 
@@ -76,16 +99,16 @@ declare global {
 
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]
 
-    type HTMLElementAttributes<T> = Partial<AttributesOf<T>> & CustomAttributes & IntrinsicAttributes & { children?: unknown }
+    type ElementAttributes<T> = Partial<AttributesOf<AugmentedAria<T>>> & CustomAttributes & IntrinsicAttributes & { children?: unknown }
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    type SVGElementAttributes<T> = HTMLElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : {}) & { class?: Attribute<string> }
+    type SVGElementAttributes<T> = ElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : {}) & { class?: Attribute<string> }
 
     type SVGURIReferenceAttribute = SVGURIReference | { href?: Attribute<string> }
 
 
-    type HTMLElements = { [Tag in keyof HTMLElementTagNameMap]: HTMLElementAttributes<HTMLElementTagNameMap[Tag]> }
+    type HTMLElements = { [Tag in keyof HTMLElementTagNameMap]: ElementAttributes<HTMLElementTagNameMap[Tag]> }
     type SVGElements = { [Tag in keyof SVGElementTagNameMap]: SVGElementAttributes<SVGElementTagNameMap[Tag]> }
-    type MathMLElements = { [Tag in keyof MathMLElementTagNameMap]: HTMLElementAttributes<MathMLElementTagNameMap[Tag]> }
+    type MathMLElements = { [Tag in keyof MathMLElementTagNameMap]: ElementAttributes<MathMLElementTagNameMap[Tag]> }
 
     interface IntrinsicElements extends HTMLElements, SVGElements, MathMLElements { }
   }
