@@ -1,7 +1,7 @@
 import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
-import { AsyncFunction } from "@/BuiltinObjects"
+import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import ProtonJSX from "@/jsx/ProtonJSX"
 import { NodeGroup } from "@/NodeGroup"
@@ -25,12 +25,14 @@ type WebInflateResult<T> =
 
 
 interface WebInflatorFlags {
-  debug: boolean
+  debug: boolean,
+  skipAsync: boolean
 }
 
 class WebInflator extends Inflator {
   flags: WebInflatorFlags = {
     debug: false,
+    skipAsync: false,
   }
   /**
    * Custom JSX attributes.
@@ -193,6 +195,11 @@ class WebInflator extends Inflator {
   }
 
   public inflateComponent(factory: Function, props?: any) {
+    if (this.flags.skipAsync) {
+      if (factory instanceof AsyncFunction.constructor) return null
+      if (factory instanceof AsyncGeneratorFunction.constructor) return null
+    }
+
     // If arrow function, simplify inflation.
     if (factory.prototype == null && factory instanceof AsyncFunction.constructor === false) {
       return this.inflate(factory(props))
