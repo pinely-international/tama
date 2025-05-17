@@ -498,7 +498,7 @@ class WebInflator extends Inflator {
     if (accessor.get == null && accessor.subscribe == null) return
 
     if (accessor.get) targetBindCallback(accessor.get())
-    if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get!() ?? value))
+    if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get?.() ?? value))
   }
 }
 
