@@ -223,11 +223,11 @@ Some elements may have binding in **two directions**, which means that [state **
 
 This is common for user input elements just like `input` and `textarea`.
 
-If you're using [`Flow`](https://github.com/denshya/flow) library, you can avoid this behavior with `readonly` method.
+If you're using [`Reactive`](https://github.com/denshya/reactive) library, you can avoid this behavior with `readonly` method.
 
 ```tsx
 function ProductCard() {
-  const title = new Flow("Title")
+  const title = new State("Title")
 
   return (
     <>
@@ -291,15 +291,16 @@ Each JSX attribute can be a **Mounting Guard**, which means the element is mount
 
 TypeScript: This approach allows type narrowing, so your property is always getting a correct type.
 
-If you're using [`Flow`](https://github.com/denshya/flow), you can use `guard` method or built-in predicates like `required`.
+you can use `guard` method or built-in predicates like `required`.
 
 ```tsx
-const className = new Flow("")
-const content = new Flow<string | null>(null)
+const className = new State("")
+const content = new State<string | null>(null)
 
 const Component = () => (
   <>
-    <span className={className.guard(it => !it)}>{content.required}</span>
+    <span className={Proton.guard.avoid(className)}>{Proton.guard.require(content)}</span>
+    <span className={Proton.guard(className, x => !x)}>{Proton.guard(content, x => x)}</span> // Equal Alternative.
   </>
 )
 ```
@@ -315,18 +316,18 @@ If you dislike this method, you can implement the way SolidJS does it or your un
 A component example I converted from React and changed a bit for demonstration purposes.
 
 ```tsx
-import { Flow, Flowable } from "@denshya/flow"
+import { State, StateOrPlain } from "@denshya/reactive"
 
 
 interface MiniProfileProps {
-  user: Flowable<User>
+  user: StateOrPlain<User>
 }
 
 function MiniProfile(props: MiniProfileProps) {
-  const user = Flow.from(props.user)
+  const user = State.from(props.user)
 
-  const inputValue = new Flow("")
-  const inputMounted = new Flow(false)
+  const inputValue = new State("")
+  const inputMounted = new StateBoolean(false)
 
   inputValue.sets(user.$.avatar)
 
@@ -343,7 +344,7 @@ function MiniProfile(props: MiniProfileProps) {
           <div className="mini-profile__email">{user.$.email}</div>
         </div>
       </div>
-      <button type="button" on={{ click: () => inputMounted.set(it => !it) }}>
+      <button type="button" on={{ click: () => inputMounted.toggle() }}>
         <Icon name="pen" />
       </button>
     </div>
@@ -368,8 +369,8 @@ function MyView(this: Proton.Component) {
   this.view.set(<div>Hello World!</div>)
 
   setTimeout(() => {
-    this.view.set(<div>I'mg Replaced!</div>)
-  }, 1000)
+    this.view.set(<div>I'm Replaced!</div>)
+  }, 1_000)
 }
 ```
 
@@ -512,14 +513,14 @@ This extends JSX attributes. It requires three steps to make it work.
 ```ts
 import { WebInflator } from "@denshya/proton"
 import { castArray } from "./utils/common"
-import { bemFlow } from "./utils/bem"
-import { Flowable } from "@denshya/flow"
+import { bem } from "./utils/bem"
+import { StateOrPlain } from "@denshya/reactive"
 
 declare global {
   namespace JSX {
     interface CustomAttributes {
       /** Applies modifiers based `className` and overrides `className` attribute. */
-      classMods?: { [K in keyof never]: Flowable<unknown> } | Flowable<unknown>[]
+      classMods?: { [K in keyof never]: StateOrPlain<unknown> } | StateOrPlain<unknown>[]
     }
   }
 }
