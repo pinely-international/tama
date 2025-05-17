@@ -133,6 +133,7 @@ function MyApp() {
 ## States (Observables)
 
 [What are Observables?](https://github.com/tc39/proposal-observable)
+[WICG Observable (Web Standard)](https://github.com/WICG/observable)
 
 Proton adopts observable as another primitive. Any object that has `Symbol.subscribe` considered to be an observable.
 
@@ -142,7 +143,7 @@ Beyond that, it treats any object that has either `get` or `set` to be an access
 
 ---
 
-There is no built-in state manager, Proton only handles Observables as is. Now creating data flows is your problem :) Joking, it always was, now it's separated from the "framework", so you can use any library that supports Observables. Like the one that is created specially for Proton - [Flow](https://github.com/denshya/flow).
+There is no built-in state manager (in the library), Proton only handles Observables as is. Now creating data flows is your problem :) Joking, it always was, now it's separated from the "framework", so you can use any library that supports Observables. Like the one Denshya has - [Reactive](https://github.com/denshya/reactive).
 
 ```tsx
 const regularText = "Static Value"
@@ -208,7 +209,13 @@ function ProductCard() {
 }
 ```
 
-To get started faster with this, try [`Flow`](https://github.com/denshya/flow) state library.
+To get started faster with this, try [`Reactive`](https://github.com/denshya/reactive) state library.
+
+> [!NOTE]
+> Observables are now implemented in Browsers. They can be used as it without any updates.
+> ```tsx
+> <div style={{ left: window.when("scroll").map(event => event.y + "px") }} />
+> ```
 
 ### Dual binding
 
