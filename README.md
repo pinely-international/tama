@@ -132,8 +132,9 @@ function MyApp() {
 
 ## States (Observables)
 
-[What are Observables?](https://github.com/tc39/proposal-observable)
 [WICG Observable (Web Standard)](https://github.com/WICG/observable)
+
+[Usage Example of Observable in Proton](https://stackblitz.com/edit/vitejs-vite-uepaaxp1?file=src%2FApp.tsx)
 
 Proton adopts observable as another primitive. Any object that has `Symbol.subscribe` considered to be an observable.
 
@@ -216,6 +217,7 @@ To get started faster with this, try [`Reactive`](https://github.com/denshya/rea
 > ```tsx
 > <div style={{ left: window.when("scroll").map(event => event.y + "px") }} />
 > ```
+> [Example Playground](https://stackblitz.com/edit/vitejs-vite-uepaaxp1?file=src%2FApp.tsx)
 
 ### Dual binding
 
