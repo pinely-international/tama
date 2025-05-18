@@ -1,8 +1,15 @@
-import { IsEqual, LiteralUnion } from "type-fest"
+import { IsEqual, LiteralUnion, StringSlice } from "type-fest"
 
 import { Accessible, AccessorGet } from "../Accessor"
 import Guarded from "../Guarded"
 import Observable from "../Observable"
+
+
+
+type OtherString = string & {}
+type BooleanLike =
+  | (true | false)
+  | ("true" | "false")
 
 
 type AriaBooleanKeys =
@@ -16,14 +23,10 @@ type AriaBooleanKeys =
   | "ariaRequired"
   | "ariaSelected"
 
-type OtherString = string & {}
-
-type BooleanLike =
-  | (true | false)
-  | ("true" | "false")
+type AriaUnprefixed<K extends keyof ARIAMixin> = K extends "role" ? "role" : StringSlice<Lowercase<K>, 4>
 
 type AugmentedAria<T> = Omit<T, keyof ARIAMixin> & {
-  [K in keyof ARIAMixin]: K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K]
+  [K in keyof ARIAMixin as AriaUnprefixed<K>]: K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K]
 }
 
 
@@ -99,7 +102,11 @@ declare global {
 
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]
 
-    type ElementAttributes<T> = Partial<AttributesOf<AugmentedAria<T>>> & CustomAttributes & IntrinsicAttributes & { children?: unknown }
+    type ElementAttributes<T> =
+      & Partial<AttributesOf<AugmentedAria<T>>>
+      & CustomAttributes
+      & IntrinsicAttributes
+      & { children?: unknown }
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     type SVGElementAttributes<T> = ElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : {}) & { class?: Attribute<string> }
 
