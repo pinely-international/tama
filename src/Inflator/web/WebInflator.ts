@@ -434,6 +434,11 @@ class WebInflator extends Inflator {
       overrides.add("style")
     }
 
+    if ("aria" in props) {
+      Object.assign(element, props.aria)
+      overrides.add("aria")
+    }
+
     if (element instanceof SVGElement) {
       if (props.class != null) {
         WebInflator.bindPropertyCallback(props.class, value => element.setAttribute("class", String(value)))
