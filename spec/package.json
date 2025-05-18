@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "name": "proton-test",
+  "private": true,
+  "devDependencies": {
+    "happy-dom": "latest",
+    "@types/bun": "latest",
+    "@denshya/reactive": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "latest"
+  }
+}
