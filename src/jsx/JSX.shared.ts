@@ -23,10 +23,11 @@ type AriaBooleanKeys =
   | "ariaRequired"
   | "ariaSelected"
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type AriaUnprefixed<K extends keyof ARIAMixin> = K extends "role" ? "role" : StringSlice<Lowercase<K>, 4>
 
 type AugmentedAria<T> = Omit<T, keyof ARIAMixin> & {
-  [K in keyof ARIAMixin as AriaUnprefixed<K>]: K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K]
+  [K in keyof ARIAMixin]: K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K]
 }
 
 
