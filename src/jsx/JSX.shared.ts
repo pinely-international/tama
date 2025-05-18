@@ -23,7 +23,7 @@ type BooleanLike =
   | ("true" | "false")
 
 type AugmentedAria<T> = Omit<T, keyof ARIAMixin> & {
-  [K in keyof ARIAMixin]: K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K]
+  aria?: { [K in keyof ARIAMixin]: K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K] }
 }
 
 
