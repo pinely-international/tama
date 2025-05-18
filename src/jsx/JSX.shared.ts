@@ -74,12 +74,9 @@ declare global {
 
     type Attribute<T> =
       | T
-      | Observable<T>
-      | Accessible<T>
-      | (Observable<T> & Accessible<T>)
-      | (Guarded<T> & Observable<T>)
-      | (Guarded<T> & Accessible<T>)
-      | (Guarded<T> & Observable<T> & Accessible<T>)
+      | Partial<Observable<T>>
+      | Partial<Accessible<T>>
+      | Partial<Guarded<T>>
 
     type Children<T extends JSX.Element> = T | Iterable<T>
 
