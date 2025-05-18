@@ -19,6 +19,7 @@ type WebInflateResult<T> =
   T extends Node ? T :
   T extends JSX.Element ? Element :
   T extends Observable<unknown> ? Text :
+  T extends (undefined | null) ? T :
   T extends Primitive ? Text :
   Node
 
@@ -319,7 +320,13 @@ class WebInflator extends Inflator {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
-    ProtonComponent.evaluate(component, factory, props)
+
+    try {
+      ProtonComponent.evaluate(component, factory, props)
+    } catch (error) {
+      console.error(error)
+      return this.inflate(error)
+    }
 
     return componentWrapper
   }
