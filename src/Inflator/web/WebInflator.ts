@@ -435,7 +435,9 @@ class WebInflator extends Inflator {
     }
 
     if ("aria" in props) {
-      Object.assign(element, props.aria)
+      for (const key in props.aria) {
+        WebInflator.bindProperty(key, props, element)
+      }
       overrides.add("aria")
     }
 
