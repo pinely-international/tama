@@ -1,4 +1,4 @@
-import { AsyncFunction } from "@/BuiltinObjects"
+import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
 import WebInflator from "@/Inflator/web/WebInflator"
 import { kebabCase } from "@/utils/string"
 import { isIterable, isJSX, isObservableGetter, isRecord } from "@/utils/testers"
@@ -8,7 +8,10 @@ import { isIterable, isJSX, isObservableGetter, isRecord } from "@/utils/testers
 class WebJSXSerializer {
   private inflator?: WebInflator
   /** Inherits customization and options applied to `inflator`. */
-  inherit(inflator: WebInflator) { this.inflator = inflator }
+  inherit(inflator: WebInflator) {
+    inflator.flags.skipAsync = true
+    this.inflator = inflator
+  }
 
   toString(value: unknown): string {
     if (value == null) return ""
@@ -29,7 +32,7 @@ class WebJSXSerializer {
     }
 
     if (value instanceof Object) {
-      throw JSON.stringify(value)
+      throw new TypeError("JSX Child can't be object: " + value.constructor)
     }
     return String(value)
   }
@@ -117,7 +120,7 @@ class WebJSXSerializer {
     return attributes
   }
 
-  jsxToString(jsx: { type: keyof never, props: any }) {
+  jsxToString(jsx: JSX.Element): string {
     if (jsx.props == null) {
       const type = String(jsx.type)
 
@@ -126,6 +129,9 @@ class WebJSXSerializer {
       }
       return "<" + type + "></" + type + ">"
     }
+
+    // Skip for SEO + better visual.
+    if (jsx.props["data-nosnippet"] === "true") return ""
 
     const children = this.toString(jsx.props.children)
     if (jsx.type.constructor === Symbol) return children
@@ -144,6 +150,7 @@ class WebJSXSerializer {
 
   componentToString(factory: Function, props?: any) {
     if (factory instanceof AsyncFunction.constructor) return ""
+    if (factory instanceof AsyncGeneratorFunction.constructor) return ""
 
     return this.toString(factory.call(undefined, props))
   }
