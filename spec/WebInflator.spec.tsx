@@ -215,4 +215,21 @@ describe("WebInflator", () => {
     const element = inflator.inflate(<div foo="bar" />)
     expect(element["foo" as never]).toBe("bar-ok" as never)
   })
+
+  it("inflates custom element", () => {
+    class CustomDiv extends HTMLDivElement { }
+    window.customElements.define("custom-div", CustomDiv)
+
+    // @ts-expect-error
+    const inflatedCustomDiv = inflator.inflate(<custom-div />)
+    expect(inflatedCustomDiv).toBeInstanceOf(CustomDiv)
+  })
+
+  // it("inflates custom element (`is` option)", () => {
+  //   class CustomDiv extends HTMLDivElement { }
+  //   window.customElements.define("custom-div", CustomDiv)
+
+  //   const inflatedCustomDiv = inflator.inflate(<div is="custom-div" />)
+  //   expect(inflatedCustomDiv).toBeInstanceOf(CustomDiv)
+  // })
 })
