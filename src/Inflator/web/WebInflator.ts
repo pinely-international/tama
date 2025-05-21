@@ -93,7 +93,7 @@ class WebInflator extends Inflator {
     throw new TypeError("Unsupported type of `jsx`", { cause: { jsx } })
   }
 
-  protected inflateObservable<T>(observable: Observable<T> & AccessorGet<T>) {
+  protected inflateObservable<T>(observable: Observable<T> & Partial<AccessorGet<T>>) {
     const textNode = new Text(String(observable.get?.()))
 
     observable[Symbol.subscribe](value => textNode.textContent = String(observable.get?.() ?? value))
@@ -156,13 +156,13 @@ class WebInflator extends Inflator {
     if (jsx.props.children instanceof Array) jsx.props.children.forEach(appendChildObject)
   }
 
-  protected inflateElement(type: string, namespaceOverride?: string) {
-    if (namespaceOverride != null) return document.createElementNS(type, namespaceOverride)
+  protected inflateElement(type: string, options?: { namespace?: string, is?: string }) {
+    if (options?.namespace != null) return document.createElementNS(options.namespace, type, options)
 
-    if (NAMESPACE_SVG.has(type)) return document.createElementNS("http://www.w3.org/2000/svg", type)
-    if (NAMESPACE_MATH.has(type)) return document.createElementNS("http://www.w3.org/1998/Math/MathML", type)
+    if (NAMESPACE_SVG.has(type)) return document.createElementNS("http://www.w3.org/2000/svg", type, options)
+    if (NAMESPACE_MATH.has(type)) return document.createElementNS("http://www.w3.org/1998/Math/MathML", type, options)
 
-    return document.createElement(type)
+    return document.createElement(type, options)
   }
 
   /**
