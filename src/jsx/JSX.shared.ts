@@ -105,6 +105,14 @@ declare global {
       & CustomAttributes
       & IntrinsicAttributes
       & { children?: unknown }
+    // & {
+    //   /**
+    //    * The tag name of a custom element previously defined via `customElements.define()`.
+    //    *
+    //    * [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement#is)
+    //    */
+    //   is?: string
+    // }
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     type SVGElementAttributes<T> = ElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : {}) & { class?: Attribute<string> }
 
