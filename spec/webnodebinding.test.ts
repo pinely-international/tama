@@ -1,110 +1,62 @@
-import "./dom"
+// tests/webnodebinding-dualSignalBind.test.ts
+import { State } from "@denshya/reactive"
+import { describe, expect, it } from "bun:test"
 
-import { afterEach, beforeEach, describe, expect, it } from "bun:test"
-
-import { injectDOMPolyfill } from "./dom"
-
-import Accessor from "../src/Accessor"
-import WebNodeBinding from "../src/utils/WebNodeBinding"
+import WebNodeBinding from "../build/WebNodeBinding"
 
 describe("WebNodeBinding.dualSignalBind", () => {
-  let input: HTMLInputElement
-  let origExtract: typeof Accessor.extractObservable
+  it("binds input value from observable to DOM and back", () => {
+    const state = new State("initial")
+    const input = document.createElement("input")
 
-  beforeEach(() => {
-    injectDOMPolyfill(globalThis)
-    document.body.innerHTML = "<div id='test' />"
-    input = document.getElementById("test") as HTMLInputElement
+    WebNodeBinding.dualSignalBind(input, "value", state, "input")
 
-    // backup and stub Accessor.extractObservable
-    origExtract = Accessor.extractObservable
+    // Initial value set from state
+    expect(input.value).toBe("initial")
+
+    // DOM update reflects in state
+    input.value = "changed"
+    input.dispatchEvent(new Event("input"))
+    expect(state.get()).toBe("changed")
+
+    // State update reflects in DOM
+    state.set("updated")
+    expect(input.value).toBe("updated")
   })
 
-  afterEach(() => {
-    // restore
-    Accessor.extractObservable = origExtract
-  })
-
-  it("returns early when value is not observable", () => {
-    let called = false
-    Accessor.extractObservable = v => { called = true; return null }
-    WebNodeBinding.dualSignalBind(input, "value", "plain", "input")
-    expect(called).toBe(true)
-    // property should remain unchanged
+  it("does not bind if input is not observable", () => {
+    const input = document.createElement("input")
+    WebNodeBinding.dualSignalBind(input, "value", "static", "input")
     expect(input.value).toBe("")
   })
 
-  it("initializes node property from accessor.get", () => {
-    const accessor = {
-      get: () => "hello",
-      set: undefined,
-      subscribe: undefined,
-    }
-    Accessor.extractObservable = () => accessor
-    WebNodeBinding.dualSignalBind(input, "value", {}, "input")
-    expect(input.value).toBe("hello")
+  it("throws for unsupported instance types", () => {
+    const notNode = {} as unknown as Node
+    const state = new State("x")
+    expect(() =>
+      WebNodeBinding.dualSignalBind(notNode, "textContent", state, "input")
+    ).toThrow(TypeError)
   })
 
-  it("wires setter to accessor.set and maintains native behavior", () => {
-    const calls: unknown[] = []
-    const accessor = {
-      get: () => "x",
-      set: (v: unknown) => calls.push(v),
-      subscribe: undefined,
-    }
-    Accessor.extractObservable = () => accessor
-    WebNodeBinding.dualSignalBind(input, "value", {}, "input")
-
-    // setting input.value should call both descriptor.set and accessor.set
-    input.value = "world"
-    expect(input.value).toBe("world")
-    expect(calls).toEqual(["world"])
+  it("throws if descriptor is missing", () => {
+    const div = document.createElement("div")
+    const state = new State("x")
+    expect(() =>
+      WebNodeBinding.dualSignalBind(div, "nonexistent" as any, state, "input")
+    ).toThrow(TypeError)
   })
 
-  it("listens to changeEventKey and propagates to accessor.set", () => {
-    let last: unknown
-    const accessor = {
-      get: () => "",
-      set: (v: unknown) => { last = v },
-      subscribe: undefined,
-    }
-    Accessor.extractObservable = () => accessor
-    WebNodeBinding.dualSignalBind(input, "value", {}, "change")
+  it("memoizes native descriptor", () => {
+    const input = document.createElement("input")
+    const state = new State("memo")
+    WebNodeBinding.dualSignalBind(input, "value", state, "input")
 
-    // simulate user interaction
-    input.value = "typed"
-    input.dispatchEvent(new Event("change", { bubbles: true }))
-    expect(last).toBe("typed")
-  })
+    // Set again with different observable
+    const state2 = new State("second")
+    WebNodeBinding.dualSignalBind(input, "value", state2, "input")
+    expect(input.value).toBe("second")
 
-  it("subscribes to accessor.subscribe to update node property", () => {
-    let subCb: (v: unknown) => void = () => { }
-    const accessor = {
-      get: () => undefined,
-      set: undefined,
-      subscribe: (cb: (v: unknown) => void) => { subCb = cb },
-    }
-    Accessor.extractObservable = () => accessor
-    WebNodeBinding.dualSignalBind(input, "value", {}, "input")
-
-    // before subscription, default
-    expect(input.value).toBe("")
-    // trigger subscription
-    subCb("newval")
-    expect(input.value).toBe("newval")
-  })
-
-  it("throws when non-Node instance passed to getNativeDescriptor", () => {
-    // bypass dualSignalBind to call underlying getNativeDescriptor
-    const fn = () => (WebNodeBinding as any).getNativeDescriptor({}, "value")
-    expect(fn).toThrow(TypeError)
-  })
-
-  it("throws when property not on prototype", () => {
-    // create fake node without 'foo'
-    Accessor.extractObservable = () => ({ get: () => 1 })
-    const fake = document.createElement("div")
-    const bind = () => WebNodeBinding.dualSignalBind(fake, "foo" as any, {}, "input")
-    expect(bind).toThrow(TypeError)
+    state.set("third")
+    expect(input.value).toBe("third")
   })
 })

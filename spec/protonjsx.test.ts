@@ -1,7 +1,7 @@
 // tests/protonjsx.test.ts
 import { describe, expect, it } from "bun:test"
 
-import ProtonJSX from "../src/jsx/ProtonJSX"
+import ProtonJSX from "../build/ProtonJSX"
 
 describe("ProtonJSX.Node & Element", () => {
   it("Node constructor assigns type and props", () => {
@@ -19,8 +19,6 @@ describe("ProtonJSX.Node & Element", () => {
 
   it("Element with string returns Intrinsic node", () => {
     const intrinsic = ProtonJSX.Element("div", { id: "test" })
-
-    console.log({ ...intrinsic })
 
     expect(intrinsic).toBeInstanceOf(ProtonJSX.Intrinsic)
     expect(intrinsic).toEqual({ type: "div", props: { id: "test" } })

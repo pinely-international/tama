@@ -31,6 +31,7 @@ namespace WebNodeBinding {
     if (accessor.get) descriptor.set!.call(node, accessor.get())
     if (accessor.set) {
       Object.defineProperty(node, key, {
+        configurable: true,
         get: () => descriptor.get!.call(node),
         set: value => {
           descriptor.set!.call(node, value)

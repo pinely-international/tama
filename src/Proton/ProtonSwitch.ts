@@ -1,4 +1,4 @@
-import { Notifier } from "@denshya/flow"
+import { Notifier } from "@denshya/reactive"
 
 import { AccessorSet } from "@/Accessor"
 import { InflatorAdapter } from "@/Inflator/InflatorAdapter"

@@ -26,7 +26,7 @@ namespace ProtonJSX {
     }
 
     if (type === FragmentSymbol) return new Fragment(type, props)
-    if (typeof type === "string" || type instanceof Symbol) return new Intrinsic(type, props)
+    if (typeof type === "string" || type.constructor === Symbol) return new Intrinsic(type, props)
 
     return new Component(type, props)
   }

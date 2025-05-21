@@ -59,7 +59,7 @@ class WebJSXSerializer {
       let styleString = ""
       for (const propertyName in style) {
         const key = kebabCase(propertyName)
-        const value = this.observableToString(style[propertyName])
+        const value = this.gettable(style[propertyName])
 
         styleString += key + ":" + value + ";"
       }
@@ -70,9 +70,9 @@ class WebJSXSerializer {
     return String(style)
   }
 
-  private observableToString(value: unknown): string {
-    if (isObservableGetter(value)) return String(value.get())
-    return String(value)
+  private gettable(value: unknown): unknown {
+    if (isObservableGetter(value)) return value.get()
+    return value
   }
 
   private applyCustomJSXAttributes(props: any) {
@@ -80,15 +80,13 @@ class WebJSXSerializer {
     if (this.inflator.jsxAttributes.size === 0) return
 
     const bind = (key: string, value: unknown) => {
-      props[key] = this.observableToString(value)
+      props[key] = this.gettable(value)
     }
 
     for (const key of this.inflator.jsxAttributes.keys()) {
       if (key in props === false) continue
 
-      const attributeSetup = this.inflator.jsxAttributes.get(key)
-      if (attributeSetup == null) continue
-
+      const attributeSetup = this.inflator.jsxAttributes.get(key)!
       attributeSetup({ props, key, value: props[key], bind })
     }
   }
@@ -112,7 +110,7 @@ class WebJSXSerializer {
       if (key === "className") key = "class"
       if (key === "style") value = this.styleToString(value)
 
-      value = this.observableToString(value)
+      value = this.gettable(value)
       if (value == null) continue
 
       attributes += " " + key + "=\"" + value + "\""
@@ -131,6 +129,7 @@ class WebJSXSerializer {
     }
 
     // Skip for SEO + better visual.
+    if (jsx.props["data-nosnippet"] === true) return ""
     if (jsx.props["data-nosnippet"] === "true") return ""
 
     const children = this.toString(jsx.props.children)

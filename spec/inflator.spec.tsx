@@ -21,7 +21,7 @@ describe("WebInflator", () => {
     expect(element.textContent).toBe("Hello")
   })
 
-  it("should bind State to attributes and update on change", () => {
+  it("should bind State to JSX attributes and update on change", () => {
     const state = new State("foo")
     const element = inflator.inflate(<div id={state} />)
 

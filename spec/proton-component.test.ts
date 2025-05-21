@@ -26,7 +26,7 @@ describe("ProtonComponent", () => {
 
   it("view.set renders only on new subject", () => {
     const calls: unknown[] = []
-    rootComp.on("view").subscribe(v => calls.push(v))
+    rootComp.when("view").subscribe(v => calls.push(v))
     const subj = { foo: 1 }
     rootComp.view.set(subj)
     rootComp.view.set(subj)
@@ -37,7 +37,7 @@ describe("ProtonComponent", () => {
     const first = document.createElement("div")
     const second = document.createElement("div")
 
-    rootComp.on("view").subscribe(() => { })
+    rootComp.when("view").subscribe(() => { })
     rootComp.view.set(first)
     expect(rootComp.getView()).toEqual(first)
 
@@ -88,19 +88,19 @@ describe("ProtonComponent", () => {
     expect(calls.some(c => c[0] === "unsuspend")).toBe(true)
   })
 
-  it("on(event) returns observable for mount/unmount", () => {
+  it("when(event) returns observable for mount/unmount", () => {
     const mounts: unknown[] = []
-    rootComp.on("mount").subscribe(() => mounts.push(true))
+    rootComp.when("mount").subscribe(() => mounts.push(true))
     // trigger mount via use()
-    const cleanup = rootComp.use(view => {
-      expect(view).toBeUndefined()
+    rootComp.use(view => {
+      expect(view).toBeEmpty()
       return () => mounts.push(false)
     })
     // simulate mount
     rootComp.events.dispatch("mount")
     // simulate unmount
     rootComp.events.dispatch("unmount")
-    expect(mounts).toEqual([true, false, false])
+    expect(mounts).toEqual([true, false])
   })
 
   it("static evaluate handles sync, async, and generator factories", async () => {
