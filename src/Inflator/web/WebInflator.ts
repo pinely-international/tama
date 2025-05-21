@@ -1,3 +1,4 @@
+import { State } from "@denshya/reactive"
 import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
@@ -184,7 +185,11 @@ class WebInflator extends Inflator {
         if (key === "children") continue
         if (overridden.has(key)) continue
 
-        WebInflator.bindProperty(key, value, inflated)
+        if (key.includes("-")) {
+          WebInflator.subscribeAttribute(inflated, key, value)
+        } else {
+          WebInflator.subscribeProperty(key, value, inflated)
+        }
       }
 
       const immediateGuard = this.applyGuardMounting(inflated, properties, type)
@@ -316,7 +321,7 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
-    component.on("view").subscribe(view => {
+    component.when("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
@@ -385,17 +390,17 @@ class WebInflator extends Inflator {
     if (isRecord(style)) {
       for (const property in style) {
         if (property.startsWith("--")) {
-          WebInflator.bindPropertyCallback(style[property], value => element.style.setProperty(property, String(value)))
+          WebInflator.subscribe(style[property], value => element.style.setProperty(property, String(value)))
           continue
         }
 
-        WebInflator.bindProperty(property, style[property], element.style)
+        WebInflator.subscribeProperty(property, style[property], element.style)
       }
 
       return
     }
 
-    WebInflator.bindPropertyCallback(style, value => element.style.cssText = String(value))
+    WebInflator.subscribe(style, value => element.style.cssText = String(value))
   }
 
   protected bindEventListeners(listeners: any, element: Element) {
@@ -436,19 +441,19 @@ class WebInflator extends Inflator {
 
     if ("aria" in props) {
       for (const key in props.aria) {
-        WebInflator.bindProperty(key, props.aria[key], element)
+        WebInflator.subscribeProperty(key, props.aria[key], element)
       }
       overrides.add("aria")
     }
 
     if (element instanceof SVGElement) {
       if (props.class != null) {
-        WebInflator.bindPropertyCallback(props.class, value => element.setAttribute("class", String(value)))
+        WebInflator.subscribe(props.class, value => element.setAttribute("class", String(value)))
         overrides.add("class")
       }
 
       if (props.href != null) {
-        WebInflator.bindPropertyCallback(props.href, (href: any) => {
+        WebInflator.subscribe(props.href, (href: any) => {
           if (typeof href === "string") element.setAttribute("href", href)
           if (typeof href === "object") element.setAttribute("href", href.baseVal)
         })
@@ -459,7 +464,7 @@ class WebInflator extends Inflator {
 
     if (element instanceof HTMLInputElement) {
       // Ensures correct type beforehand.
-      WebInflator.bindProperty("type", props.type, element)
+      WebInflator.subscribeProperty("type", props.type, element)
 
       WebNodeBinding.dualSignalBind(element, "valueAsDate", props.valueAsDate, "input")
       WebNodeBinding.dualSignalBind(element, "valueAsNumber", props.valueAsNumber, "input")
@@ -478,7 +483,7 @@ class WebInflator extends Inflator {
 
     if (this.jsxAttributes.size > 0) {
       function bind(key: string, value: unknown) {
-        WebInflator.bindProperty(key, value, element)
+        WebInflator.subscribeProperty(key, value, element)
         overrides.add(key)
       }
 
@@ -494,25 +499,28 @@ class WebInflator extends Inflator {
   }
 
   /**
-   * Binds a property
+   * Binds a property.
    */
-  static bindProperty(key: keyof never, source: unknown, target: unknown): void {
-    WebInflator.bindPropertyCallback(source, value => (target as any)[key] = value)
+  static subscribeProperty(key: keyof never, source: unknown, target: unknown): void {
+    WebInflator.subscribe(source, value => (target as any)[key] = value)
   }
 
-  static bindPropertyCallback(source: unknown, targetBindCallback: (value: unknown) => void): void {
+  /**
+   * Binds an attribute.
+   */
+  static subscribeAttribute(target: Element, key: string, value: unknown): void {
+    WebInflator.subscribe(value, value => {
+      if (value != null) {
+        target.setAttribute(key, String(value))
+      } else {
+        target.removeAttribute(key)
+      }
+    })
+  }
+
+  protected static subscribe(source: unknown, targetBindCallback: (value: unknown) => void): void {
     if (source == null) return
-    if (typeof source !== "object" && typeof source !== "function") {
-      targetBindCallback(source)
-      return
-    }
-
-    const accessor = Accessor.extractObservable(source)
-    if (accessor == null) return
-    if (accessor.get == null && accessor.subscribe == null) return
-
-    if (accessor.get) targetBindCallback(accessor.get())
-    if (accessor.subscribe) accessor.subscribe(value => targetBindCallback(accessor.get?.() ?? value))
+    return void State.subscribeImmediate(source, targetBindCallback)
   }
 }
 

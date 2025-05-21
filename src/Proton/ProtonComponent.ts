@@ -1,4 +1,4 @@
-import { Emitter } from "@denshya/flow"
+import { Emitter } from "@denshya/reactive"
 
 import { AsyncGeneratorFunction } from "@/BuiltinObjects"
 import Inflator from "@/Inflator/Inflator"
@@ -99,10 +99,10 @@ export class ProtonComponent {
   unsuspense<T = void>(callback: (result: T) => void) { this.unsuspenseCallback = callback as never }
 
   getView() { return this.viewElement }
-  on<K extends keyof ComponentEvents>(event: K): Subscriptable<ComponentEvents[K]> { return this.events.observe(event) }
+  when<K extends keyof ComponentEvents>(event: K): Subscriptable<ComponentEvents[K]> { return this.events.when(event) }
 
   use(subscribe: (view: unknown) => void | (() => void)) {
-    this.events.observe("mount").subscribe(() => {
+    this.events.when("mount").subscribe(() => {
       const unsubscribe = subscribe(this.viewElement) ?? Null.FUNCTION
       this.events.once("unmount", unsubscribe)
     })

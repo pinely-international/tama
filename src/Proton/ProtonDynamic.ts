@@ -1,4 +1,4 @@
-import { Flowable, Signal } from "@denshya/flow"
+import { State, StateOrPlain } from "@denshya/reactive"
 
 import ProtonJSX from "@/jsx/ProtonJSX"
 
@@ -9,7 +9,7 @@ import { ProtonComponent } from "./ProtonComponent"
  *
  * @example Dynamic(CharacterForm, { character })
  */
-export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown, props: { [K in keyof Props]: Flowable<Props[K]> }) {
+export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown, props: { [K in keyof Props]: StateOrPlain<Props[K]> }) {
   const results = new Map<unknown[], unknown>()
   const resultsAge = new Map<unknown[], number>()
 
@@ -38,7 +38,7 @@ export function ProtonDynamic<Props>(componentFactory: (props: Props) => unknown
   }
 
   function DynamicComponent(this: ProtonComponent) {
-    const propsState = Signal.computeRecord(props)
+    const propsState = State.collect(props)
     propsState.subscribe(props => this.view.set(getCachedFactory(this, props)))
     return getCachedFactory(this, propsState.get())
   }

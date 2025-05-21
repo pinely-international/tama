@@ -105,6 +105,9 @@ declare global {
       & CustomAttributes
       & IntrinsicAttributes
       & { children?: unknown }
+      & {
+        [x: `data-${string}`]: string
+      }
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     type SVGElementAttributes<T> = ElementAttributes<T> & (T extends SVGURIReference ? SVGURIReferenceAttribute : {}) & { class?: Attribute<string> }
 

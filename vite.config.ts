@@ -21,7 +21,12 @@ export default defineConfig({
     modulePreload: false,
 
     lib: {
-      entry: [path.resolve(__dirname, "./src/index.ts"), path.resolve(__dirname, "./src/jsx/jsx-runtime.ts")],
+      entry: [
+        path.resolve(__dirname, "./src/index.ts"),
+        path.resolve(__dirname, "./src/jsx/jsx-runtime.ts"),
+        path.resolve(__dirname, "./src/jsx/ProtonJSX.ts"),
+        path.resolve(__dirname, "./src/utils/WebNodeBinding.ts"),
+      ],
       formats: ["es"]
     }
   },
