@@ -35,7 +35,7 @@
     "typescript": "^5.7.2",
     "vite": "^6.0.6",
     "vite-bundle-visualizer": "^1.2.1",
-    "vite-plugin-externalize-deps": "^0.8.0"
+    "vite-plugin-externalize-deps": "^0.9.0"
   },
   "repository": {
     "type": "git",
