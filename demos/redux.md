@@ -28,10 +28,10 @@ const store = configureStore({
 As we now, **Proton** relies on observables to handle element updates and connections, so you need a wrapper to tell Proton to handle this.
 It's done in very simple way as Redux is very close to observable on its own.
 
-For simplicity reasons, let's use [Flow](https://github.com/denshya/flow) library as it has Reactive Accessor (`$`), which will help us accessing underlying properties of your store.
+For simplicity reasons, let's use [Reactive](https://github.com/denshya/reactive) library as it has Reactive Accessor (`$`), which will help us accessing underlying properties of your store.
 
 ```ts
-const storeState = new Flow(store.getState())
+const storeState = new State(store.getState())
 store.subscribe(() => storeState.set(store.getState()))
 ```
 
@@ -58,7 +58,7 @@ or rely on separate state declarations
 
 ```tsx
 function Component() {
-  const username = new Flow(storeState.current.user.name)
+  const username = new State(storeState.current.user.name)
   storeState.subscribe(state => usename.set(state.user.name))
 
   return <div className="username">{username}</div>
@@ -69,7 +69,7 @@ In this case you may even drop `storeState` at all.
 
 ```tsx
 function Component() {
-  const username = new Flow(store.getState().user.name)
+  const username = new State(store.getState().user.name)
   store.subscribe(() => usename.set(store.getState().user.name))
 
   return <div className="username">{username}</div>
