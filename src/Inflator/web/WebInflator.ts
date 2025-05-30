@@ -321,7 +321,7 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
-    component.when("view").subscribe(view => {
+    component.events.when("view").subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
@@ -490,7 +490,7 @@ class WebInflator extends Inflator {
       for (const [key, attributeSetup] of this.jsxAttributes.entries()) {
         if (key in props === false) continue
 
-        attributeSetup({ props, key, value: props[key], bind })
+        attributeSetup({ props, key, value: props[key], bind, component: this.component })
         overrides.add(key)
       }
     }

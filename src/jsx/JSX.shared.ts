@@ -75,6 +75,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ElementAttributesProperty { props: {} }
 
+    type GenericAttributes = JSX.CustomAttributes & JSX.IntrinsicAttributes
 
     type Attribute<T> =
       | T

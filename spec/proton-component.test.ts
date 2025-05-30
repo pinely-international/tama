@@ -26,7 +26,7 @@ describe("ProtonComponent", () => {
 
   it("view.set renders only on new subject", () => {
     const calls: unknown[] = []
-    rootComp.when("view").subscribe(v => calls.push(v))
+    rootComp.events.when("view").subscribe(v => calls.push(v))
     const subj = { foo: 1 }
     rootComp.view.set(subj)
     rootComp.view.set(subj)
@@ -37,7 +37,7 @@ describe("ProtonComponent", () => {
     const first = document.createElement("div")
     const second = document.createElement("div")
 
-    rootComp.when("view").subscribe(() => { })
+    rootComp.events.when("view").subscribe(() => { })
     rootComp.view.set(first)
     expect(rootComp.getView()).toEqual(first)
 
@@ -66,36 +66,10 @@ describe("ProtonComponent", () => {
     expect(caught).toBeInstanceOf(Error)
   })
 
-  it("suspendOf relays to parent when no suspense callback", async () => {
-    const p = Promise.resolve("done")
-    // no suspense callback set, parent of rootComp is undefined
-    const result = await rootComp.suspendOf(p)
-    expect(result).toBe("done")
-  })
-
-  it("suspendOf with callback batches and unsuspends", async () => {
-    const p1 = new Promise(res => setTimeout(() => res(1), 0))
-    const p2 = new Promise(res => setTimeout(() => res(2), 0))
-    const calls: unknown[] = []
-    rootComp.suspense(val => calls.push(["suspend", val]))
-    rootComp.unsuspense(val => calls.push(["unsuspend", val]))
-    // trigger two suspensions
-    const r1 = rootComp.suspendOf(p1)
-    const r2 = rootComp.suspendOf(p2)
-    await Promise.all([r1, r2])
-    // initial suspend callback once, unsuspend once
-    expect(calls.some(c => c[0] === "suspend")).toBe(true)
-    expect(calls.some(c => c[0] === "unsuspend")).toBe(true)
-  })
-
   it("when(event) returns observable for mount/unmount", () => {
     const mounts: unknown[] = []
-    rootComp.when("mount").subscribe(() => mounts.push(true))
-    // trigger mount via use()
-    rootComp.use(view => {
-      expect(view).toBeEmpty()
-      return () => mounts.push(false)
-    })
+    rootComp.events.when("mount").subscribe(() => mounts.push(true))
+    rootComp.events.when("unmount").subscribe(() => mounts.push(false))
     // simulate mount
     rootComp.events.dispatch("mount")
     // simulate unmount

@@ -25,6 +25,7 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
+    "stripInternal": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

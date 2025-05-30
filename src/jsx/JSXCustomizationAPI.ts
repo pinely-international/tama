@@ -1,5 +1,10 @@
-interface AttributeSetupContext<T> {
-  props: Record<string, unknown> & JSX.CustomAttributes & JSX.IntrinsicAttributes
+import { ProtonComponent } from "@/Proton/ProtonComponent"
+
+export interface AttributeSetupContext<T> {
+  /** @internal */
+  component?: ProtonComponent
+
+  props: JSX.GenericAttributes
   key: string
   value: T
 

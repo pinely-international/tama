@@ -3,8 +3,6 @@ import { Emitter } from "@denshya/reactive"
 import { AsyncGeneratorFunction } from "@/BuiltinObjects"
 import Inflator from "@/Inflator/Inflator"
 
-import Null from "../Null"
-import { Subscriptable } from "../Observable"
 import ProtonViewAPI from "../ProtonTreeAPI"
 import TreeContextAPI from "../TreeContextAPI"
 
@@ -17,34 +15,35 @@ export class ProtonComponent {
   public readonly inflator: Inflator
   public readonly context: TreeContextAPI
 
-  private readonly events = new Emitter<ComponentEvents>
+  /** @internal */
+  readonly events = new Emitter<ComponentEvents>
 
-  private lastSubject: unknown = {} // Ensures first subject to be different.
-  private previousView: unknown = null
-  private viewElement: unknown = null
-
-  /** Debug value for `constructor` which evaluated this component. */
-  declare factory: Function
+  /** @internal Debug value for `constructor` which evaluated this component. */
+  factory?: Function
 
   constructor(inflator: Inflator, private readonly parent?: ProtonComponent) {
     this.inflator = Inflator.cloneWith(inflator, this)
     this.context = new TreeContextAPI(parent?.context)
 
+    let lastSubject: unknown = {} // Ensures first subject to be different.
+    let previousView: unknown = null
+    let current: unknown = null
+
     this.view = {
       set: subject => {
-        if (subject === this.lastSubject) return
-        if (subject === this.viewElement) return
+        if (subject === lastSubject) return
+        if (subject === current) return
 
-        this.lastSubject = subject
+        lastSubject = subject
 
         try {
           const nextView = this.inflator.inflate(subject)
 
-          if (nextView !== this.previousView) {
-            this.previousView = this.viewElement ?? nextView
+          if (nextView !== previousView) {
+            previousView = current ?? nextView
           }
 
-          this.viewElement = nextView
+          current = nextView
           this.events.dispatch("view", nextView)
         } catch (thrown) {
           if (this.catchCallback != null) return void this.catchCallback(thrown)
@@ -52,8 +51,9 @@ export class ProtonComponent {
           throw thrown
         }
       },
-      setPrevious: () => this.view.set(this.previousView),
-      default: null
+      setPrevious: () => this.view.set(previousView),
+      default: null,
+      current
     }
   }
 
@@ -63,52 +63,7 @@ export class ProtonComponent {
 
   private suspenses: Promise<unknown>[] = []
 
-  catch<T>(catchCallback: (thrown: T) => void) { this.catchCallback = catchCallback as never }
-  async suspendOf<T>(value: Promise<T>): Promise<T> {
-    if (this.suspenseCallback == null) {
-      this.parent?.events.dispatch("suspend", value)
-      return await value
-    }
-
-    const suspenses = this.suspenses
-
-    if (suspenses.length === 0) this.suspenseCallback(value)
-    if (!suspenses.includes(value)) suspenses.push(value)
-
-    const length = suspenses.length
-
-
-    await Promise.all(suspenses)
-
-    if (length === suspenses.length) {
-      this.unsuspenseCallback?.(value)
-      this.suspenses = []
-    }
-
-    return await value
-  }
-  /**
-   * Calls passed `callback` just before the component is going to be suspended.
-   * Batches any down tree suspensions together while there are some unresolved.
-   *
-   * The `callback` can be used to set a temporary `view`.
-   *
-   * When the component is unsuspended, all the effects applied in the `callback` are reverted by a built-in mechanism.
-   */
-  suspense<T = void>(callback: (result: T) => void) { this.suspenseCallback = callback as never }
-  unsuspense<T = void>(callback: (result: T) => void) { this.unsuspenseCallback = callback as never }
-
-  getView() { return this.viewElement }
-  when<K extends keyof ComponentEvents>(event: K): Subscriptable<ComponentEvents[K]> { return this.events.when(event) }
-
-  use(subscribe: (view: unknown) => void | (() => void)) {
-    this.events.when("mount").subscribe(() => {
-      const unsubscribe = subscribe(this.viewElement) ?? Null.FUNCTION
-      this.events.once("unmount", unsubscribe)
-    })
-  }
-
-  /** @internal Use for debug only purposes. */
+  /** @internal */
   static async evaluate(component: ProtonComponent, factory: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
     component.factory = factory // For debugging.
 

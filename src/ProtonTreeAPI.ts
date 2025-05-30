@@ -1,5 +1,6 @@
 interface ProtonViewAPI {
   default: unknown
+  current: unknown
 
   set(subject: unknown): void
   setPrevious(): void
