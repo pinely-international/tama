@@ -98,14 +98,28 @@ class WebInflator extends Inflator {
 
   protected inflateObservable<T>(observable: Observable<T> & Partial<AccessorGet<T>>) {
     const value = observable.get?.()
-    if (isIterable(value)) return this.inflateIterable(observable)
 
+    if (isJSX(value)) return this.inflateObservableJSX(observable as never)
+    if (isIterable(value)) return this.inflateIterable(observable as never)
+
+    return this.inflateObservableText(observable)
+  }
+
+  protected inflateObservableText<T>(observable: Observable<T> & Partial<AccessorGet<T>>) {
+    const value = observable.get?.()
     const textNode = new Text(String(value))
 
     observable[Symbol.subscribe](value => textNode.textContent = String(observable.get?.() ?? value))
     this.setDebugMarker(textNode, "observable", observable.constructor.name)
 
     return textNode
+  }
+
+  protected inflateObservableJSX<T extends JSX.Element>(observable: Observable<T> & Partial<AccessorGet<T>>) {
+    const value = observable.get?.()
+    const element = this.inflateJSXDeeply(value as never)
+    observable[Symbol.subscribe]?.(value => element?.replaceWith(this.inflate(value)))
+    return element
   }
 
   protected inflateIterable<T>(iterable: (IteratorObject<T> & Partial<Observable<IteratorObject<T>>>)): unknown {

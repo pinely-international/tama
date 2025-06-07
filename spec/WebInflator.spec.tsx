@@ -80,6 +80,19 @@ describe("WebInflator", () => {
     stateIterable.set(["new", <em>oh yes</em>])
     expect([...group.childNodes].map(n => n.textContent)).toEqual(["new", "oh yes"])
   })
+  it("inflates observable jsx", () => {
+    const parent = inflator.inflate(<div />)
+
+    const jsx = new State(<div />)
+    const element = inflator.inflate(jsx)
+    parent.append(element)
+    expect(parent.children[0]).toBeInstanceOf(HTMLDivElement)
+    expect(element).toBeInstanceOf(HTMLDivElement)
+
+    jsx.set(<p />)
+    expect(parent.children[0]).toBeInstanceOf(HTMLParagraphElement)
+    expect(inflator.inflate(jsx)).toBeInstanceOf(HTMLParagraphElement)
+  })
   it("throws on async iterable input", () => {
     async function* gen() { yield 1; }
     expect(() => inflator.inflate(gen())).toThrow(TypeError)
