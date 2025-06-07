@@ -60,11 +60,58 @@ group("Inflation", () => {
 
 
   barplot(() => {
-    const s = new State("init")
+    const state = new State("init")
 
     bench("Inflate element without attribute", () => inflator.inflate(<div />)).gc("inner")
     bench("Inflate element with attribute", () => inflator.inflate(<div className="x" />)).gc("inner")
-    bench("Inflate element with observable attribute", () => inflator.inflate(<div className={s} />)).gc("inner")
+    bench("Inflate element with observable attribute", () => inflator.inflate(<div className={state} />)).gc("inner")
+  })
+
+  barplot(() => {
+    const text = new State("init")
+    const iterableWrapped = new State([])
+    const iterableInjected = new StateArray([])
+    const jsx = new State(<div />)
+
+    bench("Inflate observable text", () => inflator.inflate(text)).gc("inner")
+    bench("Inflate observable iterable (Wrapped)", () => inflator.inflate(iterableWrapped)).gc("inner")
+    bench("Inflate observable iterable (Injected)", () => inflator.inflate(iterableInjected)).gc("inner")
+    bench("Inflate observable jsx", () => inflator.inflate(jsx)).gc("inner")
+  })
+
+  barplot(() => {
+    function Component() { return <div /> }
+    async function AsyncComponent() { return <div /> }
+
+    const SimpleComponent = () => <div />
+    const AsyncSimpleComponent = async () => <div />
+
+    function* GeneratorComponent() { yield <div /> }
+    async function* AsyncGeneratorComponent() { yield <div /> }
+
+    bench("Inflate element", () => inflator.inflate(<div />))
+
+    bench("Inflate component", () => inflator.inflate(<Component />))
+    bench("Inflate component (async)", () => inflator.inflate(<AsyncComponent />))
+
+    bench("Inflate component (arrow function)", () => inflator.inflate(<SimpleComponent />))
+    bench("Inflate component (arrow function, async)", () => inflator.inflate(<AsyncSimpleComponent />))
+
+    bench("Inflate component (generator function)", () => inflator.inflate(<GeneratorComponent />))
+    bench("Inflate component (generator function, async)", () => inflator.inflate(<AsyncGeneratorComponent />))
+  })
+
+  barplot(() => {
+    function Component(props: any) { return <div>{props.children}</div> }
+
+    bench("Inflate component 1000x", () => {
+      for (let i = 0; i < 1000; i++) inflator.inflate(<Component />)
+    })
+    bench("Inflate 1000x nested component 1x", () => {
+      let nestedComponent = <Component />
+      for (let i = 0; i < 1000; i++) nestedComponent.props.children = <Component />
+      inflator.inflate(nestedComponent)
+    })
   })
 })
 
