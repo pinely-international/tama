@@ -30,6 +30,7 @@ export function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
 
 export function isJSX(value: unknown): value is JSX.Element {
   if (value instanceof ProtonJSX.Node) return true
+  if (isRecord(value) && value.type != null) return true
 
-  return isRecord(value) && value.type != null
+  return false
 }

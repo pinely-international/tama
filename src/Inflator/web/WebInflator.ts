@@ -7,7 +7,7 @@ import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAP
 import ProtonJSX from "@/jsx/ProtonJSX"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
-import { isJSX, isRecord } from "@/utils/testers"
+import { isIterable, isJSX, isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
@@ -95,7 +95,10 @@ class WebInflator extends Inflator {
   }
 
   protected inflateObservable<T>(observable: Observable<T> & Partial<AccessorGet<T>>) {
-    const textNode = new Text(String(observable.get?.()))
+    const value = observable.get?.()
+    if (isIterable(value)) return this.inflateIterable(observable)
+
+    const textNode = new Text(String(value))
 
     observable[Symbol.subscribe](value => textNode.textContent = String(observable.get?.() ?? value))
     this.setDebugMarker(textNode, "observable", observable.constructor.name)
@@ -103,21 +106,19 @@ class WebInflator extends Inflator {
     return textNode
   }
 
-  protected inflateIterable<T>(iterable: IteratorObject<T>): unknown {
+  protected inflateIterable<T>(iterable: (IteratorObject<T> & Partial<Observable<IteratorObject<T>>>)): unknown {
     const iterableGroup = this.inflateGroup("iterable", iterable.constructor.name)
 
     const inflateItem = (item: unknown) => this.inflate(item)
 
-    iterableGroup.replaceChildren(...iterable[Symbol.iterator]().filter(Boolean).map(inflateItem))
+    replace(iterableOf(iterable))
 
-    // @ts-expect-error fine.
-    iterable[Symbol.subscribe]?.(replace)
-
-    function replace(newIterable: IteratorObject<T>) {
-      // Previous nodes will be lost at this point.
-      iterableGroup.replaceChildren(...newIterable[Symbol.iterator]().filter(Boolean).map(inflateItem))
+    function replace(otherIterable: IteratorObject<T> & Partial<Observable<IteratorObject<T>>>) {
+      iterableGroup.replaceChildren() // Previous nodes will be lost at this point.
+      otherIterable[Symbol.iterator]().filter(Boolean).map(inflateItem).forEach(node => iterableGroup.append(node))
     }
 
+    iterable[Symbol.subscribe]?.(replace)
     return iterableGroup
   }
   protected inflateAsyncIterable<T>(asyncIterable: AsyncIteratorObject<T>): unknown {
@@ -639,3 +640,14 @@ class WebTempFragment extends DocumentFragment {
 //   if (value?.replacedWith) return resolveReplacement(value.replacedWith)
 //   return value
 // }
+
+
+function iterableOf(object: object) {
+  if (Symbol.iterator in object) return object
+  if ("get" in object && object.get instanceof Function) {
+    const value = object.get()
+    if (Symbol.iterator in value) return value
+  }
+
+  throw new TypeError("Unreachable code reached during extract of iterable from observable")
+}
