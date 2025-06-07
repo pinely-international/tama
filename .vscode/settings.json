@@ -4,8 +4,10 @@
     "source.fixAll.eslint": "explicit"
   },
   "cSpell.words": [
+    "barplot",
     "Componentus",
     "Foreachable",
+    "mitata",
     "unsuspense"
   ],
 }
