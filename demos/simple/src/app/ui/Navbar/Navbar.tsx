@@ -12,6 +12,7 @@ function Navbar() {
       <NavLink className="navbar__link" to="/circles">Circles</NavLink>
 
       <NavLink className="navbar__link" to="/profile">Profile</NavLink>
+      <NavLink className="navbar__link" to="/blog">Blog</NavLink>
       <NavLink className="navbar__link" to="/messenger">Messenger</NavLink>
       <NavLink className="navbar__link" to="/market">Market</NavLink>
       <NavLink className="navbar__link" to="/orders">Orders</NavLink>
