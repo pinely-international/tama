@@ -31,6 +31,8 @@ interface WebInflatorFlags {
 }
 
 class WebInflator extends Inflator {
+  private static jsxCache = new WeakMap<object, Node>
+
   flags: WebInflatorFlags = {
     debug: false,
     skipAsync: false,
@@ -125,7 +127,11 @@ class WebInflator extends Inflator {
   }
 
   private inflateJSXDeeply(jsx: ProtonJSX.Node): Element | DocumentFragment | Node {
+    const inflatedCached = WebInflator.jsxCache.get(jsx)
+    if (inflatedCached != null) return inflatedCached
+
     const inflated = this.inflateJSX(jsx)
+    WebInflator.jsxCache.set(jsx, inflated)
     // Inflation of Component children is handled by the component itself.
     if (jsx instanceof ProtonJSX.Component) return inflated
 

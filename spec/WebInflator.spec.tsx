@@ -225,6 +225,15 @@ describe("WebInflator", () => {
     expect(inflatedCustomDiv).toBeInstanceOf(CustomDiv)
   })
 
+  it("caches inflate result for same jsx", () => {
+    const jsx = <div />
+
+    const inflated1 = inflator.inflate(jsx)
+    const inflated2 = inflator.inflate(jsx)
+
+    expect(inflated1).toBe(inflated2)
+  })
+
   // it("inflates custom element (`is` option)", () => {
   //   class CustomDiv extends HTMLDivElement { }
   //   window.customElements.define("custom-div", CustomDiv)
