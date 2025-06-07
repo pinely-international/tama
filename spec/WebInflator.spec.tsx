@@ -1,10 +1,10 @@
 import "./dom"
 
-import { describe, it, expect, beforeAll } from "bun:test"
+import { describe, it, expect, beforeEach } from "bun:test"
 import { WebInflator } from "../build"
 import { injectDOMPolyfill } from "./dom"
 
-import { State } from "@denshya/reactive"
+import { State, StateArray } from "@denshya/reactive"
 
 
 
@@ -12,7 +12,7 @@ import { State } from "@denshya/reactive"
 describe("WebInflator", () => {
   let inflator: WebInflator
 
-  beforeAll(() => {
+  beforeEach(() => {
     injectDOMPolyfill(globalThis)
     inflator = new WebInflator
   })
@@ -47,6 +47,39 @@ describe("WebInflator", () => {
     expect([...frag2.childNodes].map(n => n.textContent)).toEqual(["X", "Y"])
   })
 
+  it("inflates iterable", () => {
+    const fragment = inflator.inflate(new Set(["X", <em>Y</em>]))
+    expect([...fragment.childNodes].map(n => n.textContent)).toEqual(["X", "Y"])
+  })
+
+  it("inflates observable", () => {
+    const state = new State("test")
+
+    const text = inflator.inflate(state) as Text
+    expect(text.textContent).toBe("test")
+
+    state.set("new")
+    expect(text.textContent).toBe("new")
+  })
+
+  it("inflates observable iterable", () => {
+    const stateIterable = new State(new Set(["test", <em>oh my guy</em>]))
+
+    const group = inflator.inflate(stateIterable)
+    expect([...group.childNodes].map(n => n.textContent)).toEqual(["test", "oh my guy"])
+
+    stateIterable.set(new Set(["new", <em>oh yes</em>]))
+    expect([...group.childNodes].map(n => n.textContent)).toEqual(["new", "oh yes"])
+  })
+  it("inflates iterable+observable", () => {
+    const stateIterable = new StateArray(["test", <em>oh my guy</em>])
+
+    const group = inflator.inflate(stateIterable)
+    expect([...group.childNodes].map(n => n.textContent)).toEqual(["test", "oh my guy"])
+
+    stateIterable.set(["new", <em>oh yes</em>])
+    expect([...group.childNodes].map(n => n.textContent)).toEqual(["new", "oh yes"])
+  })
   it("throws on async iterable input", () => {
     async function* gen() { yield 1; }
     expect(() => inflator.inflate(gen())).toThrow(TypeError)
@@ -122,6 +155,11 @@ describe("WebInflator", () => {
     function Comp() { return <strong>Deep</strong> }
     const el = inflator.inflate(<div><Comp /></div>) as HTMLElement
     expect(el.querySelector("strong")?.textContent).toBe("Deep")
+  })
+
+  it("creates SVGUse with href", () => {
+    const svg = inflator.inflate(<use href={new State("123")} />) as SVGUseElement
+    expect(svg.getAttribute("href")).toBe("123")
   })
 
   // it("creates SVG and MathML in correct namespace", () => {
