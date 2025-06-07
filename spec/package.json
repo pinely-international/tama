@@ -3,9 +3,10 @@
   "name": "proton-test",
   "private": true,
   "devDependencies": {
-    "happy-dom": "latest",
+    "@denshya/reactive": "latest",
     "@types/bun": "latest",
-    "@denshya/reactive": "latest"
+    "happy-dom": "latest",
+    "mitata": "latest"
   },
   "peerDependencies": {
     "typescript": "latest"
