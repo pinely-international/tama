@@ -6,25 +6,101 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+	--ifm-color-primary: hsl(208, 50%, 40%);
+	--ifm-color-primary-dark: hsl(208, 49%, 32%);
+	--ifm-color-primary-darker: hsl(208, 49%, 30%);
+	--ifm-color-primary-darkest: hsl(208, 49%, 25%);
+	--ifm-color-primary-light: hsl(208, 48%, 39%);
+	--ifm-color-primary-lighter: hsl(208, 49%, 40%);
+	--ifm-color-primary-lightest: hsl(208, 48%, 46%);
+	--ifm-code-font-size: 95%;
+	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+	--ifm-color-primary: hsl(208, 60%, 50%);
+	--ifm-color-primary-dark: hsl(208, 60%, 50%);
+	--ifm-color-primary-darker: hsl(208, 60%, 50%);
+	--ifm-color-primary-darkest: hsl(208, 60%, 50%);
+	--ifm-color-primary-light: hsl(208, 60%, 50%);
+	--ifm-color-primary-lighter: hsl(208, 60%, 50%);
+	--ifm-color-primary-lightest: hsl(208, 60%, 50%);
+	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+
+code:not([class]) {
+	padding: 1px 2px;
+	border-radius: 0.25em;
+	vertical-align: inherit;
+}
+
+a:has(code) {
+	text-decoration: none;
+	border-bottom: 1px solid var(--ifm-alert-border-color);
+	border-radius: 0.25em;
+}
+
+a:has(code):hover {
+	border-bottom-color: transparent;
+}
+
+.table-of-contents {
+	display: grid;
+	gap: 0.25em;
+
+	&>li {
+		margin: 0;
+	}
+}
+
+.asd {
+	line-height: 1;
+}
+
+.asd p {
+	white-space: pre;
+	/* margin: unset; */
+}
+
+.table-of-contents__link {
+	padding: 0.325rem 1rem;
+
+	border: 1px solid transparent;
+	border-radius: 0.5em;
+
+	font-size: 0.875rem;
+}
+
+.table-of-contents__link:hover {
+	background: hsla(208, 0%, 85%, 0.15);
+}
+
+.table-of-contents__link--active {
+	color: black;
+	background: hsla(208, 80%, 85%, 0.15);
+	border-color: hsla(208, 80%, 85%, 0.5);
+}
+
+
+
+code:not([class]) {
+	padding: 1px 2px;
+	border-radius: 0.25em;
+	vertical-align: inherit;
+}
+
+a>code {
+	font-weight: bold;
+}
+
+a:has(code) {
+	text-decoration: none;
+	border-bottom: 1px solid var(--ifm-alert-border-color);
+	border-radius: 0.25em;
+}
+
+a:has(code):hover {
+	border-bottom-color: transparent;
 }

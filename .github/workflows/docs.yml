@@ -34,11 +34,32 @@ jobs:
       - name: Setup bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Build
+      - name: Install spec deps
+        working-directory: ./spec
         run: |
-          cd docs
+          bun i --silent
+
+      - name: Build Project
+        working-directory: ./
+        run: |
           bun i --silent
           bun run build
+
+      - name: Build Docs
+        working-directory: ./docs
+        run: |
+          bun i --silent
+          bun run build
+
+      - name: Build Docs | Specification
+        working-directory: ./
+        run: |
+          bun docs/generate-spec.ts
+
+      - name: Build Docs | Benchmark
+        working-directory: ./
+        run: |
+          bun docs/generate-benchmark.ts
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

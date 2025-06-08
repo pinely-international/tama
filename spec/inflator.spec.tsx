@@ -10,9 +10,15 @@ import { State } from "@denshya/reactive"
 
 beforeAll(() => injectDOMPolyfill(globalThis))
 
+/**
+ * JSDoc for `describe` function.
+ */
 describe("WebInflator", () => {
   const inflator = new WebInflator
 
+  /**
+   * JSDoc for `it` function.
+   */
   it("should inflate basic JSX element", () => {
     const element = inflator.inflate(<div className="test">Hello</div>)
 

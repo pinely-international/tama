@@ -9,6 +9,8 @@
     "Foreachable",
     "Frontends",
     "mitata",
+    "Pinely",
+    "Statefully",
     "unsuspense"
   ],
 }

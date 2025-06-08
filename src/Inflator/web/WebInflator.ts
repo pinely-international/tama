@@ -81,7 +81,7 @@ class WebInflator extends Inflator {
     return this.inflateGroup("fragment", this.component?.factory?.name ?? "[unknown]")
   }
 
-  public inflateJSX(jsx: ProtonJSX.Node): Node {
+  public inflateJSX(jsx: JSX.Element): Node {
     if (jsx instanceof ProtonJSX.Intrinsic) return this.inflateIntrinsic(jsx.type, jsx.props)
     if (jsx instanceof ProtonJSX.Component) return this.inflateComponent(jsx.type, jsx.props)
     if (jsx instanceof ProtonJSX.Fragment) return this.inflateFragment()
@@ -141,7 +141,7 @@ class WebInflator extends Inflator {
     throw new TypeError("Async Iterator is not supported", { cause: { asyncIterable } })
   }
 
-  private inflateJSXDeeply(jsx: ProtonJSX.Node): Element | DocumentFragment | Node {
+  private inflateJSXDeeply(jsx: JSX.Element): Element | DocumentFragment | Node {
     const inflatedCached = WebInflator.jsxCache.get(jsx)
     if (inflatedCached != null) return inflatedCached
 
@@ -150,18 +150,18 @@ class WebInflator extends Inflator {
     // Inflation of Component children is handled by the component itself.
     if (jsx instanceof ProtonJSX.Component) return inflated
 
-    this.inflateJSXIntrinsicChildren(jsx, inflated)
+    this.inflateJSXChildren(jsx, inflated)
 
     return inflated
   }
 
-  private inflateJSXIntrinsicChildren(jsx: ProtonJSX.Intrinsic | ProtonJSX.Fragment, inflated: Node): void {
+  private inflateJSXChildren(jsx: JSX.Element, inflated: Node): void {
     if (jsx.props?.children == null) return
 
     // @ts-expect-error 123
     const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
 
-    const appendChildObject = (child: ProtonJSX.Node | Primitive) => {
+    const appendChildObject = (child: JSX.Element | Primitive) => {
       const childInflated = this.inflate(child)
       if (!isNode(childInflated)) return
 

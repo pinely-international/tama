@@ -5,7 +5,7 @@ import { themes as prismThemes } from "prism-react-renderer"
 const config: Config = {
   title: "Proton",
   tagline: "Rootless UI Building | Encapsulated Micro-Frontends",
-  favicon: "img/favicon.ico",
+  favicon: "img/logo.svg",
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -39,11 +39,9 @@ const config: Config = {
       "classic",
       {
         docs: {
+          routeBasePath: "/",
           sidebarPath: "./sidebars.ts",
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+          editUrl: "https://github.com/denshya/proton/tree/main/docs",
         },
         blog: {
           showReadingTime: true,
@@ -71,20 +69,44 @@ const config: Config = {
     // Replace with your project's social card
     image: "img/docusaurus-social-card.jpg",
     navbar: {
-      title: "My Site",
+      title: "Proton",
       logo: {
-        alt: "My Site Logo",
+        alt: "Proton Logo",
         src: "img/logo.svg",
       },
       items: [
         {
           type: "docSidebar",
-          sidebarId: "tutorialSidebar",
+          sidebarId: "learn",
           position: "left",
-          label: "Tutorial",
+          label: "Learn",
+        },
+        // {
+        //   type: "docSidebar",
+        //   sidebarId: "learn",
+        //   position: "left",
+        //   label: "Usage",
+        // },
+        {
+          type: "docSidebar",
+          sidebarId: "demos",
+          position: "left",
+          label: "Demos",
         },
         {
-          href: "https://github.com/facebook/docusaurus",
+          type: "doc",
+          docId: "specification",
+          position: "left",
+          label: "Specification",
+        },
+        {
+          type: "doc",
+          docId: "benchmarks",
+          position: "left",
+          label: "Benchmarks",
+        },
+        {
+          href: "https://github.com/denshya/proton",
           label: "GitHub",
           position: "right",
         },
@@ -97,8 +119,8 @@ const config: Config = {
           title: "Docs",
           items: [
             {
-              label: "Tutorial",
-              to: "/docs/intro",
+              label: "Getting Started",
+              to: "/docs/learn",
             },
           ],
         },
@@ -106,16 +128,8 @@ const config: Config = {
           title: "Community",
           items: [
             {
-              label: "Stack Overflow",
-              href: "https://stackoverflow.com/questions/tagged/docusaurus",
-            },
-            {
               label: "Discord",
-              href: "https://discordapp.com/invite/docusaurus",
-            },
-            {
-              label: "X",
-              href: "https://x.com/docusaurus",
+              href: "https://discordapp.com/invite/sHp2pxrSws",
             },
           ],
         },
@@ -124,12 +138,12 @@ const config: Config = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/facebook/docusaurus",
+              href: "https://github.com/denshya/proton",
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Denshya Community Movement. Started within Pinely International. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

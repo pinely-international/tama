@@ -30,6 +30,7 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "stripInternal": true,
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "build",

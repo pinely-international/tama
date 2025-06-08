@@ -170,4 +170,5 @@ group("TreeContext", () => {
   })
 })
 
-await run()
+
+export { run }
