@@ -57,7 +57,7 @@ jobs:
           bun docs/generate-spec.ts
 
       - name: Build Docs | Benchmark
-        working-directory: ./
+        working-directory: ./spec
         run: |
           bun docs/generate-benchmark.ts
 

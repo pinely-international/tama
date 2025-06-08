@@ -13,5 +13,5 @@ await run({
 })
 result += "</pre>"
 
-fs.writeFileSync("docs/docs/benchmarks.md", result.trim() + "\n")
+fs.writeFileSync("docs/benchmarks.md", result.trim() + "\n")
 console.log("🚀 Generated benchmarks.md")
