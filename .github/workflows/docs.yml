@@ -59,7 +59,7 @@ jobs:
       - name: Build Docs | Benchmark
         working-directory: ./spec
         run: |
-          bun ../docs/generate-benchmark.ts
+          bun ../docs/generate-benchmark.ts > docs/benchmarks.md
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
