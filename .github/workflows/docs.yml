@@ -45,12 +45,6 @@ jobs:
           bun i --silent
           bun run build
 
-      - name: Build Docs
-        working-directory: ./docs
-        run: |
-          bun i --silent
-          bun run build
-
       - name: Build Docs | Specification
         working-directory: ./
         run: |
@@ -60,6 +54,12 @@ jobs:
         working-directory: ./spec
         run: |
           bun ../docs/generate-benchmark.ts > ../docs/docs/benchmarks.md
+
+      - name: Build Docs
+        working-directory: ./docs
+        run: |
+          bun i --silent
+          bun run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
