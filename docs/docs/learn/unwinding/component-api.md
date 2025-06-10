@@ -16,15 +16,15 @@ const EmptyComponent = () => {} // Works.
 function MyApp() { return <div></div> } // Works.
 ```
 
-Props are passed the   way.
+Props are passed as the first argument, *no other arguments are not passed*.
 
 ```tsx
 const EmptyComponent = (props) => {} // Works.
 function MyApp(props) { return <div></div> } // Works.
 ```
 
-Though there is a little difference: you can define initial props value.
-It will work in runtime, but (currently) you will have an error in TypeScript.
+Initial props value can be defined.
+It will work in runtime, but *currently* you will have an error in TypeScript.
 
 ```tsx
 class MyAppProps {}
@@ -34,6 +34,13 @@ function MyApp(props = new MyAppProps) {
 }
 ```
 
-## `Proton.Component`
+Creation of `Proton.Component` is skipped for arrow functions (it can't access `this`), but not for async arrow functions (swapping views is controlled by `Proton.Component`, then it's garbage collected).
 
-Currently there is no such concept as
+```tsx
+const MyApp = () => <div></div> // Component API can't be accessed.
+```
+
+## `Proton.Component` as "Class Component"
+
+Currently there is no such concept as Class Component, you can't use `Proton.Component` as a component.
+*But if you have an interest in having it, please, create/support discussions on github.*

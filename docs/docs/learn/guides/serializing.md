@@ -10,5 +10,5 @@ const jsxString = jsxSerializer.toString(<div>123</div>) => "<div>123</div>"
 ```
 
 :::tip
-See guide for [SSR](../ssr.md)
+See guide for [SSR](../how-to-use/ssr.md)
 :::

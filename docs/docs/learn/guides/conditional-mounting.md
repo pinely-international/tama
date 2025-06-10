@@ -1,5 +1,25 @@
 # Conditional Mounting
 
+## `mounted` attribute
+
+Each element **and component** has possibility to be mounted/unmounted at any time controlled from "outside".
+
+```tsx
+function ColorApp() {
+  const mounted$ = window.when("pointermove").map(event => !!event.x)
+
+  return (
+    <div mounted={mounted$}>Visible</div>
+  )
+}
+
+<ColorApp mounted={new State(false)} />
+```
+
+:::note
+Passing plain values to `mounted` is not allowed, it clearly indicates a mistake as it will never be changed.
+:::
+
 ## Guard Pattern
 
 [Guard pattern](https://en.wikipedia.org/wiki/Guard_(computer_science)) usually refers to a Return/Throw Guard in JavaScript.

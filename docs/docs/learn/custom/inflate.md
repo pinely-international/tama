@@ -4,7 +4,11 @@ sidebar_position: 5
 
 # Custom Inflate
 
+One of the pillars of Proton is "extensibility", so you can modify output of `inflate` method or children of JSX.
+
 ## Inflator Adapters
+
+Controlled and predictable way doing so is using Inflator Adapters
 
 This kind of customization allows you to override the output of `inflate` method.
 
@@ -36,3 +40,7 @@ function MyApp() {
 const MyAppInflated = inflator.inflate(<MyApp />)
 document.getElementById("root").replaceChildren(MyAppInflated)
 ```
+
+## Inflator Extension
+
+`WebInflator` is a class, it has some `public` methods, but it also has several `protected` methods, which might be interesting for you.
