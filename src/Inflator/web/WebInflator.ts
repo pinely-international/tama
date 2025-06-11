@@ -311,8 +311,8 @@ class WebInflator extends Inflator {
           if (actualAnchor === anchor) return
         }
 
-        if (anchor.parentElement != null) {
-          anchor.parentElement.replaceChild(actualNextView, anchor)
+        if (anchor.parentNode != null) {
+          anchor.parentNode.replaceChild(actualNextView, anchor)
           currentView.toBeReplacedWith = null
         }
         currentView.replaceChildren(...fixedNodes)
@@ -333,7 +333,7 @@ class WebInflator extends Inflator {
 
         if (anchor instanceof WebComponentPlaceholder) {
           // @ts-expect-error no another way.
-          anchor.shell.events.dispatch("unmount")
+          anchor.component.events.dispatch("unmount")
         }
 
         return
@@ -560,57 +560,6 @@ function resolveReplacedNode(node: Node) {
   return node
 }
 
-// function ensureReplaceNodeWith(node, replacement) {
-//   node = resolveReplacedNode(node)
-//   replacement = resolveReplacedNode(replacement)
-//   if (node === replacement) return
-
-//   node.replacedWith = replacement
-//   node.replaceWith?.(replacement)
-// }
-
-// function resolveReplacedNode(node: Node): Node {
-//   let replacedWith: Node | null = node
-//   let nextReplacedWith: Node | null = node
-
-//   while (nextReplacedWith != null) {
-//     replacedWith = nextReplacedWith
-//     nextReplacedWith = getInternalProperty<Node | null>(nextReplacedWith, "replacedWith")
-
-//     // Resolve cycle and self-replace.
-//     if (nextReplacedWith === node) {
-//       return node
-//     }
-//   }
-
-//   // Resolve self-replace.
-//   if (replacedWith === node) {
-//     return node
-//   }
-
-//   // Collapse the replacedWith graph for easier debugging and reducing loops for the next time.
-//   setInternalProperty(node, "replacedWith", replacedWith)
-//   return replacedWith
-// }
-
-// function ensureReplaceNodeWith(node: Node | ChildNode, replacement: Node) {
-//   node = resolveReplacedNode(node) as Node | ChildNode
-//   replacement = resolveReplacedNode(replacement)
-
-//   if (node === replacement) return
-
-//   setInternalProperty(node, "replacedWith", replacement)
-//   if ("replaceWith" in node) node.replaceWith(replacement)
-// }
-
-
-// function setInternalProperty(target: any, key: string, value: unknown) {
-//   target["__" + key] = value
-// }
-// function getInternalProperty<T>(target: any, key: string): T {
-//   return target["__" + key]
-// }
-
 class WebComponentPlaceholder extends Comment {
   /**
    * Returns the actual node or the placeholder depending on the item type.
@@ -626,27 +575,27 @@ class WebComponentPlaceholder extends Comment {
    * Returns the actual node to be used.
    */
   get actual(): Node | null {
-    const shellView = this.shell.getView()
+    const shellView = this.component.getView()
     if (!shellView) return this
     if (shellView instanceof Node) return WebComponentPlaceholder.actualOf(shellView)
     return null
   }
 
-  constructor(public shell: ProtonShell, shellConstructor: Function) {
+  constructor(public component: ProtonComponent, shellConstructor: Function) {
     super(shellConstructor.name)
   }
 
-  protected safeActualParentElement(): Element | null {
+  protected safeActualParentElement(): ParentNode | null {
     const actual = this.actual
     if (actual === this) return null
-    return actual?.parentElement ?? null
+    return actual?.parentNode ?? null
   }
 
-  override get parentElement(): Element | null {
-    const element = super.parentElement ?? this.safeActualParentElement()
+  override get parentNode(): ParentNode | null {
+    const element = super.parentNode ?? this.safeActualParentElement()
     if (element == null) {
-      const shellView = this.shell.getView()
-      return shellView instanceof Node ? shellView.parentElement : null
+      const shellView = this.component.getView()
+      return shellView instanceof Node ? shellView.parentNode : null
     }
     return element
   }
@@ -655,12 +604,6 @@ class WebComponentPlaceholder extends Comment {
 class WebTempFragment extends DocumentFragment {
   declare target: Node
 }
-
-// function resolveReplacement(value: any): any {
-//   if (value?.replacedWith) return resolveReplacement(value.replacedWith)
-//   return value
-// }
-
 
 function iterableOf(object: object) {
   if (Symbol.iterator in object) return object
@@ -671,3 +614,4 @@ function iterableOf(object: object) {
 
   throw new TypeError("Unreachable code reached during extract of iterable from observable")
 }
+
