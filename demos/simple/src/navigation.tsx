@@ -77,14 +77,13 @@ const navigation = new WebNavigation
 
 export function NavRoute(this: Proton.Component, props: { path?: string; children: unknown }) {
   let view: unknown
-
   let context: RouteContext | null = null
 
   const switchView = () => {
     if (!navigation.test(props.path)) return this.view.set(null)
 
     if (context == null) context = this.context.provide(new RouteContext(null))
-    context.set(navigation.result.get())
+    context!.set(navigation.result.get())
 
     if (view == null) view = this.inflator.inflate(props.children)
     this.view.set(view)
