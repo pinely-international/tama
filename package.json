@@ -21,6 +21,9 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network",
     "prepack": "vite build"
   },
+  "dependencies": {
+    "node-group": "^0.1.0"
+  },
   "peerDependencies": {
     "type-fest": ">=4.31.0",
     "@denshya/reactive": ">=0.5.2"

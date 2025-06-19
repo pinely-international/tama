@@ -1,9 +1,9 @@
 import { State } from "@denshya/reactive"
+import { Group } from "node-group"
 import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
 import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
-import Group from "@/Group"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import ProtonJSX from "@/jsx/ProtonJSX"
 import Observable from "@/Observable"
