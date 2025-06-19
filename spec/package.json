@@ -10,5 +10,8 @@
   },
   "peerDependencies": {
     "typescript": "latest"
+  },
+  "dependencies": {
+    "@happy-dom/global-registrator": "^18.0.1"
   }
 }

@@ -1,4 +1,5 @@
 import { State } from "@denshya/reactive"
+import { Group } from "node-group"
 import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
@@ -11,7 +12,7 @@ import { isIterable, isJSX, isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { isNode, nonGuard } from "./helpers"
+import { nonGuard } from "./helpers"
 
 import Inflator from "../Inflator"
 
@@ -22,6 +23,7 @@ type WebInflateResult<T> =
   T extends Observable<unknown> ? Text :
   T extends (undefined | null) ? T :
   T extends Primitive ? Text :
+  T extends any[] ? DocumentFragment :
   Node
 
 
@@ -51,21 +53,6 @@ class WebInflator extends Inflator {
     return clone
   }
 
-  protected inflateGroup(name: string, debugValue: string) {
-    const group = document.createElement("div")
-    group.style.display = "contents"
-
-    this.setDebugMarker(group, name, debugValue)
-
-    return group
-  }
-
-  protected setDebugMarker(target: object, name: string, debugValue: string) {
-    // @ts-expect-error ok.
-    target["__" + name] = debugValue
-    if (this.flags.debug && target instanceof Element) target.setAttribute(name, debugValue)
-  }
-
   public inflate<T>(subject: T): WebInflateResult<T> {
     if (subject instanceof Node) return subject as never
     if (isJSX(subject)) return this.inflateJSXDeeply(subject) as never
@@ -77,8 +64,7 @@ class WebInflator extends Inflator {
   }
 
   protected inflateFragment() {
-    return new DocumentFragment
-    return this.inflateGroup("fragment", this.component?.factory?.name ?? "[unknown]")
+    return new Group
   }
 
   public inflateJSX(jsx: JSX.Element): Node {
@@ -110,7 +96,6 @@ class WebInflator extends Inflator {
     const textNode = new Text(String(value))
 
     observable[Symbol.subscribe](value => textNode.textContent = String(observable.get?.() ?? value))
-    this.setDebugMarker(textNode, "observable", observable.constructor.name)
 
     return textNode
   }
@@ -118,20 +103,25 @@ class WebInflator extends Inflator {
   protected inflateObservableJSX<T extends JSX.Element>(observable: Observable<T> & Partial<AccessorGet<T>>) {
     const value = observable.get?.()
     const element = this.inflateJSXDeeply(value as never)
-    observable[Symbol.subscribe]?.(value => element?.replaceWith(this.inflate(value)))
+    observable[Symbol.subscribe]?.(value => (element as ChildNode).replaceWith?.(this.inflate(value)))
     return element
   }
 
   protected inflateIterable<T>(iterable: (IteratorObject<T> & Partial<Observable<IteratorObject<T>>>)): unknown {
-    const iterableGroup = this.inflateGroup("iterable", iterable.constructor.name)
+    const iterableGroup = new Group
+    const iterableComment = onDemandRef(() => new Comment("iterable/" + iterable.constructor.name))
 
     const inflateItem = (item: unknown) => this.inflate(item)
 
     replace(iterableOf(iterable))
 
     function replace(otherIterable: IteratorObject<T> & Partial<Observable<IteratorObject<T>>>) {
-      iterableGroup.replaceChildren() // Previous nodes will be lost at this point.
-      otherIterable[Symbol.iterator]().filter(Boolean).map(inflateItem).forEach(node => iterableGroup.append(node))
+      const nodes = otherIterable[Symbol.iterator]().filter(Boolean).map(inflateItem).toArray()
+      if (nodes.length > 0) {
+        iterableGroup.replaceChildren(...nodes) // Previous nodes will be lost at this point.
+      } else {
+        iterableGroup.replaceChildren(iterableComment.current)
+      }
     }
 
     iterable[Symbol.subscribe]?.(replace)
@@ -158,15 +148,21 @@ class WebInflator extends Inflator {
   private inflateJSXChildren(jsx: JSX.Element, inflated: Node): void {
     if (jsx.props?.children == null) return
 
+    // const layout: (Node | void)[] = []
+
     // @ts-expect-error 123
     const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
+    // actualInflated.fixedLayout = layout
+
 
     const appendChildObject = (child: JSX.Element | Primitive) => {
       const childInflated = this.inflate(child)
-      if (!isNode(childInflated)) return
+      if (childInflated instanceof Node === false) return
+
+      // layout[index] = childInflated
 
       try {
-        actualInflated.appendChild(childInflated)
+        actualInflated.append(childInflated)
       } catch (error) {
         console.debug("appendChildObject -> ", child, childInflated)
         console.trace(error)
@@ -231,113 +227,31 @@ class WebInflator extends Inflator {
       if (factory instanceof AsyncFunction.constructor) return null
       if (factory instanceof AsyncGeneratorFunction.constructor) return null
     }
-    const component = new ProtonComponent(this, this.component)
-
-    const componentPlaceholder = new WebComponentPlaceholder(component, factory)
-    const componentWrapper = new WebTempFragment
-    componentWrapper.append(componentPlaceholder)
-    componentWrapper.target = componentPlaceholder
-    componentWrapper.fixedNodes = [componentPlaceholder]
-
-    const asd = component.getView()
-    if (asd != null) componentWrapper.append(asd)
-
-    let currentView: Node = componentPlaceholder
-
     // If arrow function, simplify inflation.
     if (factory.prototype == null && factory instanceof AsyncFunction.constructor === false) {
       return this.inflate(factory(props))
     }
 
-    const replace = (view: unknown) => {
-      let nextView = view
-      if (view === null) {
-        nextView = componentPlaceholder
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-      }
-      if (nextView instanceof Node === false) return
+    const component = new ProtonComponent(this, this.component)
 
-      let actualNextView = nextView
-      if (actualNextView.toBeReplacedWith != null) {
-        const toBeReplacedWith = actualNextView.toBeReplacedWith
+    const componentGroup = new Group
+    const componentComment = onDemandRef(() => new Comment("component/" + factory.name))
 
-        actualNextView.toBeReplacedWith = null
-        actualNextView = toBeReplacedWith
-      }
 
-      currentView = resolveReplacedNode(currentView)
-      currentView.toBeReplacedWith = actualNextView
+    try {
+      ProtonComponent.evaluate(component, factory, props)
+    } catch (error) {
+      console.error(error)
+      return this.inflate(error)
+    }
 
-      if (currentView.replaceWith instanceof Function) {
-        if (currentView.parentNode != null) {
-          if (actualNextView instanceof DocumentFragment && actualNextView.childNodes.length === 0) {
-            actualNextView.replaceChildren(...actualNextView.fixedNodes)
-          }
 
-          currentView.replaceWith(actualNextView)
-          currentView.toBeReplacedWith = null
-        }
+    const currentView = component.getView() as ChildNode
+    componentGroup.append(currentView ?? componentComment.current)
 
-        if (view !== null) {
-          // @ts-expect-error by design.
-          currentView.replacedWith = nextView
-        } else {
-          // @ts-expect-error by design.
-          currentView.replacedWith = null
-        }
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-        // @ts-expect-error by design.
-        actualNextView.replacedWith = null
-
-        currentView = nextView
-
-        return
-      }
-
-      if (currentView instanceof DocumentFragment) {
-        // @ts-expect-error by design.
-        const fixed = currentView.fixedNodes as Node[]
-        const fixedNodes = fixed.map(node => WebComponentPlaceholder.actualOf(node) ?? node)
-
-        const anchor = fixedNodes[0]
-
-        if (actualNextView instanceof DocumentFragment) {
-          // @ts-expect-error by design.
-          const firstFixed = actualNextView.fixedNodes[0]
-          const actualAnchor = WebComponentPlaceholder.actualOf(firstFixed) ?? firstFixed
-
-          if (actualAnchor === anchor) return
-        }
-
-        if (anchor.parentNode != null) {
-          anchor.parentNode.replaceChild(actualNextView, anchor)
-          currentView.toBeReplacedWith = null
-        }
-        currentView.replaceChildren(...fixedNodes)
-
-        if (view !== null) {
-          // @ts-expect-error by design.
-          currentView.replacedWith = nextView
-        } else {
-          // @ts-expect-error by design.
-          currentView.replacedWith = null
-        }
-        // @ts-expect-error by design.
-        nextView.replacedWith = null
-        // @ts-expect-error by design.
-        actualNextView.replacedWith = null
-
-        currentView = nextView
-
-        if (anchor instanceof WebComponentPlaceholder) {
-          // @ts-expect-error no another way.
-          anchor.component.events.dispatch("unmount")
-        }
-
-        return
-      }
+    const replace = (view: unknown | null) => {
+      if (view === null) componentGroup.replaceChildren(componentComment.current)
+      if (view instanceof Node) componentGroup.replaceChildren(view)
     }
 
 
@@ -347,14 +261,7 @@ class WebInflator extends Inflator {
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
 
-    try {
-      ProtonComponent.evaluate(component, factory, props)
-    } catch (error) {
-      console.error(error)
-      return this.inflate(error)
-    }
-
-    return componentWrapper
+    return componentGroup
   }
 
   protected applyGuardMounting(element: Element, properties: [string, unknown][], type: string) {
@@ -547,64 +454,6 @@ class WebInflator extends Inflator {
 
 export default WebInflator
 
-function resolveReplacedNode(node: Node) {
-  const seen = new Set()
-  seen.add(node)
-
-  while (node?.replacedWith) {
-    if (seen.has(node.replacedWith)) break
-    seen.add(node)
-    node = node.replacedWith
-  }
-
-  return node
-}
-
-class WebComponentPlaceholder extends Comment {
-  /**
-   * Returns the actual node or the placeholder depending on the item type.
-   */
-  static actualOf(item: unknown): Node | null {
-    if (item instanceof WebTempFragment) return WebComponentPlaceholder.actualOf(item.target)
-    if (item instanceof WebComponentPlaceholder) return item.actual
-    if (item instanceof Node) return item
-    return null
-  }
-
-  /**
-   * Returns the actual node to be used.
-   */
-  get actual(): Node | null {
-    const shellView = this.component.getView()
-    if (!shellView) return this
-    if (shellView instanceof Node) return WebComponentPlaceholder.actualOf(shellView)
-    return null
-  }
-
-  constructor(public component: ProtonComponent, shellConstructor: Function) {
-    super(shellConstructor.name)
-  }
-
-  protected safeActualParentElement(): ParentNode | null {
-    const actual = this.actual
-    if (actual === this) return null
-    return actual?.parentNode ?? null
-  }
-
-  override get parentNode(): ParentNode | null {
-    const element = super.parentNode ?? this.safeActualParentElement()
-    if (element == null) {
-      const shellView = this.component.getView()
-      return shellView instanceof Node ? shellView.parentNode : null
-    }
-    return element
-  }
-}
-
-class WebTempFragment extends DocumentFragment {
-  declare target: Node
-}
-
 function iterableOf(object: object) {
   if (Symbol.iterator in object) return object
   if ("get" in object && object.get instanceof Function) {
@@ -615,3 +464,18 @@ function iterableOf(object: object) {
   throw new TypeError("Unreachable code reached during extract of iterable from observable")
 }
 
+
+
+/**
+ * Creates reference only when it's first accessed.
+ */
+function onDemandRef<T>(factory: () => T) {
+  let value: T | null = null
+
+  return {
+    get current() {
+      if (value === null) value = factory()
+      return value
+    }
+  }
+}

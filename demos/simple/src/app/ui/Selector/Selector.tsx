@@ -20,7 +20,7 @@ function Selector<T = string | undefined>(this: Proton.Component, props: Selecto
   const expanded = new Flow(false)
   const selected = new Flow<DropDownOption<T> | null>(null)
 
-  this.on("view").subscribe(view => {
+  this.when("view").subscribe(view => {
     onClickAway(view).subscribe(() => expanded.set(false))
   })
 

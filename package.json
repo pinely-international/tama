@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@denshya/proton",
   "private": false,
-  "version": "0.5.0",
+  "version": "0.5.3127",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
@@ -18,7 +18,11 @@
     "stats": "bun stats:treemap && bun stats:sunburst",
     "stats:treemap": "vite-bundle-visualizer --sourcemap -o ./stats/treemap.html",
     "stats:sunburst": "vite-bundle-visualizer -o ./stats/sunburst.html -t sunburst",
-    "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
+    "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network",
+    "prepack": "vite build"
+  },
+  "dependencies": {
+    "node-group": "^0.1.0"
   },
   "peerDependencies": {
     "type-fest": ">=4.31.0",

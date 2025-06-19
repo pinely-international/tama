@@ -88,6 +88,21 @@ bun dev
 
 ## Understanding
 
+### Inflation
+
+Inflation is creating in-memory nodes from semi-serialized version (JSX).
+Inflating any structure will always output at least `Node`.
+
+```js
+inflator.inflate(123) // => Text
+inflator.inflate(<div />) // => HTMLDivElement
+inflator.inflate(<div mounted={new State(false)} />) // => Comment
+inflator.inflate(<Component />) // => ComponentGroup
+inflator.inflate(new Comment) // => Comment
+```
+
+Learn more about [`ComponentGroup`](./unwinding/component-group.md).
+
 ### Component
 
 Is pretty different from React:

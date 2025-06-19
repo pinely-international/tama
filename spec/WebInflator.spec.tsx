@@ -2,7 +2,6 @@ import "./dom"
 
 import { describe, it, expect, beforeEach } from "bun:test"
 import { WebInflator } from "../build"
-import { injectDOMPolyfill } from "./dom"
 
 import { State, StateArray } from "@denshya/reactive"
 
@@ -13,8 +12,8 @@ describe("WebInflator", () => {
   let inflator: WebInflator
 
   beforeEach(() => {
-    injectDOMPolyfill(globalThis)
     inflator = new WebInflator
+    document.body.replaceChildren()
   })
 
   it("inflates primitives to Text nodes", () => {
@@ -99,48 +98,59 @@ describe("WebInflator", () => {
   })
 
   it("inflates async iterable component", async () => {
+    const one = Promise.withResolvers()
+    const two = Promise.withResolvers()
+    const three = Promise.withResolvers()
+
     async function* AsyncComponent() {
       yield <span>One</span>
-      await new Promise(res => setTimeout(res, 25))
+      await one.promise
 
       yield <span>Two</span>
-      await new Promise(res => setTimeout(res, 25))
+      await two.promise
 
       yield <span>Three</span>
-      await new Promise(res => setTimeout(res, 25))
+      await three.promise
 
       return <span>Return</span>
     }
 
+    const group = inflator.inflate(<AsyncComponent />)
+    expect(group.firstChild).toBeInstanceOf(Comment)
+
     const container = document.createElement('div')
-    container.append(inflator.inflate(<AsyncComponent />))
+    container.append(group)
 
-    let spans
+    document.body.append(container)
 
-    spans = container.querySelectorAll('span')
+
+
+    let spans = container.querySelectorAll('span')
     expect(spans.length).toBe(0)
-    expect(container.childNodes[0]).toBeInstanceOf(Comment)
 
-    // after first yield
-    await new Promise(r => setTimeout(r, 0))
+    await window.happyDOM.whenAsyncComplete()
+
     spans = container.querySelectorAll('span')
     expect(spans.length).toBe(1)
     expect(spans[0].textContent).toBe('One')
 
-    // after second yield
-    await new Promise(r => setTimeout(r, 25))
+    one.resolve()
+    await window.happyDOM.whenAsyncComplete()
+
     spans = container.querySelectorAll('span')
     expect(spans.length).toBe(1)
     expect(spans[0].textContent).toBe('Two')
 
-    // after third yield
-    await new Promise(r => setTimeout(r, 25))
+    two.resolve()
+    await window.happyDOM.whenAsyncComplete()
+
     spans = container.querySelectorAll('span')
     expect(spans.length).toBe(1)
     expect(spans[0].textContent).toBe('Three')
 
-    // after return (must append return value)
-    await new Promise(r => setTimeout(r, 25))
+    three.resolve()
+    await window.happyDOM.whenAsyncComplete()
+
     spans = container.querySelectorAll('span')
     expect(spans.length).toBe(1)
     expect(spans[0].textContent).toBe('Return')
@@ -150,12 +160,12 @@ describe("WebInflator", () => {
     function Sync() { return <p>S</p>; }
     async function Async() { return <p>A</p>; }
 
-    const s = inflator.inflate(<Sync />) as unknown as DocumentFragment
-    expect(s.textContent).toBe("S")
+    const sync = inflator.inflate(<Sync />) as unknown as DocumentFragment
+    expect(sync.textContent).toBe("S")
 
-    const a = inflator.inflate(<Async />) as unknown as DocumentFragment
+    const async = inflator.inflate(<Async />) as unknown as DocumentFragment
     await new Promise(r => setTimeout(r, 0))
-    expect(a.textContent).toBe("A")
+    expect(async.textContent).toBe("A")
   })
 
   it("gracefully shuts down on error in component", () => {
@@ -164,10 +174,14 @@ describe("WebInflator", () => {
     expect(() => inflator.inflate(<ComponentErrored />)).toThrow()
   })
 
-  it("inflates nested components deeply", () => {
+  it("inflates nested components deeply", async () => {
     function Comp() { return <strong>Deep</strong> }
-    const el = inflator.inflate(<div><Comp /></div>) as HTMLElement
-    expect(el.querySelector("strong")?.textContent).toBe("Deep")
+
+    const element = inflator.inflate(<div><Comp /></div>) as HTMLElement
+    document.body.append(element)
+
+
+    expect(element.querySelector("strong")?.textContent).toBe("Deep")
   })
 
   it("creates SVGUse with href", () => {
