@@ -1,16 +1,15 @@
 import "./tictactoe.scss"
 
-import { Flow, FlowArray } from "@denshya/flow"
+import { State, StateArray } from "@denshya/reactive"
 
 
-
-function Square(props: { value: Flow<string>, onClick(): void }) {
+function Square(props: { value: State<string>, onClick(): void }) {
   return (
     <button className="square" on={{ click: props.onClick }}>{props.value}</button>
   )
 }
 
-function Board(props: { xIsNext: Flow<boolean>, squares: Flow<string[]>, onPlay(squares: string[]): void }) {
+function Board(props: { xIsNext: State<boolean>, squares: State<string[]>, onPlay(squares: string[]): void }) {
   function onClick(index: number) {
     const squares = props.squares.get()
 
@@ -27,7 +26,7 @@ function Board(props: { xIsNext: Flow<boolean>, squares: Flow<string[]>, onPlay(
   }
 
 
-  const status = Flow.compute((xIsNext, squares) => {
+  const status = State.combine([props.xIsNext, props.squares], (xIsNext, squares) => {
     const winner = calculateWinner(squares)
 
     if (winner) {
@@ -35,7 +34,7 @@ function Board(props: { xIsNext: Flow<boolean>, squares: Flow<string[]>, onPlay(
     }
 
     return 'Next player: ' + (xIsNext ? 'X' : 'O')
-  }, [props.xIsNext, props.squares])
+  })
 
   return (
     <>
@@ -60,11 +59,11 @@ function Board(props: { xIsNext: Flow<boolean>, squares: Flow<string[]>, onPlay(
 }
 
 export default function Game() {
-  const history = new FlowArray<string[]>([Array(9).fill("")])
-  const currentMove = new Flow(0)
+  const history = new StateArray<string[]>([Array(9).fill("")])
+  const currentMove = new State(0)
 
   const xIsNext = currentMove.to(it => it % 2 === 0)
-  const currentSquares = history.at(currentMove)
+  const currentSquares = history.at(currentMove, "direct")
 
   function onPlay(nextSquares: string[]) {
     const nextHistory = [...history.get().slice(0, currentMove.get() + 1), nextSquares]
