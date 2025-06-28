@@ -4,6 +4,37 @@ Fast, Light weight (~5kb gzip), Component-based, JSX UI library.
 
 [Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
 
+## What is "Rootless"?
+
+That is more-less novel wording, another good phrase is "Reversed Element Factory Ownership".
+These all stand for a component (or element) factory function producing/providing ownership to owned elements rather than being a side-effects function,
+which only modifies given element.
+
+From querying the element and modifying
+```js
+const element = document.getElementById("id")
+makeWidget(element)
+
+function makeWidget(element) {
+  element.style = "..."
+  // ... Some other styling and structure
+}
+```
+
+To creating desired element and sharing ownership
+```js
+function createWidget() { // returns element instead.
+  const element = document.createElement("div")
+  element.style = "..."
+  // ... Some other styling and structure
+
+  return element
+}
+```
+
+This forces you to find the exact place where the new element should go, which may be tricky,
+this what Proton solves with JSX while still letting you choose the place to attach or reattach Proton Component.
+
 ## Motivation
 
 Other libraries provide their own built-in “primitives” that you **have to** stick to.
