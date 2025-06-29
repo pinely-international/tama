@@ -1,6 +1,6 @@
 # Proton 🔵
 
-Fast, Light weight (~5kb gzip), Component-based, JSX UI library.
+Fast, Light weight (~5kb gzip), opt in Native Observables, Rootless, DOM-first, No configuration, Component-based UI library with Android-style View inflation.
 
 [Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
 
