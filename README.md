@@ -55,6 +55,7 @@ Another point is to create a library that can be used alongside with VanilaJS in
 If you want manage your components in a somewhat complex way (like in React), you can continue reading this, but otherwise you may want to consider these alternatives:
 
 - <https://github.com/kitajs/html>
+- https://github.com/reactivehtml/rimmel
 
 ## Install
 
