@@ -81,6 +81,14 @@ button.append(inflate.inflate(<div>{text}</div>))
 
 _Continue reading about_ [JSX Reactivity](https://denshya.github.io/proton/learn/unwinding/reactivity)
 
+## JSX Native
+
+```jsx
+const text = new State("1")
+document.getElementById("button")?.append(<div>{text}</div>)
+text.set("2") // Reflects to DOM.
+```
+
 ## Customization
 
 Adding your own JSX Attribute for any element is as easy as never.
