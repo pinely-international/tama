@@ -1,8 +1,28 @@
 # Proton 🔵
 
 Fast, Light weight (~5kb gzip), opt in Native Observables, Rootless, DOM-first, No configuration, Component-based UI library with Android-style View inflation.
+Based on [No Framework Principle](https://dev.to/framemuse/no-framework-principle-arised-2n39).
 
 [Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
+
+## Install
+
+```bash
+bun i @denshya/proton
+```
+
+For the JSX and types to work properly, you should add this to your `tsconfig.json`/`jsconfig.json`
+
+```jsonc
+{
+  "compilerOptions": {
+    // ...
+    "jsx": "react-jsx",
+    "jsxImportSource": "@denshya/proton/jsx/virtual",
+    // ...
+  }
+}
+```
 
 ## What is "Rootless"?
 
@@ -35,20 +55,63 @@ function createWidget() { // returns element instead.
 This forces you to find the exact place where the new element should go, which may be tricky,
 this what Proton solves with JSX while still letting you choose the place to attach or reattach Proton Component.
 
-## Motivation
+This allows you do to this: (Somewhat an alternative to Web Components)
 
-Other libraries provide their own built-in “primitives” that you **have to** stick to.
-They restrict extensibility in a favor of concealing implementation details and don't give any explicit controls.
+```jsx
+function Widget() {
+  return <div style={...} /> // Some code.
+}
+Widget.Standalone = inflator.inflate(<Widget />)
 
-This all makes it very difficult to build Web GAMES - this is the intial intention to build this package, eventually a potentiall to compete with React.
-Another point is to create a library that can be used alongside with VanilaJS intuitively without deep learning.
+const container = document.querySelector(".container")
+container?.append(Widget.Standalone)
+```
 
-## Pillars
+## JSX + Observables
 
-- [No Framework](https://dev.to/framemuse/no-framework-principle-arised-2n39)
-- Open Internals
-- Fault Tolerance
-- Customization
+The turning point is that JSX element attributes and children can consume [WICG Observables](https://github.com/WICG/observable),
+meaning practically any library can be used as a State Manager.
+
+```jsx
+const text = new State("")
+
+const button = document.getElementById("button")
+button.append(inflate.inflate(<div>{text}</div>))
+```
+
+_Continue reading about_ [JSX Reactivity](https://denshya.github.io/proton/learn/unwinding/reactivity)
+
+## Customization
+
+Adding your own JSX Attribute for any element is as easy as never.
+
+For example, **`classMods`** - it will ensure BEM for elements without anoying imports.
+```jsx
+inflator.jsxAttributes.set("classMods", context => {
+  if (context.value == null) return
+  context.bind("className", bem(context.props.className, context.value))
+})
+```
+
+More about [customization](https://denshya.github.io/proton/category/custom-behavior)
+
+## Fault Tolerance
+
+Unlike to React - Proton will not propogate thrown errors to parents - errors in Children will not break Parents while you still can catch them.
+
+```jsx
+function Child() { throw new Error("Test") }
+function Parent(this: Proton.Component) { return <div>123<Child /></div> }
+
+document.body.append(inflate.inflate(<Parent />)) // Will render `123` without errors.
+```
+
+Learn how you [catch errors](https://denshya.github.io/proton/learn/guides/error)
+
+## Open Internals
+
+To maintain open internals this library uses Classes instead of Functions as factories and uses `private` identifier in TypeScript,
+which gives you propert types while not stopping you from experimenting with internal variables and even allowing you to override them in convential way.
 
 ## Similar Libraries
 
@@ -56,25 +119,6 @@ If you want manage your components in a somewhat complex way (like in React), yo
 
 - <https://github.com/kitajs/html>
 - https://github.com/reactivehtml/rimmel
-
-## Install
-
-```bash
-bun i @denshya/proton
-```
-
-For the JSX and types to work properly, you should add this to your `tsconfig.json`/`jsconfig.json`
-
-```jsonc
-{
-  "compilerOptions": {
-    // ...
-    "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/proton/jsx/virtual",
-    // ...
-  }
-}
-```
 
 ## Getting Started
 
@@ -105,64 +149,6 @@ Proton supports React-like JSX, except that it maps directly to [Document](https
 ```
 
 Learn more about [Inflator](#inflator) to provide custom handlers.
-
-## Special Attributes (Events, Styles, Namespaces)
-
-Proton defines several "special" attributes for [Intrinsic Elements](https://www.typescriptlang.org/docs/handbook/jsx.html#intrinsic-elements) for convenience's sake.
-
-```tsx
-function MyApp() {
-  return (
-    <div
-      style={{ display: "absolute" }}
-      on={{ click: event => event.pointerId }}
-    >
-      // This element will be `SVGAElement` instead of `HTMLAnchorElement`
-      <a ns="http://www.w3.org/2000/svg" />
-    </div>
-  )
-}
-```
-
-`style` is special because it's extended to consume an Record object with various property types, including Observables.
-
-## Inflator
-
-A class that is responsible for creating a view representation held in memory.
-
-## Built-in Helpers
-
-### `Reconcile`
-
-Currently not implemented, but this is a desired syntax
-
-```tsx
-const array = Observable([{a:1}, {a:2}, {a:3}])
-array.set([{a:0}, {a:2}, {a:4}]) // Will trigger list reconciling, which will create 2 new elements, but will **reuse** the one with unchanged key (`{a:2}`).
-
-const list = new Proton.Reconcile(array, { key: it => it.a })
-list.key = it => it.b // Assigns a new `key` selector.
-
-<div>{list.map((observableValue, index) => <span>{observableValue} {index}</span>)}</div>
-```
-
-### `Lazy`
-
-It can be used for dynamic imports, but it is strongly recommended to implement this one in your own way as it's very simple and will give your users a much better UX.
-
-```tsx
-function Lazy(importFactory: () => Promise<unknown>) {
-  return async function (this: Proton.Component) {
-    this.view.set(<Loader />)
-    const Module = await importFactory()
-    return <Module />
-  }
-}
-
-const UserProfile = Lazy(async () => (await import("pages/user-profile")).default)
-<UserProfile />
-
-```
 
 ## TypeScript
 
