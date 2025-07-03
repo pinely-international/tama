@@ -67,7 +67,7 @@ const container = document.querySelector(".container")
 container?.append(Widget.Standalone)
 ```
 
-## JSX + Observables
+## Observables Allowed in JSX
 
 The turning point is that JSX element attributes and children can consume [WICG Observables](https://github.com/WICG/observable),
 meaning practically any library can be used as a State Manager.
@@ -80,14 +80,6 @@ button.append(inflate.inflate(<div>{text}</div>))
 ```
 
 _Continue reading about_ [JSX Reactivity](https://denshya.github.io/proton/learn/unwinding/reactivity)
-
-## JSX Native
-
-```jsx
-const text = new State("1")
-document.getElementById("button")?.append(<div>{text}</div>)
-text.set("2") // Reflects to DOM.
-```
 
 ## Customization
 
