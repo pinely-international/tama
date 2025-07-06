@@ -26,7 +26,9 @@ For the JSX and types to work properly, you should add this to your `tsconfig.js
 
 ## What is "Rootless"?
 
-That is more-less novel wording, another good phrase is "Reversed Element Factory Ownership".
+It means you don't have to hijack an element in order to render the App, it cancles Root Component and Host element completely.
+
+That is a novel wording, another good phrase is "Reversed Element Factory Ownership".
 These all stand for a component (or element) factory function producing/providing ownership to owned elements rather than being a side-effects function,
 which only modifies given element.
 
