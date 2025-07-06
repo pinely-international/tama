@@ -1,7 +1,8 @@
 # Proton 🔵
 
-Fast, Light weight (~5kb gzip), opt in Native Observables, Rootless, DOM-first, No configuration, Component-based UI library with Android-style View inflation.
-Based on [No Framework Principle](https://dev.to/framemuse/no-framework-principle-arised-2n39).
+Fast, Ultra Light weight (~5kb gzip), DOM-first, Rootless, with Native Observables, No configuration, Component-based UI library with Android-style View inflation.
+
+**Based on **[No Framework Principle](https://dev.to/framemuse/no-framework-principle-arised-2n39).
 
 [Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
 
@@ -57,7 +58,7 @@ function createWidget() { // returns element instead.
 This forces you to find the exact place where the new element should go, which may be tricky,
 this what Proton solves with JSX while still letting you choose the place to attach or reattach Proton Component.
 
-This allows you do to this: (Somewhat an alternative to Web Components)
+Which allows you do to this: (Somewhat an alternative to Web Components)
 
 ```jsx
 function Widget() {
