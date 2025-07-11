@@ -12,19 +12,6 @@ Fast, Ultra Light weight (~5kb gzip), DOM-first, Rootless, with Native Observabl
 bun i @denshya/proton
 ```
 
-For the JSX and types to work properly, you should add this to your `tsconfig.json`/`jsconfig.json`
-
-```jsonc
-{
-  "compilerOptions": {
-    // ...
-    "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/proton/jsx/virtual",
-    // ...
-  }
-}
-```
-
 ## What is "Rootless"?
 
 It means you don't have to hijack an element in order to render the App, it cancles Root Component and Host element completely.
@@ -62,7 +49,8 @@ Which allows you do to this: (Somewhat an alternative to Web Components)
 
 ```jsx
 function Widget() {
-  return <div style={...} /> // Some code.
+  const element = document.createElement("div")
+  return <div style={...}>{element}</div>
 }
 Widget.Standalone = inflator.inflate(<Widget />)
 
@@ -80,6 +68,8 @@ const text = new State("")
 
 const button = document.getElementById("button")
 button.append(inflate.inflate(<div>{text}</div>))
+
+text.set("Some text")
 ```
 
 _Continue reading about_ [JSX Reactivity](https://denshya.github.io/proton/learn/unwinding/reactivity)
@@ -138,7 +128,7 @@ document.getElementById("root").replaceChildren(AppView)
 
 ## JSX
 
-Proton supports React-like JSX, except that it maps directly to [Document](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) elements and allows any value to be put into attributes or as children of **any elements**.
+Proton supports JSX, it maps directly to [Document](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) elements and allows any value to be put into attributes or as children of **any elements**. And it has a flavor comparing to React JSX.
 
 ```xml
 <div className="product-card">
