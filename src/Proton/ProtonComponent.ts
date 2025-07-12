@@ -3,9 +3,9 @@ import { Emitter } from "@denshya/reactive"
 import { AsyncGeneratorFunction } from "@/BuiltinObjects"
 import Inflator from "@/Inflator/Inflator"
 
-import Null from "../Null"
 import { Subscriptable } from "../Observable"
 import ProtonViewAPI from "../ProtonTreeAPI"
+import ViewAPI from "../ProtonTreeAPI"
 import TreeContextAPI from "../TreeContextAPI"
 
 
@@ -19,9 +19,6 @@ export class ProtonComponent {
 
   private readonly events = new Emitter<ComponentEvents>
 
-  private lastSubject: unknown = {} // Ensures first subject to be different.
-  private previousView: unknown = null
-  private viewElement: unknown = null
 
   /** Debug value for `constructor` which evaluated this component. */
   declare factory: Function
@@ -29,32 +26,7 @@ export class ProtonComponent {
   constructor(inflator: Inflator, private readonly parent?: ProtonComponent) {
     this.inflator = Inflator.cloneWith(inflator, this)
     this.context = new TreeContextAPI(parent?.context)
-
-    this.view = {
-      set: subject => {
-        if (subject === this.lastSubject) return
-        if (subject === this.viewElement) return
-
-        this.lastSubject = subject
-
-        try {
-          const nextView = this.inflator.inflate(subject)
-
-          if (nextView !== this.previousView) {
-            this.previousView = this.viewElement ?? nextView
-          }
-
-          this.viewElement = nextView
-          this.events.dispatch("view", nextView)
-        } catch (thrown) {
-          if (this.catchCallback != null) return void this.catchCallback(thrown)
-
-          throw thrown
-        }
-      },
-      setPrevious: () => this.view.set(this.previousView),
-      default: null
-    }
+    this.view = new ViewAPI(this)
   }
 
   private declare catchCallback?: (thrown: unknown) => void
@@ -98,15 +70,7 @@ export class ProtonComponent {
   suspense<T = void>(callback: (result: T) => void) { this.suspenseCallback = callback as never }
   unsuspense<T = void>(callback: (result: T) => void) { this.unsuspenseCallback = callback as never }
 
-  getView() { return this.viewElement }
   when<K extends keyof ComponentEvents>(event: K): Subscriptable<ComponentEvents[K]> { return this.events.when(event) }
-
-  use(subscribe: (view: unknown) => void | (() => void)) {
-    this.events.when("mount").subscribe(() => {
-      const unsubscribe = subscribe(this.viewElement) ?? Null.FUNCTION
-      this.events.once("unmount", unsubscribe)
-    })
-  }
 
   /** @internal Use for debug only purposes. */
   static async evaluate(component: ProtonComponent, factory: Function, props?: Record<keyof never, unknown> | null): Promise<void> {
@@ -122,9 +86,9 @@ export class ProtonComponent {
           component.view.set(yieldResult.value)
         }
 
-        if (component.viewElement != null) {
+        if (component.view.current != null) {
           // Only assign default if generator was explicitly returned.
-          component.view.default = component.viewElement
+          component.view.default = component.view.current
         }
         return
       }
@@ -164,9 +128,5 @@ export class ProtonComponent {
 export type ProtonComponentPublic = InstanceType<typeof ProtonComponent>
 
 interface ComponentEvents {
-  view: unknown
   suspend: Promise<unknown>
-
-  mount: unknown
-  unmount: void
 }
