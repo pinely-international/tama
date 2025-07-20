@@ -8,10 +8,10 @@ export class ProtonComponent {
   public readonly view: ProtonViewAPI
   public readonly inflator: Inflator
   public readonly context: TreeContextAPI
-  public
+  public readonly fallbacks?:
 
-  /** @internal Debug value for `constructor` which evaluated this component. */
-  declare factory: Function
+    /** @internal Debug value for `constructor` which evaluated this component. */
+    declare factory: Function
 
   constructor(inflator: Inflator, parent?: ProtonComponent) {
     this.inflator = Inflator.cloneWith(inflator, this)
