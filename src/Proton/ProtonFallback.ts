@@ -5,6 +5,8 @@ type ProtonFallbackResult = Error | Promise<unknown> | true | null
 export class ProtonFallback<ErrorView = unknown, PendingView = unknown> {
   readonly error = new State<Error | null>(null)
   readonly pending = new State<boolean | Promise<unknown>>(false)
+
+  /** @internal */
   readonly result = State.combine([this.error, this.pending], (error, pending) => error ?? (pending || null))
 
   constructor(public views: { error: ErrorView, pending: PendingView }) { }
