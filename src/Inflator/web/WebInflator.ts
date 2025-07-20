@@ -239,14 +239,15 @@ class WebInflator extends Inflator {
 
 
     try {
-      ProtonComponent.evaluate(component, factory, props)
+      component.factory = factory
+      component.view.initWith(factory.call(this, props))
     } catch (error) {
       console.error(error)
       return this.inflate(error)
     }
 
 
-    const currentView = component.getView() as ChildNode
+    const currentView = component.view.get() as ChildNode
     componentGroup.append(currentView ?? componentComment.current)
 
     const replace = (view: unknown | null) => {
@@ -256,7 +257,7 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
-    component.when("view").subscribe(view => {
+    component.view.subscribe(view => {
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
@@ -332,25 +333,9 @@ class WebInflator extends Inflator {
   }
 
   protected bindEventListeners(listeners: any, element: Element) {
-    // @ts-expect-error by design.
-    const catchCallback = this.component?.catchCallback
-
-    if (catchCallback == null)
-      for (const key in listeners) {
-        element.addEventListener(key, listeners[key])
-      }
-    if (catchCallback != null)
-      for (const key in listeners) {
-        element.addEventListener(key, event => {
-          try {
-            listeners[key].call(event.currentTarget, event)
-          } catch (thrown) {
-            if (catchCallback != null) return void catchCallback(thrown)
-
-            throw thrown
-          }
-        })
-      }
+    for (const key in listeners) {
+      element.addEventListener(key, listeners[key])
+    }
   }
 
   /** @returns property names that were overridden. */
