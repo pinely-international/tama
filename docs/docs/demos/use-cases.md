@@ -1,6 +1,11 @@
 # Use Cases
 
+## Done
+
 - Fetching Data
+
+## To do
+
 - Code Spitting
 - Tree Context Providers (Theme, i18n, User, etc.)
 - Global State Management
@@ -26,6 +31,8 @@
 - Hooks or Effects that Compose Behavior (e.g., useDrag, useSort)
 - Optimistic update utilities
 - File system based routes
+
+- Virtual List
 
 ## Testing
 
