@@ -239,11 +239,11 @@ class WebInflator extends Inflator {
 
 
     try {
-      component.factory = factory
       component.view.initWith(factory.call(this, props))
-    } catch (error) {
-      console.error(error)
-      return this.inflate(error)
+    } catch (thrown) {
+      component.tree.caught(thrown)
+      console.error(thrown)
+      return componentGroup
     }
 
 
@@ -251,6 +251,8 @@ class WebInflator extends Inflator {
     componentGroup.append(currentView ?? componentComment.current)
 
     const replace = (view: unknown | null) => {
+      view = component.inflator.inflate(view)
+
       if (view === null) componentGroup.replaceChildren(componentComment.current)
       if (view instanceof Node) componentGroup.replaceChildren(view)
     }

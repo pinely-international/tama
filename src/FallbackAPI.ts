@@ -2,7 +2,7 @@ import { State } from "@denshya/reactive"
 
 type FallbackResult = Error | Promise<unknown> | true | null
 
-export class FallbackAPI<ErrorView = unknown, PendingView = unknown> {
+export class Fallback<ErrorView = unknown, PendingView = unknown> {
   readonly error = new State<Error | null>(null)
   readonly pending = new State<boolean | Promise<unknown>>(false)
 
@@ -24,3 +24,11 @@ export class FallbackAPI<ErrorView = unknown, PendingView = unknown> {
     throw new TypeError("Unreachable code, something went wrong during Proton Fallback Resolution", { cause: this })
   }
 }
+
+
+class FallbackAPI {
+  catch<T>(thrown?: T): PromiseLike<T> { }
+}
+
+const asd = new FallbackAPI
+asd.catch()

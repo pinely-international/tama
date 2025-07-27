@@ -11,7 +11,7 @@ class TreeContextAPI {
     this.contexts.set((context as any).constructor, context)
     return context
   }
-  find<T extends TreeContext>(context: T): InstanceType<T> | null {
+  protected find<T extends TreeContext>(context: T): InstanceType<T> | null {
     const instance = this.contexts.get(context)
     if (instance != null) return instance as InstanceType<T>
 

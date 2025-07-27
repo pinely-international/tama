@@ -297,6 +297,8 @@ describe("WebInflator", () => {
     const inflated2 = inflator.inflate(jsx)
 
     expect(inflated1).toBe(inflated2)
+
+    expect(inflator.inflate(1)).not.toBe(inflator.inflate(1))
   })
 
   // it("inflates custom element (`is` option)", () => {
