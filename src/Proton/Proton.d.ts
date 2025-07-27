@@ -1,4 +1,4 @@
-import { ProtonComponentPublic as Component } from "./ProtonComponent"
+import { ProtonComponent as Component } from "./ProtonComponent"
 import { ProtonDynamic as Dynamic } from "./ProtonDynamic"
 import { ProtonLazy as Lazy } from "./ProtonLazy"
 import { ProtonSwitch as Switch } from "./ProtonSwitch"
