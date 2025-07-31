@@ -1,8 +1,25 @@
+import PlaygroundCard from '@site/src/components/PlaygroundCard/PlaygroundCard'
+
 # Use Cases
 
-## Done
-
-- Fetching Data
+<div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1em" }}>
+  <PlaygroundCard
+    title="Fetching Data"
+    description="Fetching simple json with Tanstack Query and rendering mapped list elements"
+  />
+  <PlaygroundCard
+    title="Fetching Data"
+    description="Fetching simple json with Tanstack Query and rendering mapped list elements"
+  />
+  <PlaygroundCard
+    title="Fetching Data"
+    description="Fetching simple json with Tanstack Query and rendering mapped list elements"
+  />
+  <PlaygroundCard
+    title="ThreeJS - Littlest Tokyo"
+    description="Perfect scenes management of 3D applications via Components"
+  />
+</div>
 
 ## To do
 
@@ -25,7 +42,7 @@
 - Global State via Signals, Context, Stores
 - Placeholder until loaded
 - Progressive lists
-- Title / Meta Management (<Head> abstraction)
+- Title / Meta Management (\<Head\> abstraction)
 - Headless Component Architecture
 - View/Controller Separation (Container/Presenter pattern)
 - Hooks or Effects that Compose Behavior (e.g., useDrag, useSort)

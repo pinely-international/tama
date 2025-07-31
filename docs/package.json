@@ -20,10 +20,13 @@
     "@mdx-js/react": "^3.0.0",
     "ansi-to-html": "^0.7.2",
     "clsx": "^2.0.0",
+    "docusaurus-plugin-sass": "^0.2.6",
     "glob": "^11.0.2",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "sass": "^1.89.2",
+    "sass-embedded": "^1.89.2",
     "ts-morph": "^26.0.0"
   },
   "devDependencies": {

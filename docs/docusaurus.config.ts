@@ -34,6 +34,8 @@ const config: Config = {
     locales: ["en"],
   },
 
+  plugins: ["docusaurus-plugin-sass"],
+
   presets: [
     [
       "classic",
@@ -81,17 +83,17 @@ const config: Config = {
           position: "left",
           label: "Learn",
         },
-        // {
-        //   type: "docSidebar",
-        //   sidebarId: "learn",
-        //   position: "left",
-        //   label: "Usage",
-        // },
         {
           type: "docSidebar",
           sidebarId: "demos",
           position: "left",
           label: "Demos",
+        },
+        {
+          type: "doc",
+          docId: "ui-kit",
+          position: "left",
+          label: "UI Kit",
         },
         {
           type: "doc",

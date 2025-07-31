@@ -31,6 +31,7 @@ These all stand for a component (or element) factory function producing/providin
 which only modifies given element.
 
 From querying the element and modifying
+
 ```js
 const element = document.getElementById("id")
 makeWidget(element)
@@ -42,6 +43,7 @@ function makeWidget(element) {
 ```
 
 To creating desired element and sharing ownership
+
 ```js
 function createWidget() { // returns element instead.
   const element = document.createElement("div")
@@ -86,6 +88,7 @@ _Continue reading about_ [JSX Reactivity](https://denshya.github.io/proton/learn
 Adding your own JSX Attribute for any element is as easy as never.
 
 For example, **`classMods`** - it will ensure BEM for elements without anoying imports.
+
 ```jsx
 inflator.jsxAttributes.set("classMods", context => {
   if (context.value == null) return
@@ -118,7 +121,27 @@ which gives you propert types while not stopping you from experimenting with int
 If you want manage your components in a somewhat complex way (like in React), you can continue reading this, but otherwise you may want to consider these alternatives:
 
 - <https://github.com/kitajs/html>
-- https://github.com/reactivehtml/rimmel
+- <https://github.com/reactivehtml/rimmel>
+
+## Frameworks Comparison
+
+| Feature                   | Proton | SolidJS | Svelte | React | Vue | Angular |
+| ------------------------- | :----: | :-----: | :----: | :---: | :-: | :-----: |
+| Tiny size                 |   ✅   |   ✅    |   ✅   |  ❌   | ❌  |   ❌    |
+| Virtual DOM               |   ❌   |   ❌    |   ❌   |  ✅   | ✅  |   ✅    |
+| Reactivity via Signals    |   ✅   |   ✅    |   ✅   |  ❌   | ✅  |   ✅    |
+| Two‑Way Data Binding      |   ✅   |   ❌    |   ✅   |  ❌   | ✅  |   ✅    |
+| Component‑based           |   ✅   |   ✅    |   ✅   |  ✅   | ✅  |   ✅    |
+| JSX Support               |   ✅   |   ✅    |   ❌   |  ✅   | ❌  |   ❌    |
+| Server‑Side Rendering     |   ✅   |   ✅    |   ✅   |  ✅   | ✅  |   ✅    |
+| Direct DOM Manipulation   |   ✅   |   ✅    |   ✅   |  ❌   | ❌  |   ❌    |
+| Fine‑Grained Reactivity   |   ✅   |   ✅    |   ✅   |  ❌   | ❌  |   ❌    |
+| TypeScript First          |   ✅   |   ✅    |   ❌   |  ❌   | ❌  |   ✅    |
+| Immutable Data Focus      |   ❌   |   ✅    |   ❌   |  ✅   | ❌  |   ❌    |
+| Compiled Output           |   ❌   |   ✅    |   ✅   |  ❌   | ❌  |   ❌    |
+| Dependency Injection      |   ❌   |   ❌    |   ❌   |  ❌   | ❌  |   ✅    |
+| State Management Built‑in |   ❌   |   ❌    |   ❌   |  ❌   | ✅  |   ✅    |
+| Built‑in Animations       |   ❌   |   ❌    |   ✅   |  ❌   | ✅  |   ✅    |
 
 ## Getting Started
 
