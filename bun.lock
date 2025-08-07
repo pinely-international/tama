@@ -4,7 +4,7 @@
     "": {
       "name": "@denshya/proton",
       "dependencies": {
-        "node-group": "^0.1.0",
+        "node-group": "^0.1.4",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -390,7 +390,7 @@
 
     "natural-compare": ["natural-compare@1.4.0", "", {}, "sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw=="],
 
-    "node-group": ["node-group@0.1.0", "", { "dependencies": { "type-fest": "^4.31.0" } }, "sha512-9SPeY4XAKjSwhttap5ZzKlGS2cRWWnMylZiTfBayByBgPALYAzC3CHyKZ63qmHUMHmZRv15SYgGtpq6kB3Q3fQ=="],
+    "node-group": ["node-group@0.1.4", "", {}, "sha512-VetSK83p90e5YppF23MEHQRyGf/I0pxBIegLIOqdD8mxWYwE01tVm6kSldTmCQo250cyIxhZoxcLydGwxZtPFg=="],
 
     "object-assign": ["object-assign@4.1.1", "", {}, "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg=="],
 

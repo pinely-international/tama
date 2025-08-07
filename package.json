@@ -22,8 +22,10 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network",
     "test-pack": "npm version patch --git-tag-version false && npm pack"
   },
+  "dependencies": {
+    "node-group": "^0.1.4"
+  },
   "peerDependencies": {
-    "node-group": ">=0.1.0",
     "type-fest": ">=4.31.0",
     "@denshya/reactive": ">=0.5.2"
   },

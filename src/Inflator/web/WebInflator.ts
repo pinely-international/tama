@@ -85,17 +85,26 @@ class WebInflator extends Inflator {
   protected inflateObservable<T>(observable: Observable<T> & Partial<AccessorGet<T>>) {
     const value = observable.get?.()
 
-    if (isJSX(value)) return this.inflateObservableJSX(observable as never)
-    if (isIterable(value)) return this.inflateIterable(observable as never)
+    switch (typeof value) {
+      case "boolean":
+      case "number":
+      case "string":
+      case "symbol":
+      default:
+      case "object": {
+        if (isJSX(value)) return this.inflateObservableJSX(observable as never)
+        if (isIterable(value)) return this.inflateIterable(observable as never)
+      }
 
-    return this.inflateObservableText(observable)
+        return this.inflateObservableText(observable)
+    }
   }
 
   protected inflateObservableText<T>(observable: Observable<T> & Partial<AccessorGet<T>>) {
     const value = observable.get?.()
     const textNode = new Text(String(value))
 
-    observable[Symbol.subscribe](value => textNode.textContent = String(observable.get?.() ?? value))
+    observable[Symbol.subscribe](value => textNode.nodeValue = String(observable.get?.() ?? value))
 
     return textNode
   }
@@ -111,18 +120,17 @@ class WebInflator extends Inflator {
     const iterableGroup = new Group
     const iterableComment = onDemandRef(() => new Comment("iterable/" + iterable.constructor.name))
 
-    const inflateItem = (item: unknown) => this.inflate(item)
+    const replace = (otherIterable: IteratorObject<T> & Partial<Observable<IteratorObject<T>>>) => {
+      const nodes = [...this.__inflateIterable__(otherIterable)]
 
-    replace(iterableOf(iterable))
-
-    function replace(otherIterable: IteratorObject<T> & Partial<Observable<IteratorObject<T>>>) {
-      const nodes = otherIterable[Symbol.iterator]().filter(Boolean).map(inflateItem).toArray()
       if (nodes.length > 0) {
         iterableGroup.replaceChildren(...nodes) // Previous nodes will be lost at this point.
       } else {
         iterableGroup.replaceChildren(iterableComment.current)
       }
     }
+
+    replace(iterableOf(iterable))
 
     iterable[Symbol.subscribe]?.(replace)
     return iterableGroup
@@ -148,30 +156,27 @@ class WebInflator extends Inflator {
   private inflateJSXChildren(jsx: JSX.Element, inflated: Node): void {
     if (jsx.props?.children == null) return
 
-    // const layout: (Node | void)[] = []
-
     // @ts-expect-error 123
     const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
-    // actualInflated.fixedLayout = layout
 
+    try {
+      if (isIterable(jsx.props.children)) {
+        const result: Node[] = []
+        for (const child of jsx.props.children) {
+          const inflated = this.inflate(child)
+          if (inflated == null) continue
 
-    const appendChildObject = (child: JSX.Element | Primitive) => {
-      const childInflated = this.inflate(child)
-      if (childInflated instanceof Node === false) return
+          result.push(inflated)
+        }
 
-      // layout[index] = childInflated
-
-      try {
-        actualInflated.append(childInflated)
-      } catch (error) {
-        console.debug("appendChildObject -> ", child, childInflated)
-        console.trace(error)
-        throw error
+        actualInflated.replaceChildren(...result)
+      } else {
+        actualInflated.replaceChildren(this.inflate(jsx.props.children))
       }
+    } catch (error) {
+      console.trace(error, "inflateJSXChildren")
+      throw error
     }
-
-    if (jsx.props.children instanceof Array === false) appendChildObject(jsx.props.children)
-    if (jsx.props.children instanceof Array) jsx.props.children.forEach(appendChildObject)
   }
 
   protected inflateElement(type: string, options?: { namespace?: string, is?: string }) {
@@ -186,7 +191,7 @@ class WebInflator extends Inflator {
   /**
    * Creates element and binds properties.
    */
-  public inflateIntrinsic(type: unknown, props?: any): Element | Comment {
+  public inflateIntrinsic(type: unknown, props?: Record<string, any>): Element | Comment {
     if (typeof type !== "string") {
       throw new TypeError(typeof type + " type of intrinsic element is not supported", { cause: { type } })
     }
@@ -194,29 +199,14 @@ class WebInflator extends Inflator {
     const inflated = this.inflateElement(type, props?.ns)
     if (props == null) return inflated
 
-    try {
-      const properties = Object.entries(props)
-      const overridden = this.bindCustomProperties(props, inflated)
+    const overridden = this.bindCustomProperties(props, inflated)
+    this.bindProperties(props, inflated, overridden)
 
-      for (const [key, value] of properties) {
-        if (key === "children") continue
-        if (overridden.has(key)) continue
-
-        if (key.includes("-")) {
-          WebInflator.subscribeAttribute(inflated, key, value)
-        } else {
-          WebInflator.subscribeProperty(key, value, inflated)
-        }
-      }
-
-      const immediateGuard = this.applyGuardMounting(inflated, properties, type)
-      if (immediateGuard != null) {
-        // @ts-expect-error 123
-        immediateGuard.inflated = inflated
-        return immediateGuard
-      }
-    } catch (error) {
-      console.error("Element props binding failed -> ", error)
+    const immediateGuard = this.applyGuardMounting(inflated, props, type)
+    if (immediateGuard != null) {
+      // @ts-expect-error 123
+      immediateGuard.inflated = inflated
+      return immediateGuard
     }
 
     return inflated
@@ -264,7 +254,7 @@ class WebInflator extends Inflator {
     return componentGroup
   }
 
-  protected applyGuardMounting(element: Element, properties: [string, unknown][], type: string) {
+  protected applyGuardMounting(element: Element, props: Record<string, any>, type: string) {
     let mountPlaceholder: Comment | null = null
 
     function toggleMount(condition: unknown) {
@@ -280,26 +270,25 @@ class WebInflator extends Inflator {
     let guards: Map<string, boolean> | null = null
     let immediateGuard = false
 
-    for (const [key, property] of properties) {
+    if (props.mounted != null && props.mounted.valid == null) {
+      props.mounted.valid = nonGuard
+    }
+
+    for (const key in props) {
+      const property = props[key]
       if (property instanceof Object === false) continue
-
-      // @ts-expect-error `valid` property is there.
-      if (key === "mounted") property.valid = nonGuard
-
-      if ("valid" in property === false) continue
       if (property.valid instanceof Function === false) continue
 
       const accessor = Accessor.extractObservable(property)
       if (accessor == null) continue
+      if (accessor.subscribe == null) continue
 
-      if (mountPlaceholder == null) {
-        mountPlaceholder = new Comment(type)
-      }
       if (guards == null) guards = new Map<string, boolean>()
+      if (mountPlaceholder == null) mountPlaceholder = new Comment(type)
 
-      accessor.subscribe?.(value => {
+      accessor.subscribe(value => {
         value = accessor.get?.() ?? value
-        // @ts-expect-error should be fine actually.
+
         const valid = property.valid(value)
         guards!.set(key, valid)
 
@@ -351,6 +340,26 @@ class WebInflator extends Inflator {
           }
         })
       }
+  }
+
+  protected bindProperties(props: object, inflated: Element, overridden: Set<string>) {
+    try {
+      let value
+      for (const key in props) {
+        if (key === "children") continue
+        if (overridden.has(key)) continue
+
+        value = props[key as never]
+
+        if (key.includes("-")) {
+          WebInflator.subscribeAttribute(inflated, key, value)
+        } else {
+          WebInflator.subscribeProperty(key, value, inflated)
+        }
+      }
+    } catch (error) {
+      console.error("Element props binding failed -> ", error)
+    }
   }
 
   /** @returns property names that were overridden. */
@@ -415,7 +424,7 @@ class WebInflator extends Inflator {
         overrides.add(key)
       }
 
-      for (const [key, attributeSetup] of this.jsxAttributes.entries()) {
+      for (const [key, attributeSetup] of this.jsxAttributes) {
         if (key in props === false) continue
 
         attributeSetup({ props, key, value: props[key], bind })
@@ -449,6 +458,13 @@ class WebInflator extends Inflator {
   protected static subscribe(source: unknown, targetBindCallback: (value: unknown) => void): void {
     if (source == null) return
     return void State.subscribeImmediate(source, targetBindCallback)
+  }
+
+  private *__inflateIterable__(iterable: Iterable<unknown>) {
+    for (const next of iterable) {
+      if (next == null) continue
+      yield this.inflate(next)
+    }
   }
 }
 
