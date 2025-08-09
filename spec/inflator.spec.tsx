@@ -53,8 +53,8 @@ describe("Conditional Rendering (mounted)", () => {
 
   const inflator = new WebInflator
 
-  it("should not append element when mounted is false", () => {
-    const mounted = new State(false)
+  it("should not append element when mounted is false or nullish", () => {
+    const mounted = new State(null)
 
     const view = inflator.inflate(<span mounted={mounted}>Hidden</span>)
     const root = document.getElementById("root")!
@@ -63,8 +63,8 @@ describe("Conditional Rendering (mounted)", () => {
     expect(root.querySelector("span")).toBeNull()
   })
 
-  it("should append element when mounted becomes true", () => {
-    const mounted = new State(false)
+  it("should append element when mounted becomes true or non-nullish", () => {
+    const mounted = new State({})
 
     const view = inflator.inflate(<span mounted={mounted}>Visible</span>)
     const root = document.getElementById("root")!

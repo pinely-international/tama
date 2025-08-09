@@ -290,12 +290,12 @@ class WebInflator extends Inflator {
         value = accessor.get?.() ?? value
 
         const valid = property.valid(value)
-        guards!.set(key, valid)
+        guards!.set(key, !!valid)
 
         toggleMount(guards!.values().every(Boolean))
       })
 
-      if (accessor.get && property.valid(accessor.get()) === false) {
+      if (accessor.get && !property.valid(accessor.get())) {
         immediateGuard = true
       }
     }
