@@ -4,13 +4,13 @@ Fast, Ultra Light weight (~5kb gzip), DOM-first, Rootless, with Native Observabl
 
 **Based on** [No Framework Principle](https://dev.to/framemuse/no-framework-principle-arised-2n39).
 
-[Denshya Proton Quick Demos](https://stackblitz.com/@FrameMuse/collections/proton)
-
 ## Install
 
 ```bash
 bun i @denshya/proton
 ```
+
+[Quick Demos](https://stackblitz.com/@FrameMuse/collections/proton)
 
 ## What is "Rootless"?
 
