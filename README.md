@@ -4,7 +4,7 @@ Fast, Ultra Light weight (~5kb gzip), DOM-first, Rootless, with Native Observabl
 
 **Based on** [No Framework Principle](https://dev.to/framemuse/no-framework-principle-arised-2n39).
 
-[Playground](https://stackblitz.com/~/github.com/denshya/proton-template)
+[Denshya Proton Quick Demos](https://stackblitz.com/@FrameMuse/collections/proton)
 
 ## Install
 
