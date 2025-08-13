@@ -1,6 +1,6 @@
 # Proton 🔵
 
-Fast, Light weight (~5kb gzip), DOM-first, Rootless, with Native Observables, No configuration, Component-based UI library with Android-style View inflation.
+Fast, Light weight (~5kb gzip), DOM-first, Rootless, Android-style, Supported Observables, Zero Configuration, Component-based - UI library.
 
 **Based on** [No Framework Principle](https://dev.to/framemuse/no-framework-principle-arised-2n39).
 
