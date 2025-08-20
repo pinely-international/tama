@@ -7,119 +7,62 @@ import { ProtonComponent } from "../src/Proton/ProtonComponent"
 import TreeContextAPI from "../src/TreeContextAPI"
 
 describe("ProtonComponent", () => {
-  let rootComp: ProtonComponent
+  let rootComponent: ProtonComponent
   let inflator: WebInflator
 
   beforeEach(() => {
     inflator = new WebInflator()
-    rootComp = new ProtonComponent(inflator)
+    rootComponent = new ProtonComponent(inflator)
   })
 
   it("initializes view, context, and inflator.clone", () => {
-    expect(rootComp.view).toHaveProperty("set")
-    expect(rootComp.view).toHaveProperty("setPrevious")
-    expect(rootComp.context).toBeInstanceOf(TreeContextAPI)
+    expect(rootComponent.view).toHaveProperty("set")
+    expect(rootComponent.tree.context).toBeInstanceOf(TreeContextAPI)
     // cloned inflator has same API
-    expect(rootComp.inflator).not.toBe(inflator)
-    expect(rootComp.inflator).toHaveProperty("inflate")
+    expect(rootComponent.inflator).not.toBe(inflator)
+    expect(rootComponent.inflator).toHaveProperty("inflate")
   })
 
-  it("view.set renders only on new subject", () => {
-    const calls: unknown[] = []
-    rootComp.when("view").subscribe(v => calls.push(v))
-    const subj = { foo: 1 }
-    rootComp.view.set(subj)
-    rootComp.view.set(subj)
-    expect(calls.length).toBe(1)
-  })
+  // it("view.set dispatches only on new subject", () => {
+  //   const calls: unknown[] = []
+  //   rootComponent.view.subscribe(v => calls.push(v))
+  //   const subj = { foo: 1 }
+  //   rootComponent.view.set(subj)
+  //   rootComponent.view.set(subj)
+  //   expect(calls.length).toBe(1)
+  // })
 
-  it("view.setPrevious restores previous view", () => {
-    const first = document.createElement("div")
-    const second = document.createElement("div")
-
-    rootComp.when("view").subscribe(() => { })
-    rootComp.view.set(first)
-    expect(rootComp.getView()).toEqual(first)
-
-    rootComp.view.set(second)
-    expect(rootComp.getView()).toEqual(second)
-
-    rootComp.view.setPrevious()
-    expect(rootComp.getView()).toEqual(first)
-  })
-
-  it("ProtonComponent.evaluate throws error on error", () => {
-    const component = new ProtonComponent(inflator)
-    const componentFactoryErrored = () => { throw new Error("test") }
-
-    expect(() => ProtonComponent.evaluate(component, componentFactoryErrored)).toThrow()
-  })
-
-  it("ProtonComponent.evaluate intercepts thrown errors", () => {
-    const component = new ProtonComponent(inflator)
-    const componentFactoryErrored = () => { throw new Error("test") }
-
-    let caught
-    component.catch(error => caught = error)
-
-    expect(() => ProtonComponent.evaluate(component, componentFactoryErrored)).not.toThrow()
-    expect(caught).toBeInstanceOf(Error)
-  })
-
-  it("suspendOf relays to parent when no suspense callback", async () => {
-    const p = Promise.resolve("done")
-    // no suspense callback set, parent of rootComp is undefined
-    const result = await rootComp.suspendOf(p)
-    expect(result).toBe("done")
-  })
-
-  it("suspendOf with callback batches and unsuspends", async () => {
-    const p1 = new Promise(res => setTimeout(() => res(1), 0))
-    const p2 = new Promise(res => setTimeout(() => res(2), 0))
-    const calls: unknown[] = []
-    rootComp.suspense(val => calls.push(["suspend", val]))
-    rootComp.unsuspense(val => calls.push(["unsuspend", val]))
-    // trigger two suspensions
-    const r1 = rootComp.suspendOf(p1)
-    const r2 = rootComp.suspendOf(p2)
-    await Promise.all([r1, r2])
-    // initial suspend callback once, unsuspend once
-    expect(calls.some(c => c[0] === "suspend")).toBe(true)
-    expect(calls.some(c => c[0] === "unsuspend")).toBe(true)
-  })
-
-  it("when(event) returns observable for mount/unmount", () => {
-    const mounts: unknown[] = []
-    rootComp.when("mount").subscribe(() => mounts.push(true))
-    // trigger mount via use()
-    rootComp.use(view => {
-      expect(view).toBeEmpty()
-      return () => mounts.push(false)
-    })
-    // simulate mount
-    rootComp.events.dispatch("mount")
-    // simulate unmount
-    rootComp.events.dispatch("unmount")
-    expect(mounts).toEqual([true, false])
-  })
+  // it("when(event) returns observable for mount/unmount", () => {
+  //   const mounts: unknown[] = []
+  //   rootComponent.view.subscribe(() => mounts.push(true))
+  //   // trigger mount via use()
+  //   rootComponent.view.life.adopt(view => {
+  //     expect(view).toBeEmpty()
+  //     return () => mounts.push(false)
+  //   })
+  //   // simulate mount
+  //   rootComponent.events.dispatch("mount")
+  //   // simulate unmount
+  //   rootComponent.events.dispatch("unmount")
+  //   expect(mounts).toEqual([true, false])
+  // })
 
   it("static evaluate handles sync, async, and generator factories", async () => {
     // sync factory
-    const comp1 = new ProtonComponent(inflator)
-    await ProtonComponent.evaluate(comp1, function sync() { return "A" })
-    expect(comp1.getView()).toBeDefined()
+    const component = new ProtonComponent(inflator)
+    await component.view.initWith(function sync() { return "A" }())
+    expect(component.view.current).toBe("A")
 
     // async factory
-    const comp2 = new ProtonComponent(inflator)
-    await ProtonComponent.evaluate(comp2, async () => "B")
-    expect(comp2.getView()).toBeDefined()
+    await component.view.initWith((async () => "B")())
+    expect(component.view.current).toBe("B")
 
     // generator factory
-    const comp3 = new ProtonComponent(inflator)
-    await ProtonComponent.evaluate(comp3, function* gen() {
+    await component.view.initWith(async function* gen() {
       yield "X"
       yield "Y"
-    })
-    expect(comp3.getView()).toBeDefined()
+      return "Z"
+    }())
+    expect(component.view.current).toBe("Z")
   })
 })

@@ -1,4 +1,11 @@
-import { Window } from "happy-dom"
+import { DetachedWindowAPI, Window } from "happy-dom"
+
+
+declare global {
+  interface Window {
+    happyDOM: DetachedWindowAPI
+  }
+}
 
 export function injectDOMPolyfill(context: typeof globalThis) {
   const window = new Window

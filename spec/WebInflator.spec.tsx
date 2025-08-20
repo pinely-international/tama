@@ -6,8 +6,6 @@ import { WebInflator } from "../build"
 import { State, StateArray } from "@denshya/reactive"
 
 
-
-
 describe("WebInflator", () => {
   let inflator: WebInflator
 
@@ -180,7 +178,6 @@ describe("WebInflator", () => {
     const element = inflator.inflate(<div><Comp /></div>) as HTMLElement
     document.body.append(element)
 
-
     expect(element.querySelector("strong")?.textContent).toBe("Deep")
   })
 
@@ -297,6 +294,8 @@ describe("WebInflator", () => {
     const inflated2 = inflator.inflate(jsx)
 
     expect(inflated1).toBe(inflated2)
+
+    expect(inflator.inflate(1)).not.toBe(inflator.inflate(1))
   })
 
   // it("inflates custom element (`is` option)", () => {
