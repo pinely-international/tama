@@ -247,7 +247,7 @@ class WebInflator extends Inflator {
     }
 
 
-    const currentView = component.view.get() as ChildNode
+    const currentView = component.inflator.inflate(component.view.get()) as ChildNode
     componentGroup.append(currentView ?? componentComment.current)
 
     const replace = (view: unknown | null) => {

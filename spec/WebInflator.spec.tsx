@@ -6,8 +6,6 @@ import { WebInflator } from "../build"
 import { State, StateArray } from "@denshya/reactive"
 
 
-
-
 describe("WebInflator", () => {
   let inflator: WebInflator
 
@@ -180,8 +178,6 @@ describe("WebInflator", () => {
     const element = inflator.inflate(<div><Comp /></div>) as HTMLElement
     document.body.append(element)
 
-
-    expect(element.innerHTML).toBe("Deep")
     expect(element.querySelector("strong")?.textContent).toBe("Deep")
   })
 
