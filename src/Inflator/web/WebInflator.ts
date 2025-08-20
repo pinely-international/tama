@@ -92,6 +92,8 @@ class WebInflator extends Inflator {
       case "symbol":
       default:
       case "object": {
+        if (value instanceof Node) return value
+
         if (isJSX(value)) return this.inflateObservableJSX(observable as never)
         if (isIterable(value)) return this.inflateIterable(observable as never)
       }
@@ -110,13 +112,21 @@ class WebInflator extends Inflator {
   }
 
   protected inflateObservableJSX<T extends JSX.Element>(observable: Observable<T> & Partial<AccessorGet<T>>) {
-    const value = observable.get?.()
-    const element = this.inflateJSXDeeply(value as never)
-    observable[Symbol.subscribe]?.(value => (element as ChildNode).replaceWith?.(this.inflate(value)))
+    const placeholder = onDemandRef(() => new Comment("ObservableJSX/" + observable.constructor.name))
+
+    const value = observable.get!()
+    let element = this.inflateJSXDeeply(value) as Partial<ChildNode>
+
+    observable[Symbol.subscribe]?.(value => {
+      const next = this.inflate(value) ?? placeholder.current
+
+      element.replaceWith?.(next)
+      element = next
+    })
     return element
   }
 
-  protected inflateIterable<T>(iterable: (IteratorObject<T> & Partial<Observable<IteratorObject<T>>>)): unknown {
+  protected inflateIterable<T>(iterable: (IteratorObject<T> & Partial<Observable<IteratorObject<T>>>)) {
     const iterableGroup = new Group
     const iterableComment = onDemandRef(() => new Comment("iterable/" + iterable.constructor.name))
 
