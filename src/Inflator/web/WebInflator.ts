@@ -170,7 +170,8 @@ class WebInflator extends Inflator {
     const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
 
     try {
-      if (isIterable(jsx.props.children)) {
+      // Check for non-observable iterables.
+      if (isIterable(jsx.props.children) && ((Symbol.subscribe in jsx.props.children) === false)) {
         const result: Node[] = []
         for (const child of jsx.props.children) {
           const inflated = this.inflate(child)

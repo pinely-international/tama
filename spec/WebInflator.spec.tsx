@@ -71,11 +71,13 @@ describe("WebInflator", () => {
   it("inflates iterable+observable", () => {
     const stateIterable = new StateArray(["test", <em>oh my guy</em>])
 
-    const group = inflator.inflate(stateIterable)
-    expect([...group.childNodes].map(n => n.textContent)).toEqual(["test", "oh my guy"])
+    const div = inflator.inflate(<div>{stateIterable}</div>)
+    document.body.appendChild(div)
+
+    expect([...div.childNodes].map(n => n.textContent)).toEqual(["test", "oh my guy"])
 
     stateIterable.set(["new", <em>oh yes</em>])
-    expect([...group.childNodes].map(n => n.textContent)).toEqual(["new", "oh yes"])
+    expect([...div.childNodes].map(n => n.textContent)).toEqual(["new", "oh yes"])
   })
   it("inflates observable jsx", () => {
     const parent = inflator.inflate(<div />)
@@ -83,12 +85,15 @@ describe("WebInflator", () => {
     const jsx = new State(<div />)
     const element = inflator.inflate(jsx)
     parent.append(element)
+
     expect(parent.children[0]).toBeInstanceOf(HTMLDivElement)
     expect(element).toBeInstanceOf(HTMLDivElement)
 
     jsx.set(<p />)
     expect(parent.children[0]).toBeInstanceOf(HTMLParagraphElement)
-    expect(inflator.inflate(jsx)).toBeInstanceOf(HTMLParagraphElement)
+
+    jsx.set(<a />)
+    expect(parent.children[0]).toBeInstanceOf(HTMLAnchorElement)
   })
   it("throws on async iterable input", () => {
     async function* gen() { yield 1; }
