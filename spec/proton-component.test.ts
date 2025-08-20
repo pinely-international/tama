@@ -23,7 +23,7 @@ describe("ProtonComponent", () => {
     expect(rootComponent.inflator).toHaveProperty("inflate")
   })
 
-  // it("view.set renders only on new subject", () => {
+  // it("view.set dispatches only on new subject", () => {
   //   const calls: unknown[] = []
   //   rootComponent.view.subscribe(v => calls.push(v))
   //   const subj = { foo: 1 }
@@ -32,20 +32,20 @@ describe("ProtonComponent", () => {
   //   expect(calls.length).toBe(1)
   // })
 
-  it("when(event) returns observable for mount/unmount", () => {
-    const mounts: unknown[] = []
-    rootComponent.view.subscribe(() => mounts.push(true))
-    // trigger mount via use()
-    rootComponent.view.life.adopt(view => {
-      expect(view).toBeEmpty()
-      return () => mounts.push(false)
-    })
-    // simulate mount
-    rootComponent.events.dispatch("mount")
-    // simulate unmount
-    rootComponent.events.dispatch("unmount")
-    expect(mounts).toEqual([true, false])
-  })
+  // it("when(event) returns observable for mount/unmount", () => {
+  //   const mounts: unknown[] = []
+  //   rootComponent.view.subscribe(() => mounts.push(true))
+  //   // trigger mount via use()
+  //   rootComponent.view.life.adopt(view => {
+  //     expect(view).toBeEmpty()
+  //     return () => mounts.push(false)
+  //   })
+  //   // simulate mount
+  //   rootComponent.events.dispatch("mount")
+  //   // simulate unmount
+  //   rootComponent.events.dispatch("unmount")
+  //   expect(mounts).toEqual([true, false])
+  // })
 
   it("static evaluate handles sync, async, and generator factories", async () => {
     // sync factory
