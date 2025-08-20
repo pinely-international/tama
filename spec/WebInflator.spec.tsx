@@ -181,6 +181,7 @@ describe("WebInflator", () => {
     document.body.append(element)
 
 
+    expect(element.innerHTML).toBe("Deep")
     expect(element.querySelector("strong")?.textContent).toBe("Deep")
   })
 

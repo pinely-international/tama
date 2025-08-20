@@ -1,6 +1,6 @@
 import { EventSignal } from "@denshya/reactive"
 
-import { AsyncGeneratorFunction } from "./BuiltinObjects"
+import { AsyncGeneratorPrototype } from "./BuiltinObjects"
 import { Life } from "./Life"
 
 
@@ -19,18 +19,19 @@ class ViewAPI extends EventSignal<unknown> {
     while (yieldResult.done === false) {
       yieldResult = await iterable.next()
       this.set(yieldResult.value)
+      console.log(this.current)
     }
   }
 
   /** @internal */
   async initWith(returnResult: unknown) {
     if (returnResult == null) return
-    if (returnResult instanceof AsyncGeneratorFunction) {
-      this.setIterable(returnResult as any)
+    if (returnResult.constructor === AsyncGeneratorPrototype) {
+      await this.setIterable(returnResult as any)
 
       if (this.current != null) {
         // Only assign default if generator was explicitly returned.
-        this.default = this.current
+        this.default ??= this.current
       }
 
       return
