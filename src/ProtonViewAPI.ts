@@ -19,7 +19,6 @@ class ViewAPI extends EventSignal<unknown> {
     while (yieldResult.done === false) {
       yieldResult = await iterable.next()
       this.set(yieldResult.value)
-      console.log(this.current)
     }
   }
 
