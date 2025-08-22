@@ -252,8 +252,6 @@ class WebInflator extends Inflator {
     componentGroup.append(currentView ?? componentComment.current)
 
     const replace = (view: unknown | null) => {
-      view = component.inflator.inflate(view)
-
       if (view === null) componentGroup.replaceChildren(componentComment.current)
       if (view instanceof Node) componentGroup.replaceChildren(view)
     }
@@ -261,6 +259,8 @@ class WebInflator extends Inflator {
 
     let lastAnimationFrame = -1
     component.view.subscribe(view => {
+      view = component.inflator.inflate(view)
+
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
     })
