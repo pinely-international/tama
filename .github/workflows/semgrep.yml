@@ -1,0 +1,61 @@
+name: Semgrep
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    container:
+      image: semgrep/semgrep:1.134.0-nonroot
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Install gh CLI (user-local)
+        env:
+          GH_VERSION: "2.57.0"
+        run: |
+          set -eux
+          mkdir -p "$HOME/.local/bin"
+          curl -sL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o /tmp/gh.tgz
+          tar -xzf /tmp/gh.tgz -C /tmp
+          mv "/tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" "$HOME/.local/bin/gh"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Semgrep cache (gh cache)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CACHE_KEY: ${{ runner.os }}-semgrep-${{ hashFiles('.semgrep*', 'semgrep.yml', 'semgrep.yaml') }}
+        run: |
+          set -eux
+          mkdir -p "$HOME/.cache/semgrep"
+          gh cache restore "$CACHE_KEY" --keys "${{ runner.os }}-semgrep-" --path "$HOME/.cache/semgrep" || true
+      - name: Run Semgrep (generate SARIF)
+        run: |
+          semgrep ci \
+            --config p/ci \
+            --config p/typescript \
+            --exclude node_modules \
+            --exclude dist \
+            --sarif --output semgrep.sarif
+      - name: Save Semgrep cache (gh cache)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CACHE_KEY: ${{ runner.os }}-semgrep-${{ hashFiles('.semgrep*', 'semgrep.yml', 'semgrep.yaml') }}
+        run: |
+          set -eux
+          gh cache save "$CACHE_KEY" --path "$HOME/.cache/semgrep" || true
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
