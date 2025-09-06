@@ -240,7 +240,7 @@ class WebInflator extends Inflator {
 
 
     try {
-      component.view.initWith(factory.call(this, props))
+      component.view.initWith(factory.call(component, props))
     } catch (thrown) {
       component.tree.caught(thrown)
       console.error(thrown)
