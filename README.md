@@ -1,6 +1,6 @@
 # Proton 🔵
 
-Fast, Light weight (~5kb gzip), DOM-first, Rootless, Android-style, Supported Observables, Zero Configuration, Component-based - UI library.
+Fast, Light weight (~5kb gzip), DOM-first, Rootless, Android-style, Component-based - UI library.
 
 **Based on** [No Framework Principle](https://dev.to/framemuse/no-framework-principle-arised-2n39).
 
@@ -11,6 +11,18 @@ bun i @denshya/proton
 ```
 
 [Quick Demos](https://stackblitz.com/@FrameMuse/collections/proton)
+
+## Why Proton over React?
+
+It is very similar to React, it tries to simplify development as we know it in React. 
+
+|Feature|Description|
+|-------|-----------|
+|Extended Customization|Custom Attributes, Children Adapters, Element Transformation, Class extension|
+|No built-in State Manager|Any State Manager that supports Signal-like interface **will just** work in Proton, while there is no enforncement of one|
+|Signals/Observables Support|Observables are another primitive in Proton|
+|No root elements|Every component can be **inflated** and freely attached/reattached to a desired element|
+|Class-based|Proton chooses class-based approach as object constructors since this contributes to **tree-shaking** and **extensibility**|
 
 ## What is "Rootless"?
 
