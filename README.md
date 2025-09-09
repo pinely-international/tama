@@ -22,6 +22,10 @@ It is very similar to React, it tries to simplify development as we know it in R
 |No built-in State Manager|Any State Manager that supports Signal-like interface **will just** work in Proton, while there is no enforncement of one|
 |Signals/Observables Support|Native support for [WICG Observables](https://github.com/WICG/observable) and Signal-like structures|
 |No root elements|Any component can be **inflated** and attached anywhere|
+|Components can be Async 😱 (Client side)|Await your values and delay/schedule the views with fallbacks and initial view.|
+|Top level allowed|You can do anything in any scope, Proton doesn't put any constraints where or from something is initialized - enjoy!|
+|Children don't crash Parents|Error in the subtree will not break rendering of parents.|
+|Return any value|Components can be returned with **any** value, no seriously, even DOM Nodes/Elements will work.|
 |Class-based|Enables **tree-shaking**, **extensibility**, and **open internals**|
 
 **React Inherited Features**
@@ -35,6 +39,8 @@ It is very similar to React, it tries to simplify development as we know it in R
 |`ref` attribute|Access DOM element when it's ready - supports refs merging as well|
 |Event delegation|Proton subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/proton/issues/53))|
 |SSR|Provides extendable `JSXSerializer` and examples with full DOM support in DOM-less envrionments like servers|
+|Portal||
+|Error catching||
 
 **Problems to solve:**
 
