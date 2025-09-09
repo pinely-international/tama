@@ -20,9 +20,26 @@ It is very similar to React, it tries to simplify development as we know it in R
 |-------|-----------|
 |Extended Customization|Custom Attributes, Children Adapters, Element Transformation, Class extension|
 |No built-in State Manager|Any State Manager that supports Signal-like interface **will just** work in Proton, while there is no enforncement of one|
-|Signals/Observables Support|Observables are another primitive in Proton|
-|No root elements|Every component can be **inflated** and freely attached/reattached to a desired element|
-|Class-based|Proton chooses class-based approach as object constructors since this contributes to **tree-shaking** and **extensibility**|
+|Signals/Observables Support|Native support for [WICG Observables](https://github.com/WICG/observable) and Signal-like structures|
+|No root elements|Any component can be **inflated** and attached anywhere|
+|Class-based|Enables **tree-shaking**, **extensibility**, and **open internals**|
+
+**React Inherited Features**
+
+|Feature|Description|
+|-------|-----------|
+|Tree Context|Excplicit context sharing between subtree components|
+|Conditional Rendering|Proton implements Conditional Mounting|
+|Layouts Swapping|Conditionally changing the whole component layout|
+|JSX|Proton supports React JSX, but it also has a flavor|
+|`ref` attribute|Access DOM element when it's ready - supports refs merging as well|
+|Event delegation|Proton subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/proton/issues/53))|
+|SSR|Provides extendable `JSXSerializer` and examples with full DOM support in DOM-less envrionments like servers|
+
+**Problems to solve:**
+
+Proton isn't perfect, it's being developed
+https://github.com/pinely-international/proton/milestones
 
 ## What is "Rootless"?
 
