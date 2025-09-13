@@ -111,7 +111,7 @@ button.append(inflate.inflate(<div>{text}</div>))
 text.set("Some text")
 ```
 
-_Continue reading about_ [JSX Reactivity](https://denshya.github.io/proton/learn/unwinding/reactivity)
+_Continue reading about_ [JSX Reactivity](https://pinely-international.github.io/proton/learn/unwinding/reactivity)
 
 ## Customization
 
@@ -125,7 +125,7 @@ inflator.jsxAttributes.set("classMods", context => {
 })
 ```
 
-More about [customization](https://denshya.github.io/proton/category/custom-behavior)
+More about [customization](https://pinely-international.github.io/proton/category/custom-behavior)
 
 ## Fault Tolerance
 
@@ -138,7 +138,7 @@ function Parent(this: Proton.Component) { return <div>123<Child /></div> }
 document.body.append(inflate.inflate(<Parent />)) // Will render `123` without errors.
 ```
 
-Learn how you [catch errors](https://denshya.github.io/proton/learn/guides/error)
+Learn how you [catch errors](https://pinely-international.github.io/proton/learn/guides/error)
 
 ## Open Internals
 
