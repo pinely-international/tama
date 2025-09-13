@@ -1,8 +1,12 @@
-# Proton 🔵
+<h1 align="center">🔵 Proton - UI Composition</h1>
+<h3 align="center">😱 ~5kb gzip, DOM-first, Rootless, Android-style, Component-based</h3>
+<h4 align="center">Full TypeScript Support, Based on <a href="https://dev.to/framemuse/no-framework-principle-arised-2n39">No Framework Principle</a></h4>
 
-Fast, Light weight (~5kb gzip), DOM-first, Rootless, Android-style, Component-based - UI library.
-
-**Based on** [No Framework Principle](https://dev.to/framemuse/no-framework-principle-arised-2n39).
+<p align="center">
+  <a href="https://www.npmjs.com/package/@denshya/proton">
+    <img src="https://img.shields.io/npm/v/@denshya/proton/latest.svg" />
+  </a>
+</p>
 
 ## Install
 
