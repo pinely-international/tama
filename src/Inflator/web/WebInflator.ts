@@ -349,7 +349,7 @@ class WebInflator extends Inflator {
 
         value = props[key as never]
 
-        if (key.includes("-")) {
+        if (inflated instanceof SVGElement || key.includes("-")) {
           WebInflator.subscribeAttribute(inflated, key, value)
         } else {
           WebInflator.subscribeProperty(key, value, inflated)
@@ -379,22 +379,6 @@ class WebInflator extends Inflator {
         WebInflator.subscribeProperty(key, props.aria[key], element)
       }
       overrides.add("aria")
-    }
-
-    if (element instanceof SVGElement) {
-      if (props.class != null) {
-        WebInflator.subscribe(props.class, value => element.setAttribute("class", String(value)))
-        overrides.add("class")
-      }
-
-      if (props.href != null) {
-        WebInflator.subscribe(props.href, (href: any) => {
-          if (typeof href === "string") element.setAttribute("href", href)
-          if (typeof href === "object") element.setAttribute("href", href.baseVal)
-        })
-
-        overrides.add("href")
-      }
     }
 
     if (element instanceof HTMLInputElement) {
