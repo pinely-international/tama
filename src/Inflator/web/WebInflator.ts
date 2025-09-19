@@ -86,18 +86,19 @@ class WebInflator extends Inflator {
     const value = observable.get?.()
 
     switch (typeof value) {
+      case "object": {
+        if (value instanceof Node) return value
+
+        if (isIterable(value)) return this.inflateIterable(observable as never)
+        if (isJSX(value)) return this.inflateObservableJSX(observable as never)
+
+        throw new TypeError("Can't choose right way to inflate observable of this type: " + value)
+      }
       case "boolean":
       case "number":
       case "string":
       case "symbol":
       default:
-      case "object": {
-        if (value instanceof Node) return value
-
-        if (isJSX(value)) return this.inflateObservableJSX(observable as never)
-        if (isIterable(value)) return this.inflateIterable(observable as never)
-      }
-
         return this.inflateObservableText(observable)
     }
   }
