@@ -43,8 +43,8 @@ It is very similar to React, it tries to simplify development as we know it in R
 |`ref` attribute|Access DOM element when it's ready - supports refs merging as well|
 |Event delegation|Proton subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/proton/issues/53))|
 |SSR|Provides extendable `JSXSerializer` and examples with full DOM support in DOM-less envrionments like servers|
-|Portal||
-|Error catching||
+|Portal|Portals are natural and very easy, you just use component scoped inflator|
+|Error catching|Proton exposes clear API to catch errors and other|
 
 **Problems to solve:**
 
