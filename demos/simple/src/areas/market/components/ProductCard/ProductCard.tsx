@@ -16,7 +16,7 @@ import { MarketProduct } from "../../types"
 interface ProductCardProps extends MarketProduct { }
 
 function ProductCard(this: Proton.Component, props: ProductCardProps) {
-  const market = this.context.require(MarketModel)
+  const market = this.tree.context.require(MarketModel)
 
   const amount = market.cart.$.get(props.id).to(it => it ?? -1).from(it => it < 0 ? 0 : it)
   const liked = market.liked.$.has(props.id)

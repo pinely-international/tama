@@ -14,7 +14,7 @@ import Icon from "@/app/ui/Icon/Icon"
 interface CartProps { }
 
 function Cart(this: Proton.Component, props: CartProps) {
-  const market = this.context.require(MarketModel)
+  const market = this.tree.context.require(MarketModel)
 
   const size = market.cart.to(cart => cart.values().reduce((result, next) => result + next, 0))
   const totals = market.cart.to(cart => cartTotals(STATIC_PRODUCTS, cart))

@@ -27,7 +27,7 @@ async function* ProductPage(this: Proton.Component) {
   yield <LoaderCover />
   await new Promise(r => setTimeout(r, 1_000))
 
-  const route = this.context.require(RouteContext)
+  const route = this.tree.context.require(RouteContext)
 
   const id = route.$.pathname.$.groups.$.id.to(requireRouteParam)
   const product = id.to(getProductById)

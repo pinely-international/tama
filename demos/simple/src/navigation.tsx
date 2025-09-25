@@ -82,7 +82,7 @@ export function NavRoute(this: Proton.Component, props: { path?: string; childre
   const switchView = () => {
     if (!navigation.test(props.path)) return this.view.set(null)
 
-    if (context == null) context = this.context.provide(new RouteContext(null))
+    if (context == null) context = this.tree.context.provide(new RouteContext(null))
     context!.set(navigation.result.get())
 
     if (view == null) view = this.inflator.inflate(props.children)

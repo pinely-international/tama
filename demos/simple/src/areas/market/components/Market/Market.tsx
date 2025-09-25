@@ -15,7 +15,7 @@ import ProductCard from "../ProductCard/ProductCard"
 
 
 function Market(this: Proton.Component) {
-  const market = this.context.provide(new MarketModel)
+  const market = this.tree.context.provide(new MarketModel)
 
   const points = (
     <>

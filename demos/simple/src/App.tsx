@@ -31,7 +31,7 @@ function App(this: Proton.Component) {
   const user = new Flow<User>({ email: "my@example.com", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
   const userContext = new UserContext(user)
 
-  this.context.provide(userContext)
+  this.tree.context.provide(userContext)
 
   return (
     <>
