@@ -30,6 +30,7 @@ type WebInflateResult<T> =
 interface WebInflatorFlags {
   debug: boolean
   skipAsync: boolean
+  disableJSXCache: boolean
 }
 
 class WebInflator extends Inflator {
@@ -38,6 +39,7 @@ class WebInflator extends Inflator {
   flags: WebInflatorFlags = {
     debug: false,
     skipAsync: false,
+    disableJSXCache: false,
   }
   /**
    * Custom JSX attributes.
@@ -151,11 +153,17 @@ class WebInflator extends Inflator {
   }
 
   private inflateJSXDeeply(jsx: JSX.Element): Element | DocumentFragment | Node {
-    const inflatedCached = WebInflator.jsxCache.get(jsx)
-    if (inflatedCached != null) return inflatedCached
+    let inflated
 
-    const inflated = this.inflateJSX(jsx)
-    WebInflator.jsxCache.set(jsx, inflated)
+    if (this.flags.disableJSXCache) {
+      inflated = this.inflateJSX(jsx)
+    } else {
+      const inflatedCached = WebInflator.jsxCache.get(jsx)
+      if (inflatedCached != null) return inflatedCached
+
+      inflated = this.inflateJSX(jsx)
+      WebInflator.jsxCache.set(jsx, inflated)
+    }
     // Inflation of Component children is handled by the component itself.
     if (jsx instanceof ProtonJSX.Component) return inflated
 
