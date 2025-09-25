@@ -4,7 +4,8 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@denshya/proton">
-    <img src="https://img.shields.io/npm/v/@denshya/proton/latest.svg" />
+    <img src="https://img.shields.io/npm/v/@denshya/proton?color=007ec6" />
+    <img alt="npm package minimized gzipped size" src="https://img.shields.io/bundlejs/size/@denshya/proton">
   </a>
 </p>
 
