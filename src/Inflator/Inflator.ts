@@ -1,5 +1,3 @@
-import { Primitive } from "type-fest"
-
 import { AccessorGet } from "@/Accessor"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
@@ -26,21 +24,10 @@ abstract class Inflator {
     if (isAsyncIterable(subject)) return this.inflateAsyncIterable(subject)
     if (isObservableGetter(subject)) return this.inflateObservable(subject)
 
-
-    switch (typeof subject) {
-      case "bigint":
-      case "boolean":
-      case "number":
-      case "string":
-      case "symbol":
-        return this.inflatePrimitive(subject)
-
-      default:
-        return this.inflatePrimitive(String(subject))
-    }
+    return this.inflatePrimitive(subject)
   }
 
-  protected abstract inflatePrimitive(primitive: Primitive): unknown
+  protected abstract inflatePrimitive(primitive: unknown): unknown
   protected abstract inflateFragment(): unknown
 
   protected abstract inflateIterable<T>(iterable: Iterable<T>): unknown
@@ -49,9 +36,10 @@ abstract class Inflator {
 
   protected abstract clone(): Inflator
 
-  protected declare component?: ProtonComponent
+  /** @internal */
+  declare component?: ProtonComponent
 
-
+  /** @internal */
   static cloneWith(inflator: Inflator, component: ProtonComponent): Inflator {
     const clone = inflator.clone()
 

@@ -21,7 +21,8 @@ export class ProtonComponent {
 class TreeAPI {
   public readonly context: TreeContextAPI
 
-  private readonly thrown = new Messager<unknown>
+  /** @internal */
+  readonly thrown = new Messager<unknown>
 
   constructor(private readonly parent?: TreeAPI) {
     this.context = new TreeContextAPI(this.parent?.context)
@@ -31,27 +32,5 @@ class TreeAPI {
 
   /** @internal */
   caught(thrown: unknown) { this.thrown.dispatch(thrown) }
-  catch(callback: (thrown: unknown) => void) { return this.thrown.subscribe(callback) }
-
-
-}
-
-
-function Component(this: ProtonComponent) {
-  this.view.set(1)
-
-  this.view.life.when("enter")
-  this.view.life.when("exit")
-  this.view.life.adopt(new Asd)
-
-  this.tree.catch()
-
-  this.tree.context.require()
-
-  this.tree.context
-}
-
-class Asd {
-  onEnter() { }
-  onExit() { }
+  catch(callback: (thrown: unknown) => void) { void this.thrown.subscribe(callback) }
 }

@@ -72,7 +72,7 @@ export class ProtonSwitch<T extends Record<keyof never | "default", unknown> = a
     })
   }
 
-  [Symbol.subscribe](next: () => void) { return this.notifier.subscribe(next) }
+  subscribe(next: () => void) { return this.notifier.subscribe(next) }
 }
 
 export class ProtonSwitchWebInflator extends InflatorAdapter {
@@ -84,7 +84,7 @@ export class ProtonSwitchWebInflator extends InflatorAdapter {
       [switcher.current.key]: this.inflator.inflate(switcher.current.value)
     }
 
-    switcher[Symbol.subscribe](() => {
+    switcher.subscribe(() => {
       if (switcher.current.key in inflatedCache === false) {
         inflatedCache[switcher.current.key] = this.inflator.inflate(switcher.current.value)
       }

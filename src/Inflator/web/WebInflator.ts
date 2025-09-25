@@ -28,7 +28,7 @@ type WebInflateResult<T> =
 
 
 interface WebInflatorFlags {
-  debug: boolean,
+  debug: boolean
   skipAsync: boolean
 }
 
@@ -59,7 +59,7 @@ class WebInflator extends Inflator {
 
     return super.inflate(subject) as never
   }
-  protected inflatePrimitive(primitive: Primitive): Text {
+  protected inflatePrimitive(primitive: unknown): Text {
     return new Text(String(primitive))
   }
 
@@ -191,7 +191,7 @@ class WebInflator extends Inflator {
     }
   }
 
-  protected inflateElement(type: string, options?: { namespace?: string, is?: string }) {
+  private inflateElement(type: string, options?: { namespace?: string, is?: string }) {
     if (options?.namespace != null) return document.createElementNS(options.namespace, type, options)
 
     if (NAMESPACE_SVG.has(type)) return document.createElementNS("http://www.w3.org/2000/svg", type, options)
