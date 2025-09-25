@@ -1,10 +1,11 @@
 <h1 align="center">🔵 Proton - UI Composition</h1>
-<h3 align="center">😱 ~5kb gzip, DOM-first, Rootless, Android-style, Component-based</h3>
+<h3 align="center">😱 ~5kb gzip, DOM-first, Rootless, Android-style, Component-based, No build</h3>
 <h4 align="center">Full TypeScript Support, Based on <a href="https://dev.to/framemuse/no-framework-principle-arised-2n39">No Framework Principle</a></h4>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@denshya/proton">
-    <img src="https://img.shields.io/npm/v/@denshya/proton/latest.svg" />
+    <img src="https://img.shields.io/npm/v/@denshya/proton?color=007ec6" />
+    <img alt="npm package minimized gzipped size" src="https://img.shields.io/bundlejs/size/@denshya/proton">
   </a>
 </p>
 
@@ -43,8 +44,8 @@ It is very similar to React, it tries to simplify development as we know it in R
 |`ref` attribute|Access DOM element when it's ready - supports refs merging as well|
 |Event delegation|Proton subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/proton/issues/53))|
 |SSR|Provides extendable `JSXSerializer` and examples with full DOM support in DOM-less envrionments like servers|
-|Portal||
-|Error catching||
+|Portal|Portals are natural and very easy, you just use component scoped inflator|
+|Error catching|Proton exposes clear API to catch errors and other|
 
 **Problems to solve:**
 
