@@ -12,9 +12,6 @@ import { NavRoute } from "./navigation"
 import UserContext from "./UserContext"
 
 
-const Circles = Lazy(() => import("./Circles/Circles"))
-const TictactoeGame = Lazy(() => import("./tictactoe/tictactoe"))
-const ProductsTableApp = Lazy(() => import("./products-table/ProductsTable"))
 const Market = Lazy(() => import("./areas/market/components/Market/Market"))
 const ProductPage = Lazy(() => import("./areas/market/components/ProductPage/ProductPage"))
 
@@ -36,9 +33,6 @@ function App(this: Proton.Component) {
 
   this.context.provide(userContext)
 
-  this.suspense(() => this.view.set(<LoaderCover />))
-  this.unsuspense(() => this.view.set(this.view.default))
-
   return (
     <>
       <header>
@@ -48,14 +42,10 @@ function App(this: Proton.Component) {
         <NavRoute path="/"><span>123</span></NavRoute>
         <NavRoute path="/documentation">Documentation</NavRoute>
 
-        <NavRoute path="/circles"><Circles /></NavRoute>
-
         <NavRoute path="/profile">
           <MiniProfile />
           <EditableAvatar image="https://denshya.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10409" />
         </NavRoute>
-        <NavRoute path="/tictactoe"><TictactoeGame /></NavRoute>
-        <NavRoute path="/products-table"><ProductsTableApp /></NavRoute>
         <NavRoute path="/market"><Market /></NavRoute>
         <NavRoute path="/market/product/:id"><ProductPage /></NavRoute>
       </main>
