@@ -1,6 +1,6 @@
 import "./ProductCard.scss"
 
-import { Flow, Flowable, FlowRead } from "@denshya/flow"
+import { State, StateOrPlain } from "@denshya/reactive"
 import { Proton } from "@denshya/proton"
 
 import Icon from "@/app/ui/Icon/Icon"
@@ -55,8 +55,8 @@ function ProductCard(this: Proton.Component, props: ProductCardProps) {
 
 export default ProductCard
 
-function useSearch(value: FlowRead<string | null | undefined>) {
-  const valueNormalized = Flow.from(value).to(it => it?.toLowerCase() ?? "")
+function useSearch(value: StateRead<string | null | undefined>) {
+  const valueNormalized = State.from(value).to(it => it?.toLowerCase() ?? "")
 
   function search(searchable: string | null | undefined, value: string): number {
     if (searchable == null) return -1
@@ -64,9 +64,9 @@ function useSearch(value: FlowRead<string | null | undefined>) {
     return searchable.toLowerCase().search(value)
   }
 
-  function highlight(searchable: Flowable<string | null | undefined>) {
+  function highlight(searchable: StateOrPlain<string | null | undefined>) {
     function HighlightComponent() {
-      const range = Flow.from(Flow.compute((searchable, value) => {
+      const range = State.from(State.combine([searchable, valueNormalized], (searchable, value) => {
 
         const index = search(searchable, value)
 
@@ -75,7 +75,7 @@ function useSearch(value: FlowRead<string | null | undefined>) {
           highlight: searchable?.slice(index, index + value.length),
           end: searchable?.slice(index + value.length)
         }
-      }, [Flow.from(searchable), valueNormalized]))
+      }))
 
       return (
         <>

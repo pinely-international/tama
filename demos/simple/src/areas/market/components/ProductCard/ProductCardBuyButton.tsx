@@ -1,13 +1,13 @@
 import "./ProductCardBuyButton.scss"
 
-import { Flow } from "@denshya/flow"
+import { State } from "@denshya/reactive"
 import { Proton } from "@denshya/proton"
 
 import Icon from "@/app/ui/Icon/Icon"
 
 
 interface ProductCardBuyProps {
-  amount: Flow<number>
+  amount: State<number>
   onClick?(): void
 }
 

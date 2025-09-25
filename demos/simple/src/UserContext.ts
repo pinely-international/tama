@@ -1,7 +1,7 @@
-import { Flow } from "@denshya/flow";
+import { State } from "@denshya/reactive";
 import User from "./app/user/User";
 
 
 export default class UserContext {
-  constructor(readonly user: Flow<User>) { }
+  constructor(readonly user: State<User>) { }
 }

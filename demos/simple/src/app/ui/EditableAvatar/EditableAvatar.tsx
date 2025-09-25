@@ -3,7 +3,7 @@ import "./EditableAvatar.scss"
 import { Proton } from "@denshya/proton"
 
 import Icon from "../Icon/Icon"
-import { Flow } from "@denshya/flow"
+import { State } from "@denshya/reactive"
 
 
 interface EditableAvatarProps {
@@ -14,8 +14,8 @@ interface EditableAvatarProps {
 }
 
 function EditableAvatar(this: Proton.Component, props: EditableAvatarProps) {
-  const image = new Flow(props.image)
-  const pending = new Flow(false)
+  const image = new State(props.image)
+  const pending = new State(false)
 
   async function onChange(event: Event) {
     const target = event.currentTarget as HTMLInputElement

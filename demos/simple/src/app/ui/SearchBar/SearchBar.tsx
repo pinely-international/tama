@@ -1,18 +1,18 @@
 import "./SearchBar.scss"
 
-import { Flow } from "@denshya/flow"
+import { State } from "@denshya/reactive"
 import { Proton } from "@denshya/proton"
 
 import Icon from "../Icon/Icon"
 
 
 interface SearchBarProps {
-  value: Flow<string>
+  value: State<string>
 }
 
 function SearchBar(this: Proton.Component, props: SearchBarProps) {
-  const value = Flow.from(props.value)
-  const valueFilled = value.is(it => it === "")
+  const value = State.from(props.value)
+  const valueIsEmpty = value.is("")
 
   const LoupeIcon = this.inflator.inflate(<div><Icon name="loupe" /></div>) as HTMLElement
   const anim1 = LoupeIcon.animate(
@@ -59,7 +59,7 @@ function SearchBar(this: Proton.Component, props: SearchBarProps) {
     <label className="search-bar">
       {LoupeIcon}
       <input className="search-bar__input" placeholder="Search..." pattern="" value={value} />
-      <button className="search-bar__empty" type="button" hidden={valueFilled} on={{ click: () => value.set("") }}>
+      <button className="search-bar__empty" type="button" hidden={valueIsEmpty} on={{ click: () => value.set("") }}>
         <Icon name="cross" />
       </button>
     </label>

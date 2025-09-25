@@ -1,6 +1,6 @@
 import "@/assets/scss/base.scss"
 
-import { Flow } from "@denshya/flow"
+import { State } from "@denshya/reactive"
 import { Proton } from "@denshya/proton"
 
 import EditableAvatar from "./app/ui/EditableAvatar/EditableAvatar"
@@ -28,7 +28,7 @@ function Lazy<T extends JSX.ElementTypeConstructor>(importFactory: () => Promise
 
 
 function App(this: Proton.Component) {
-  const user = new Flow<User>({ email: "my@example.com", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
+  const user = new State<User>({ email: "my@example.com", firstName: "Valery", lastName: "Zinchenko", username: "FrameMuse" })
   const userContext = new UserContext(user)
 
   this.tree.context.provide(userContext)

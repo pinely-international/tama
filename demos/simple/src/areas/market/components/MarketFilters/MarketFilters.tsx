@@ -4,7 +4,7 @@ import { Proton } from "@denshya/proton"
 
 import Icon from "@/app/ui/Icon/Icon"
 import MarketModel from "../../models/MarketModel"
-import { Flow } from "@denshya/flow"
+import { State } from "@denshya/reactive"
 import Button from "@/app/ui/Button/Button"
 
 
@@ -13,7 +13,7 @@ interface MarketFiltersProps { }
 function MarketFilters(this: Proton.Component, props: MarketFiltersProps) {
   const market = this.tree.context.require(MarketModel)
 
-  const expanded = new Flow(false)
+  const expanded = new State(false)
 
   return (
     <>

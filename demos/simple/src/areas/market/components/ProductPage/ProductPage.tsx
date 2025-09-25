@@ -1,6 +1,6 @@
 import "./ProductPage.scss"
 
-import { Flow } from "@denshya/flow"
+import { State } from "@denshya/reactive"
 import { Proton } from "@denshya/proton"
 
 import Icon from "@/app/ui/Icon/Icon"
@@ -44,7 +44,7 @@ async function* ProductPage(this: Proton.Component) {
           <Icon name="star" />
           <strong>{4.8}</strong>
           <span>(452 reviews)</span>
-          <NavLink className="ghost" to={Flow.f`/market/product/${id}/reviews`} />
+          <NavLink className="ghost" to={State.f`/market/product/${id}/reviews`} />
         </div>
         <div className="product-page__pricing">
           <div className="product-page__price">{product.to(it => Price.format(it.price * (1 - (it.discount / 100))))}</div>

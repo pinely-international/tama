@@ -1,4 +1,4 @@
-import { Flow, Flowable } from "@denshya/flow"
+import { State, StateOrPlain } from "@denshya/reactive"
 import { castArray, isRecord } from "./common"
 
 class BEM {
@@ -39,14 +39,14 @@ function bem(classNames: BEMElement | BEMElement[], ...modifiers: (Record<keyof 
   return bemTil.merge(...castArray(classNames).map(className => bemTil.modify(className, ...mods)))
 }
 
-export const bemFlow = (classNames: Flowable<BEMElement> | Flowable<BEMElement>[], ...mods) => {
-  const classNamesFlows = castArray(classNames).map(Flow.from)
+export const bemFlow = (classNames: StateOrPlain<BEMElement> | StateOrPlain<BEMElement>[], ...mods) => {
+  const classNamesFlows = castArray(classNames).map(State.from)
   const modsFlows = mods.flatMap(mod => {
-    if (isRecord(mod)) return Flow.computeRecord(mod)
-    if (mod instanceof Array) return Flow.all(mod)
+    if (isRecord(mod)) return State.collect(mod)
+    if (mod instanceof Array) return State.collect(mod)
 
     return mod
   })
 
-  return Flow.compute(bem, [Flow.all(classNamesFlows), ...modsFlows])
+  return State.combine([State.collect(classNamesFlows), ...modsFlows], bem)
 }

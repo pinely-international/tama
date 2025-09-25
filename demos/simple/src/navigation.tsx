@@ -1,4 +1,4 @@
-import { Flow, Flowable } from "@denshya/flow"
+import { State, StateOrPlain } from "@denshya/reactive"
 import { Proton } from "@denshya/proton"
 
 
@@ -17,7 +17,7 @@ namespace WebNavigation {
 }
 
 export class WebNavigation extends Navigation {
-  readonly current = new Flow(new URL(window.location.href))
+  readonly current = new State(new URL(window.location.href))
 
   get path() { return this.current.get().pathname }
   get url() { return this.current.get() }
@@ -54,7 +54,7 @@ export class WebNavigation extends Navigation {
     return url
   }
 
-  readonly result = new Flow<URLPatternResult | null>(null)
+  readonly result = new State<URLPatternResult | null>(null)
 
   test(pathPattern: string | undefined | null): boolean {
     const pattern = new URLPattern(`*://*:*${pathPattern ?? ""}`)
@@ -95,12 +95,12 @@ export function NavRoute(this: Proton.Component, props: { path?: string; childre
 
 
 
-export function NavLink(props: { to: Flowable<string>; className?: Flowable<string>; classMods?: JSX.CustomAttributes["classMods"]; children?: unknown }) {
-  const active = Flow.compute((nav, to) => to.length > 1 && nav.pathname.startsWith(to), [navigation.current, props.to])
+export function NavLink(props: { to: StateOrPlain<string>; className?: StateOrPlain<string>; classMods?: JSX.CustomAttributes["classMods"]; children?: unknown }) {
+  const active = State.combine([navigation.current, props.to], (nav, to) => to.length > 1 && nav.pathname.startsWith(to))
 
   function onClick(event: MouseEvent) {
     event.preventDefault()
-    navigation.navigate(Flow.get(props.to))
+    navigation.navigate(State.get(props.to))
   }
 
   return (
@@ -109,4 +109,4 @@ export function NavLink(props: { to: Flowable<string>; className?: Flowable<stri
 }
 
 
-export class RouteContext extends Flow<URLPatternResult | null> { }
+export class RouteContext extends State<URLPatternResult | null> { }

@@ -3,7 +3,7 @@ import "./Selector.scss"
 import DropDown, { DropDownOption } from "../DropDown/DropDown"
 import Icon, { IconName } from "../Icon/Icon"
 import { Proton } from "@denshya/proton"
-import { Flow, Flowable } from "@denshya/flow"
+import { State, StateOrPlain } from "@denshya/reactive"
 
 
 interface SelectorProps<T> {
@@ -11,16 +11,16 @@ interface SelectorProps<T> {
   label?: unknown
   placeholder?: unknown
 
-  iconName?: Flowable<IconName>
+  iconName?: StateOrPlain<IconName>
 
   children: JSX.Children<DropDownOption<T>>
 }
 
 function Selector<T = string | undefined>(this: Proton.Component, props: SelectorProps<T>) {
-  const expanded = new Flow(false)
-  const selected = new Flow<DropDownOption<T> | null>(null)
+  const expanded = new State(false)
+  const selected = new State<DropDownOption<T> | null>(null)
 
-  this.when("view").subscribe(view => {
+  this.view.life.adopt(view => {
     onClickAway(view).subscribe(() => expanded.set(false))
   })
 
@@ -30,7 +30,7 @@ function Selector<T = string | undefined>(this: Proton.Component, props: Selecto
         <div className="selector__label">{props.label}</div>
       )}
       <button className="selector__appearance" type="button" on={{ click: () => expanded.set(it => !it) }}>
-        <Icon className="selector__icon" name={Flow.from(props.iconName).required} />
+        <Icon className="selector__icon" name={State.from(props.iconName).required} />
         <div className="selector__placeholder" mounted={selected.isNullish}>{props.placeholder}</div>
         <div className="selector__current">{selected.$.children.required}</div>
         <Icon className="selector__icon" classMods={{ up: expanded }} name="chevron-down" />

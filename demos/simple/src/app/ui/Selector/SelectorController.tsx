@@ -1,23 +1,15 @@
-
-import { Flow, Flowable } from "@denshya/flow"
+import { State, StateOrPlain } from "@denshya/reactive"
 
 import { castArray } from "@/utils/common"
 
-
-
-// interface SelectorOption<T> {
-//   value: T
-//   hidden?: boolean
-//   disabled?: boolean
-// }
 
 interface SelectorControllerConfig<T> {
   /**
    * Force `expanded` state.
    */
-  expanded?: Flowable<boolean>
+  expanded?: StateOrPlain<boolean>
 
-  value?: Flow<T | T[]>
+  value?: State<T | T[]>
   defaultValue?: T | T[]
 
   /**
@@ -26,11 +18,11 @@ interface SelectorControllerConfig<T> {
    * @default
    * true
    */
-  searchable?: Flowable<boolean>
+  searchable?: StateOrPlain<boolean>
   /**
    * Search will set to this. Read only.
    */
-  search?: Flow<string>
+  search?: State<string>
 }
 
 class SelectorController<T> {
@@ -38,12 +30,12 @@ class SelectorController<T> {
     this.search.subscribe(() => this.expanded.set(true))
 
     if (config.search != null) this.search.sets(config.search)
-    if (config.expanded instanceof Flow) config.expanded.sets(this.expanded)
+    if (config.expanded instanceof State) config.expanded.sets(this.expanded)
   }
 
-  readonly search = new Flow("")
-  readonly expanded = new Flow(false)
-  private readonly localSelected = new Flow<T[]>(castArray(this.config.defaultValue ?? []))
+  readonly search = new State("")
+  readonly expanded = new State(false)
+  private readonly localSelected = new State<T[]>(castArray(this.config.defaultValue ?? []))
 
   readonly value = this.config.value?.to(castArray)
 
@@ -65,11 +57,11 @@ class SelectorController<T> {
     return false
   }
 
-  readonly searchable = Flow.from(this.config.searchable ?? new Flow(true))
+  readonly searchable = State.from(this.config.searchable ?? true)
   readonly searching = this.search.to(it => it.length > 0)
-  readonly searchVisible = Flow.compute(
+  readonly searchVisible = State.combine(
+    [this.searchable, this.config.expanded ?? this.expanded, this.searching],
     (searchable, expanded, searching) => searchable && (expanded || searching),
-    [this.searchable, Flow.from(this.config.expanded ?? this.expanded), this.searching],
   )
 }
 

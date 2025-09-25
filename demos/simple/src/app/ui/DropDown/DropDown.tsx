@@ -1,20 +1,20 @@
 import "./DropDown.scss"
 
-import { Flow, FlowArray } from "@denshya/flow"
+import { State, StateArray, StateOrPlain } from "@denshya/reactive"
 import { Proton } from "@denshya/proton"
 
 
 export type DropDownOption<V = unknown> = { type: "option", props: JSX.HTMLElements["option"] & { value?: V }, children?: unknown }
 
 interface DropDownProps<T> {
-  expanded: Flow<boolean>
-  selected: Flow<DropDownOption<T> | null>
+  expanded: State<boolean>
+  selected: State<DropDownOption<T> | null>
 
   children: JSX.Children<DropDownOption<T>>
 }
 
 function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
-  const optionsList = new FlowArray(props.children)
+  const optionsList = new StateArray(props.children)
 
   function onSelect(option: DropDownOption<T>) {
     props.selected.set(option)
@@ -31,7 +31,7 @@ function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
     containByHeight(view, document.body)
   }
 
-  const mutation = new MutationObserver(() => contain(this.getView() as HTMLElement))
+  const mutation = new MutationObserver(() => contain(this.view.current as HTMLElement))
 
   this.use(view => {
     if (view instanceof HTMLElement === false) return
@@ -46,14 +46,14 @@ function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
   })
 
   return (
-    <div className="drop-down" classMods={{ expanded: props.expanded }} role="listbox" aria-expanded={props.expanded}>
+    <div className="drop-down" classMods={{ expanded: props.expanded }} aria={{ role: "listbox", ariaExpanded: props.expanded }}>
       {optionsList.map(option => (
         <button
           className="drop-down__option"
           classMods={{ selected: isSelect(option) }}
 
           on={{ click: () => onSelect(option) }}
-          role="option"
+          aria={{ role: "option" }}
           type="button"
 
           name={String(option.props.value)}

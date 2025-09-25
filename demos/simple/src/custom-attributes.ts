@@ -1,4 +1,4 @@
-import { Flowable } from "@denshya/flow"
+import { StateOrPlain } from "@denshya/reactive"
 import { WebInflator } from "@denshya/proton"
 
 import { bemFlow } from "./utils/bem"
@@ -8,7 +8,7 @@ declare global {
   namespace JSX {
     interface CustomAttributes {
       /** Applies modifiers based `className` and overrides `className` attribute. */
-      classMods?: { [K in keyof never]: Flowable<unknown> } | Flowable<unknown>[]
+      classMods?: { [K in keyof never]: StateOrPlain<unknown> } | StateOrPlain<unknown>[]
     }
   }
 }

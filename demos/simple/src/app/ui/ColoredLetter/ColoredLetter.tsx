@@ -1,13 +1,13 @@
 import "./ColoredLetter.scss"
 
-import { Flow } from "@denshya/flow"
+import { State } from "@denshya/reactive"
 
 import { Proton } from "@denshya/proton"
 
 
 interface ColoredLetterProps {
-  letter: Flow<string>
-  baseHSL?: Flow<[number, number, number]>
+  letter: State<string>
+  baseHSL?: State<[number, number, number]>
 }
 
 function ColoredLetter(this: Proton.Component, props: ColoredLetterProps) {
@@ -25,7 +25,7 @@ function ColoredLetter(this: Proton.Component, props: ColoredLetterProps) {
   // )
 }
 
-const ads = new Flow([255, 50, 50])
+const ads = new State([255, 50, 50])
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz".split("")
 
