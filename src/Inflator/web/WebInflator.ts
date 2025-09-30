@@ -556,7 +556,7 @@ class WebInflator extends Inflator {
 
     try {
       // Pass context as `this` to the component function
-      component.view.initWith(factory.call(ctx, props));
+      component.view.initWith(factory.call(component, props));
     } catch (thrown) {
       component.tree.caught(thrown);
       console.error(thrown);
