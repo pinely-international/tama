@@ -1,11 +1,11 @@
-import { EventSignal } from "@denshya/reactive"
+import { State } from "@denshya/reactive"
 
 import { AsyncGeneratorPrototype } from "./BuiltinObjects"
 import { Life } from "./Life"
 
 
 
-class ViewAPI extends EventSignal<unknown> {
+class ViewAPI extends State<unknown> {
   readonly life = new Life
 
   declare default: unknown
