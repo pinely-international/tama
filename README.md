@@ -17,41 +17,6 @@ bun i @denshya/proton
 
 [Quick Demos](https://stackblitz.com/@FrameMuse/collections/proton)
 
-## Why Proton over React?
-
-It is very similar to React, it tries to simplify development as we know it in React. 
-
-|Feature|Description|
-|-------|-----------|
-|Extended Customization|Custom Attributes, Children Adapters, Element Transformation, Class extension|
-|No built-in State Manager|Any State Manager that supports Signal-like interface **will just** work in Proton, while there is no enforncement of one|
-|Signals/Observables Support|Native support for [WICG Observables](https://github.com/WICG/observable) and Signal-like structures|
-|No root elements|Any component can be **inflated** and attached anywhere|
-|Components can be Async 😱 (Client side)|Await your values and delay/schedule the views with fallbacks and initial view.|
-|Top level allowed|You can do anything in any scope, Proton doesn't put any constraints where or from something is initialized - enjoy!|
-|Children don't crash Parents|Error in the subtree will not break rendering of parents.|
-|Return any value|Components can be returned with **any** value, no seriously, even DOM Nodes/Elements will work.|
-|Class-based|Enables **tree-shaking**, **extensibility**, and **open internals**|
-
-**React Inherited Features**
-
-|Feature|Description|
-|-------|-----------|
-|Tree Context|Excplicit context sharing between subtree components|
-|Conditional Rendering|Proton implements Conditional Mounting|
-|Layouts Swapping|Conditionally changing the whole component layout|
-|JSX|Proton supports React JSX, but it also has a flavor|
-|`ref` attribute|Access DOM element when it's ready - supports refs merging as well|
-|Event delegation|Proton subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/proton/issues/53))|
-|SSR|Provides extendable `JSXSerializer` and examples with full DOM support in DOM-less envrionments like servers|
-|Portal|Portals are natural and very easy, you just use component scoped inflator|
-|Error catching|Proton exposes clear API to catch errors and other|
-
-**Problems to solve:**
-
-Proton isn't perfect, it's being developed
-https://github.com/pinely-international/proton/milestones
-
 ## What is "Rootless"?
 
 It means you don't have to hijack an element in order to render the App, it cancles Root Component and Host element completely.
@@ -152,6 +117,41 @@ If you want manage your components in a somewhat complex way (like in React), yo
 
 - <https://github.com/kitajs/html>
 - https://github.com/reactivehtml/rimmel
+
+## Why Proton over React?
+
+It is very similar to React, it tries to simplify development as we know it in React. 
+
+|Feature|Description|
+|-------|-----------|
+|Extended Customization|Custom Attributes, Children Adapters, Element Transformation, Class extension|
+|No built-in State Manager|Any State Manager that supports Signal-like interface **will just** work in Proton, while there is no enforncement of one|
+|Signals/Observables Support|Native support for [WICG Observables](https://github.com/WICG/observable) and Signal-like structures|
+|No root elements|Any component can be **inflated** and attached anywhere|
+|Components can be Async 😱 (Client side)|Await your values and delay/schedule the views with fallbacks and initial view.|
+|Top level allowed|You can do anything in any scope, Proton doesn't put any constraints where or from something is initialized - enjoy!|
+|Children don't crash Parents|Error in the subtree will not break rendering of parents.|
+|Return any value|Components can be returned with **any** value, no seriously, even DOM Nodes/Elements will work.|
+|Class-based|Enables **tree-shaking**, **extensibility**, and **open internals**|
+
+**React Inherited Features**
+
+|Feature|Description|
+|-------|-----------|
+|Tree Context|Excplicit context sharing between subtree components|
+|Conditional Rendering|Proton implements Conditional Mounting|
+|Layouts Swapping|Conditionally changing the whole component layout|
+|JSX|Proton supports React JSX, but it also has a flavor|
+|`ref` attribute|Access DOM element when it's ready - supports refs merging as well|
+|Event delegation|Proton subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/proton/issues/53))|
+|SSR|Provides extendable `JSXSerializer` and examples with full DOM support in DOM-less envrionments like servers|
+|Portal|Portals are natural and very easy, you just use component scoped inflator|
+|Error catching|Proton exposes clear API to catch errors and other|
+
+**Problems to solve:**
+
+Proton isn't perfect, it's being developed
+https://github.com/pinely-international/proton/milestones
 
 ## Getting Started
 
