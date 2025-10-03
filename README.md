@@ -7,6 +7,7 @@
     <img src="https://img.shields.io/npm/v/@denshya/proton?color=007ec6" />
     <img alt="npm package minimized gzipped size" src="https://img.shields.io/bundlejs/size/@denshya/proton">
   </a>
+  [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 </p>
 
 ## Install
