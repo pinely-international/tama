@@ -80,13 +80,12 @@ describe("WebJSXSerializer", () => {
 
   it("apply custom JSX attributes before serialization", () => {
     const inflator = new WebInflator
-    inflator.jsxAttributes.set("foo" as never, (context: any) => {
+    inflator.jsxAttributes.set("foo" as never, context => {
       context.bind("customFoo", `${context.value}-test`)
     })
 
     serializer.inherit(inflator)
-  const jsx = { type: "div", props: { foo: "bar", children: "ok" } }
-  expect(serializer.toString(jsx)).toContain(" customFoo=\"bar-test\"")
+    expect(serializer.toString(<div foo="bar">ok</div>)).toContain(" customFoo=\"bar-test\"")
   })
 
   it("componentToString renders sync component", () => {
