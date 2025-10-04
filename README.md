@@ -20,9 +20,9 @@ bun i @denshya/proton
 
 ## What is "Rootless"?
 
-It means you don't have to hijack an element to render the App; it cancels the Root Component and Host element completely.
+It means you don't have to hijack an element to render the App, it cancels the Root Component and Host element completely.
 
-That is a novel wording; another good phrase is "Reversed Element Factory Ownership."
+That is a novel wording, another good phrase is "Reversed Element Factory Ownership."
 These all stand for a component (or element) factory function producing/providing ownership to owned elements rather than being a side-effect function,
 which only modifies a given element.
 
@@ -121,7 +121,7 @@ If you want to manage your components in a somewhat complex way (like in React),
 
 ## Why Proton over React?
 
-It is very similar to React; it tries to simplify development as we know it in React.
+It is very similar to React, it tries to simplify development as we know it in React.
 
 |Feature|Description|
 |-------|-----------|
@@ -130,9 +130,9 @@ It is very similar to React; it tries to simplify development as we know it in R
 |Signals/Observables Support|Native support for [WICG Observables](https://github.com/WICG/observable) and Signal-like structures|
 |No root elements|Any component can be **inflated** and attached anywhere|
 |Components can be Async 😱 (Client side)|Await your values and delay/schedule the views with fallbacks and an initial view.|
-|Top-level allowed|You can do anything in any scope; Proton doesn't put any constraints on where or from what something is initialized - enjoy!|
+|Top-level allowed|You can do anything in any scope, Proton doesn't put any constraints on where or from what something is initialized - enjoy!|
 |Children don't crash Parents|An error in the subtree will not break the rendering of parents.|
-|Return any value|Components can be returned with **any** value; no seriously, even DOM Nodes/Elements will work.|
+|Return any value|Components can be returned with **any** value, no seriously, even DOM Nodes/Elements will work.|
 |Class-based|Enables **tree-shaking**, **extensibility**, and **open internals**|
 
 **React Inherited Features**
@@ -146,12 +146,12 @@ It is very similar to React; it tries to simplify development as we know it in R
 |`ref` attribute|Access a DOM element when it's ready - supports refs merging as well|
 |Event delegation|Proton subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/proton/issues/53))|
 |SSR|Provides an extendable `JSXSerializer` and examples with full DOM support in DOM-less environments like servers|
-|Portal|Portals are natural and very easy; you just use a component-scoped inflator|
+|Portal|Portals are natural and very easy, you just use a component-scoped inflator|
 |Error catching|Proton exposes a clear API to catch errors and others|
 
 **Problems to solve:**
 
-Proton isn't perfect; it's being developed.
+Proton isn't perfect, it's being developed.
 https://github.com/pinely-international/proton/milestones
 
 ## Getting Started
