@@ -161,7 +161,7 @@ function App() {
   return <div>Hello World!</div>
 }
 
-const inflator = new WebInflator()
+const inflator = new WebInflator
 const AppView = inflator.inflate(<App />)
 
 document.getElementById("root").replaceChildren(AppView)
