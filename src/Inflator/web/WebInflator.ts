@@ -16,8 +16,6 @@ import { iterableOf, nonGuard, onDemandRef } from "./helpers"
 
 import Inflator from "../Inflator"
 
-const REACT_FRAGMENT_SYMBOL = Symbol.for("react.fragment")
-
 
 type WebInflateResult<T> =
   T extends Node ? T :
@@ -75,7 +73,6 @@ class WebInflator extends Inflator {
     if (jsx instanceof ProtonJSX.Intrinsic) return this.inflateIntrinsic(jsx.type, jsx.props)
     if (jsx instanceof ProtonJSX.Component) return this.inflateComponent(jsx.type, jsx.props)
     if (jsx instanceof ProtonJSX.Fragment) return this.inflateFragment()
-    if (jsx.type === ProtonJSX.FragmentSymbol || jsx.type === REACT_FRAGMENT_SYMBOL) return this.inflateFragment()
 
     // Alternatives checks.
     switch (typeof jsx.type) {

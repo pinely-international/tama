@@ -75,43 +75,36 @@ class WebJSXSerializer {
     return value
   }
 
-  private applyCustomJSXAttributes(props: Record<string, unknown>): Record<string, unknown> {
-    if (this.inflator == null) return props
-    if (this.inflator.jsxAttributes.size === 0) return props
-
-    let target = props
-    if (Object.isExtensible(target) === false) {
-      target = { ...target }
-    }
+  private applyCustomJSXAttributes(props: any) {
+    if (this.inflator == null) return
+    if (this.inflator.jsxAttributes.size === 0) return
 
     const bind = (key: string, value: unknown) => {
-      target[key] = this.gettable(value)
+      props[key] = this.gettable(value)
     }
 
     for (const key of this.inflator.jsxAttributes.keys()) {
-      if (key in target === false) continue
+      if (key in props === false) continue
 
       const attributeSetup = this.inflator.jsxAttributes.get(key)!
-      attributeSetup({ props: target, key, value: target[key], bind })
+      attributeSetup({ props, key, value: props[key], bind })
     }
-
-    return target
   }
 
   jsxAttributesToString(props: any): string {
     if (props == null) return ""
 
-    const normalizedProps = this.applyCustomJSXAttributes(props)
+    this.applyCustomJSXAttributes(props)
 
     let attributes = "", key, value
-    for (key in normalizedProps) {
+    for (key in props) {
       if (key === "on") continue
       if (key === "ns") continue
       if (key === "children") continue
 
       if (this.inflator?.jsxAttributes.has(key)) continue
 
-      value = normalizedProps[key]
+      value = props[key]
       if (value == null) continue
 
       if (key === "className") key = "class"
