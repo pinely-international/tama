@@ -23,6 +23,7 @@
     "test-pack": "npm version patch --git-tag-version false && npm pack"
   },
   "dependencies": {
+    "@denshya/proton": "^0.7.4",
     "node-group": "^0.1.4"
   },
   "peerDependencies": {

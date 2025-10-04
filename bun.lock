@@ -4,6 +4,7 @@
     "": {
       "name": "@denshya/proton",
       "dependencies": {
+        "@denshya/proton": "^0.7.4",
         "node-group": "^0.1.4",
       },
       "devDependencies": {
@@ -26,6 +27,8 @@
     },
   },
   "packages": {
+    "@denshya/proton": ["@denshya/proton@0.7.4", "", { "dependencies": { "node-group": "^0.1.4" }, "peerDependencies": { "@denshya/reactive": ">=0.5.2", "type-fest": ">=4.31.0" } }, "sha512-+9QfsKKERytWPy6DjHGfAG6tg+nDvTpc6v0KCM2uDhd/c5IFtnvw71f8kvFFTMngXeV+bQT8xQdNdDg3Efc8AQ=="],
+
     "@denshya/reactive": ["@denshya/reactive@0.5.2", "", {}, "sha512-u/zU+aMOQpkTf82MJUr3DYXjdoguimEJ86uqayW6O5YxxslWpPjph5fXHEdgp/IzIGNktcCiekevRGPUZe/LFw=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.4", "", { "os": "aix", "cpu": "ppc64" }, "sha512-1VCICWypeQKhVbE9oW/sJaAmjLxhVqacdkvPLEjwlttjfwENRSClS8EjBz0KzRyFSCPDIkuXW34Je/vk7zdB7Q=="],
