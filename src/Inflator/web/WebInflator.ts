@@ -5,7 +5,7 @@ import { Primitive } from "type-fest"
 import Accessor, { AccessorGet } from "@/Accessor"
 import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
-import ProtonJSX from "@/jsx/ProtonJSX"
+import { MountGuard } from "@/MountGuard"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
 import { isIterable, isJSX, isRecord } from "@/utils/testers"
@@ -209,13 +209,16 @@ class WebInflator extends Inflator {
     if (props == null) return inflated
 
     const overridden = this.bindCustomProperties(props, inflated)
-    this.bindProperties(props, inflated, overridden)
+    const properties = this.bindProperties(props, inflated, overridden)
 
-    const immediateGuard = this.applyGuardMounting(inflated, props, type)
-    if (immediateGuard != null) {
+    const mountGuard = new MountGuard(inflated)
+    for (const { key, value } of properties) {
+      mountGuard.for(key, value)
+    }
+    if (mountGuard.immediate) {
       // @ts-expect-error 123
-      immediateGuard.inflated = inflated
-      return immediateGuard
+      mountGuard.placeholder.current.inflated = inflated
+      return mountGuard.placeholder.current
     }
 
     return inflated
@@ -266,55 +269,6 @@ class WebInflator extends Inflator {
     return componentGroup
   }
 
-  protected applyGuardMounting(element: Element, props: Record<string, any>, type: string) {
-    let mountPlaceholder: Comment | null = null
-
-    function toggleMount(condition: unknown) {
-      if (condition) {
-        if (mountPlaceholder?.parentElement == null) return
-        mountPlaceholder!.replaceWith(element)
-      } else {
-        if (element.parentElement == null) return
-        element.replaceWith(mountPlaceholder!)
-      }
-    }
-
-    let guards: Map<string, boolean> | null = null
-    let immediateGuard = false
-
-    if (props.mounted != null && props.mounted.valid == null) {
-      props.mounted.valid = nonGuard
-    }
-
-    for (const key in props) {
-      const property = props[key]
-      if (property instanceof Object === false) continue
-      if (property.valid instanceof Function === false) continue
-
-      const accessor = Accessor.extractObservable(property)
-      if (accessor == null) continue
-      if (accessor.subscribe == null) continue
-
-      if (guards == null) guards = new Map<string, boolean>()
-      if (mountPlaceholder == null) mountPlaceholder = new Comment(type)
-
-      accessor.subscribe(value => {
-        value = accessor.get?.() ?? value
-
-        const valid = property.valid(value)
-        guards!.set(key, valid)
-
-        toggleMount(guards!.values().every(Boolean))
-      })
-
-      if (accessor.get && property.valid(accessor.get()) === false) {
-        immediateGuard = true
-      }
-    }
-
-    if (immediateGuard) return mountPlaceholder
-  }
-
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
     if (isRecord(style)) {
       for (const property in style) {
@@ -338,14 +292,16 @@ class WebInflator extends Inflator {
     }
   }
 
-  protected bindProperties(props: object, inflated: Element, overridden: Set<string>) {
+  protected *bindProperties(props: object, inflated: Element, overridden: Set<string>) {
     try {
       let value
       for (const key in props) {
+        value = props[key as never]
+
+        yield { key, value }
+
         if (key === "children") continue
         if (overridden.has(key)) continue
-
-        value = props[key as never]
 
         if (inflated instanceof SVGElement || key.includes("-")) {
           WebInflator.subscribeAttribute(inflated, key, value)
