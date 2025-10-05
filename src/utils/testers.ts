@@ -33,3 +33,12 @@ export function isJSX(value: unknown): value is JSX.Element {
 
   return false
 }
+
+export function isPrimitive(value: unknown) {
+  switch (typeof value) {
+    case "function": return false
+    case "object": return value == null
+
+    default: return true
+  }
+}

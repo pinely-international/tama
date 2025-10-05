@@ -9,11 +9,11 @@ import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAP
 import { MountGuard } from "@/MountGuard"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
-import { isIterable, isJSX, isRecord } from "@/utils/testers"
+import { isIterable, isJSX, isObservableGetter, isPrimitive, isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { iterableOf, nonGuard, onDemandRef } from "./helpers"
+import { iterableOf, onDemandRef } from "./helpers"
 
 import Inflator from "../Inflator"
 
@@ -130,8 +130,7 @@ class WebInflator extends Inflator {
 
     replace(iterableOf(iterable))
 
-    iterable[Symbol.subscribe]?.(replace)
-    return iterableGroup
+    return parent
   }
   protected inflateAsyncIterable<T>(asyncIterable: AsyncIteratorObject<T>): unknown {
     throw new TypeError("Async Iterator is not supported", { cause: { asyncIterable } })
@@ -220,10 +219,7 @@ class WebInflator extends Inflator {
     }
 
     const component = new ProtonComponent(this, this.component)
-
-    const componentGroup = new Group
-    const componentComment = onDemandRef(() => new Comment("component/" + factory.name))
-
+    const componentGroup = new InsertionGroup
 
     try {
       component.view.initWith(factory.call(component, props))
