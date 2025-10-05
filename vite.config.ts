@@ -1,13 +1,15 @@
 import path from "path"
 import { defineConfig } from "vite"
 import { externalizeDeps } from "vite-plugin-externalize-deps"
-import viteCompression from 'vite-plugin-compression';
+import viteCompression from "vite-plugin-compression"
+import jsxCompressPlugin from "./vite-plugin-jsx-compress"
 
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     externalizeDeps({ peerDeps: true }),
+    jsxCompressPlugin(),
     viteCompression({
       algorithm: "brotliCompress", 
       threshold: 10240,           
