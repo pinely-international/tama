@@ -1,6 +1,5 @@
-import { AccessorGet } from "@/Accessor"
-import ProtonJSX from "@/jsx/ProtonJSX"
-import Observable from "@/Observable"
+import Accessor from "@/Accessor"
+import { Subscriptable } from "@/Observable"
 
 /**
  * https://stackoverflow.com/questions/38304401/javascript-check-if-dictionary/71975382#71975382
@@ -9,9 +8,9 @@ export function isRecord(object: unknown): object is Record<keyof never, unknown
   return object instanceof Object && object.constructor === Object
 }
 
-export function isObservableGetter<T>(value: unknown): value is Observable<T> & AccessorGet<T> {
+export function isObservableGetter<T>(value: unknown): value is Partial<Accessor<T> & Subscriptable<T>> {
   // @ts-expect-error ok to check this way.
-  if (value instanceof Object && value.get instanceof Function && value[Symbol.subscribe] instanceof Function) {
+  if (value instanceof Object && value.subscribe instanceof Function) {
     return true
   }
 
