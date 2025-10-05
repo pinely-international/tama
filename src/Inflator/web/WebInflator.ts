@@ -2,7 +2,7 @@ import { State } from "@denshya/reactive"
 import { Group } from "node-group"
 import { Primitive } from "type-fest"
 
-import Accessor, { AccessorGet } from "@/Accessor"
+import { AccessorGet } from "@/Accessor"
 import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
 import { InsertionGroup } from "@/InsertionGroup"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
@@ -103,7 +103,7 @@ class WebInflator extends Inflator {
     const value = observable.get?.()
     const textNode = document.createTextNode(value as string)
 
-    observable[Symbol.subscribe](value => textNode.nodeValue = String(observable.get?.() ?? value))
+    observable.subscribe(value => textNode.nodeValue = (observable.get?.() ?? value) as string)
 
     return textNode
   }
@@ -114,7 +114,7 @@ class WebInflator extends Inflator {
     const value = observable.get!()
     let element = this.inflateJSXDeeply(value) as Partial<ChildNode>
 
-    observable[Symbol.subscribe]?.(value => {
+    observable.subscribe?.(value => {
       const next = this.inflate(value) ?? placeholder.current
 
       element.replaceWith?.(next)
@@ -129,6 +129,7 @@ class WebInflator extends Inflator {
     }
 
     replace(iterableOf(iterable))
+    iterable.subscribe?.(replace)
 
     return parent
   }
