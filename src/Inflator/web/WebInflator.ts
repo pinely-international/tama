@@ -157,26 +157,19 @@ class WebInflator extends Inflator {
     return inflated
   }
 
-  private inflateJSXChildren(jsx: JSX.Element, inflated: Node): void {
+  private inflateJSXChildren(jsx: JSX.Element, parent: Node): void {
     if (jsx.props?.children == null) return
 
     // @ts-expect-error 123
-    const actualInflated = inflated instanceof Comment ? inflated.inflated : inflated
+    const actualParent = parent.nodeType === Node.COMMENT_NODE ? parent.inflated : parent
 
     try {
-      // Check for non-observable iterables.
-      if (isIterable(jsx.props.children) && ((Symbol.subscribe in jsx.props.children) === false)) {
-        const result: Node[] = []
-        for (const child of jsx.props.children) {
-          const inflated = this.inflate(child)
-          if (inflated == null) continue
-
-          result.push(inflated)
-        }
-
-        actualInflated.replaceChildren(...result)
+      if (isIterable(jsx.props.children)) {
+        this.inflateIterable(jsx.props.children, actualParent)
+      } else if (isObservableGetter(jsx.props.children) || isPrimitive(jsx.props.children)) {
+        WebInflator.subscribeProperty("textContent", jsx.props.children, actualParent)
       } else {
-        actualInflated.replaceChildren(this.inflate(jsx.props.children))
+        actualParent.appendChild(this.inflate(jsx.props.children))
       }
     } catch (error) {
       console.trace(error, "inflateJSXChildren")
