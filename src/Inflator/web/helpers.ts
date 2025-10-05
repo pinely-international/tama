@@ -1,16 +1,11 @@
 export const nonGuard = (value: unknown) => value
 
 
-export function iterableOf(object: object) {
-  if (Symbol.iterator in object) return object
-  if ("get" in object && object.get instanceof Function) {
-    const value = object.get()
-    if (Symbol.iterator in value) return value
-  }
+export function iterableOf(object: object): IteratorObject<any> {
+  if (Symbol.iterator in object.valueOf()) return object as never
 
-  throw new TypeError("Unreachable code reached during extract of iterable from observable")
+  throw new TypeError("Given object is not iterable", { cause: { object } })
 }
-
 
 
 /**

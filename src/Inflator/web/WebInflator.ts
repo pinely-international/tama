@@ -93,10 +93,6 @@ class WebInflator extends Inflator {
 
         throw new TypeError("Can't choose right way to inflate observable of this type: " + value)
       }
-      case "boolean":
-      case "number":
-      case "string":
-      case "symbol":
       default:
         return this.inflateObservableText(observable)
     }
@@ -453,4 +449,3 @@ class WebInflator extends Inflator {
 }
 
 export default WebInflator
-
