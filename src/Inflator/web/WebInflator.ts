@@ -4,6 +4,7 @@ import { Primitive } from "type-fest"
 
 import Accessor, { AccessorGet } from "@/Accessor"
 import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
+import { InsertionGroup } from "@/InsertionGroup"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import { MountGuard } from "@/MountGuard"
 import Observable from "@/Observable"
@@ -122,18 +123,9 @@ class WebInflator extends Inflator {
     return element
   }
 
-  protected inflateIterable<T>(iterable: (IteratorObject<T> & Partial<Observable<IteratorObject<T>>>)) {
-    const iterableGroup = new Group
-    const iterableComment = onDemandRef(() => new Comment("iterable/" + iterable.constructor.name))
-
+  protected inflateIterable<T, P extends ParentNode = InsertionGroup>(iterable: (IteratorObject<T> & Partial<Observable<IteratorObject<T>>>), parent: P = new InsertionGroup as never): P {
     const replace = (otherIterable: IteratorObject<T> & Partial<Observable<IteratorObject<T>>>) => {
-      const nodes = [...this.__inflateIterable__(otherIterable)]
-
-      if (nodes.length > 0) {
-        iterableGroup.replaceChildren(...nodes) // Previous nodes will be lost at this point.
-      } else {
-        iterableGroup.replaceChildren(iterableComment.current)
-      }
+      parent.replaceChildren(...this.__inflateIterable__(otherIterable)) // Previous nodes will be lost at this point.
     }
 
     replace(iterableOf(iterable))
@@ -249,11 +241,11 @@ class WebInflator extends Inflator {
     }
 
 
-    const currentView = component.inflator.inflate(component.view.get()) as ChildNode
-    componentGroup.append(currentView ?? componentComment.current)
+    const currentView = component.inflator.inflate(component.view.current) as ChildNode | null
+    replace(currentView)
 
-    const replace = (view: unknown | null) => {
-      if (view === null) componentGroup.replaceChildren(componentComment.current)
+    function replace(view: unknown | null) {
+      if (view == null) componentGroup.replaceChildren()
       if (view instanceof Node) componentGroup.replaceChildren(view)
     }
 
