@@ -1,11 +1,19 @@
 import path from "path"
 import { defineConfig } from "vite"
 import { externalizeDeps } from "vite-plugin-externalize-deps"
+import viteCompression from 'vite-plugin-compression';
 
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [externalizeDeps({ peerDeps: true })],
+  plugins: [
+    externalizeDeps({ peerDeps: true }),
+    viteCompression({
+      algorithm: "brotliCompress", 
+      threshold: 10240,           
+      deleteOriginFile: false
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -14,8 +22,7 @@ export default defineConfig({
   build: {
     target: false,
     outDir: "build",
-
-    minify: false,
+    minify: "esbuild", 
     sourcemap: true,
     emptyOutDir: true,
     modulePreload: false,
@@ -33,6 +40,6 @@ export default defineConfig({
   esbuild: {
     treeShaking: true,
     minifyIdentifiers: false,
-    keepNames: false
+    keepNames: false 
   },
 })
