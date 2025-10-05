@@ -28,10 +28,19 @@ export default function jsxCompressPlugin(): Plugin {
 
       babel.traverse(ast, {
         JSXAttribute(path) {
-          if (t.isJSXIdentifier(path.node.name)) {
-            if (path.node.name.name === "className") path.node.name.name = "cn"
-            if (path.node.name.name === "tabIndex") path.node.name.name = "ti"
-            if (path.node.name.name === "for") path.node.name.name = "f" 
+          // Only rename for DOM elements (not custom components)
+          const parent = path.parentPath && path.parentPath.parent
+          if (
+            parent &&
+            t.isJSXOpeningElement(parent) &&
+            t.isJSXIdentifier(parent.name) &&
+            /^[a-z]/.test(parent.name.name)
+          ) {
+            if (t.isJSXIdentifier(path.node.name)) {
+              if (path.node.name.name === "className") path.node.name.name = "cn"
+              if (path.node.name.name === "tabIndex") path.node.name.name = "ti"
+              if (path.node.name.name === "htmlFor") path.node.name.name = "f"
+            }
           }
         },
         JSXOpeningElement(path) {

@@ -97,6 +97,13 @@ class WebJSXSerializer {
     this.applyCustomJSXAttributes(props)
 
     let attributes = "", key, value
+    // Reverse mapping for compressed attribute names
+    const reverseMap: Record<string, string> = {
+      cn: "class",
+      ti: "tabIndex",
+      f: "for",
+      className: "class"
+    }
     for (key in props) {
       if (key === "on") continue
       if (key === "ns") continue
@@ -107,13 +114,14 @@ class WebJSXSerializer {
       value = props[key]
       if (value == null) continue
 
-      if (key === "className") key = "class"
-      if (key === "style") value = this.styleToString(value)
+      // Map short names back to HTML attribute names
+      const htmlKey = reverseMap[key] || key
+      if (htmlKey === "style") value = this.styleToString(value)
 
       value = this.gettable(value)
       if (value == null) continue
 
-      attributes += " " + key + "=\"" + value + "\""
+      attributes += " " + htmlKey + "=\"" + value + "\""
     }
     return attributes
   }
