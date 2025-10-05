@@ -1,13 +1,22 @@
-// Reverse mapping for compressed element names
-const elementReverseMap: Record<string, string> = {
-  d: "div"
-  // Add more compressed element mappings here if needed
-}
 import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
 import WebInflator from "@/Inflator/web/WebInflator"
 import { kebabCase } from "@/utils/string"
 import { isIterable, isJSX, isObservableGetter, isRecord } from "@/utils/testers"
 
+// Reverse mapping for compressed attribute names
+const reverseMap: Record<string, string> = {
+  cn: "class",
+  ti: "tabIndex",
+  f: "for",
+  className: "class"
+}
+// Reverse mapping for compressed element names
+const elementReverseMap: Record<string, string> = {
+  d: "div"
+  // Add more compressed element mappings here if needed
+}
+// Helper to get original element type
+const getOriginalType = (t: any) => elementReverseMap[String(t)] || String(t)
 
 
 class WebJSXSerializer {
@@ -102,13 +111,7 @@ class WebJSXSerializer {
     this.applyCustomJSXAttributes(props)
 
     let attributes = "", key, value
-    // Reverse mapping for compressed attribute names
-    const reverseMap: Record<string, string> = {
-      cn: "class",
-      ti: "tabIndex",
-      f: "for",
-      className: "class"
-    }
+    // Use module-level reverseMap for compressed attribute names
     for (key in props) {
       if (key === "on") continue
       if (key === "ns") continue
@@ -132,8 +135,6 @@ class WebJSXSerializer {
   }
 
   jsxToString(jsx: JSX.Element): string {
-    // Reverse mapping for compressed element names
-    const getOriginalType = (t: any) => elementReverseMap[String(t)] || String(t)
     if (jsx.props == null) {
       const type = getOriginalType(jsx.type)
       if (selfClosingTags.has(type)) {
