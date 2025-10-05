@@ -1,3 +1,8 @@
+// Reverse mapping for compressed element names
+const elementReverseMap: Record<string, string> = {
+  d: "div"
+  // Add more compressed element mappings here if needed
+}
 import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
 import WebInflator from "@/Inflator/web/WebInflator"
 import { kebabCase } from "@/utils/string"
@@ -127,9 +132,10 @@ class WebJSXSerializer {
   }
 
   jsxToString(jsx: JSX.Element): string {
+    // Reverse mapping for compressed element names
+    const getOriginalType = (t: any) => elementReverseMap[String(t)] || String(t)
     if (jsx.props == null) {
-      const type = String(jsx.type)
-
+      const type = getOriginalType(jsx.type)
       if (selfClosingTags.has(type)) {
         return "<" + type + "/>"
       }
@@ -143,7 +149,7 @@ class WebJSXSerializer {
     const children = this.toString(jsx.props.children)
     if (jsx.type.constructor === Symbol) return children
 
-    const type = String(jsx.type)
+    const type = getOriginalType(jsx.type)
     const attributes = this.jsxAttributesToString(jsx.props)
 
     if (selfClosingTags.has(type)) {
