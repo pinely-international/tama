@@ -63,7 +63,7 @@ class WebInflator extends Inflator {
     return super.inflate(subject) as never
   }
   protected inflatePrimitive(primitive: unknown): Text {
-    return new Text(String(primitive))
+    return document.createTextNode(primitive as string)
   }
 
   protected inflateFragment() {
@@ -101,7 +101,7 @@ class WebInflator extends Inflator {
 
   protected inflateObservableText<T>(observable: Observable<T> & Partial<AccessorGet<T>>) {
     const value = observable.get?.()
-    const textNode = new Text(String(value))
+    const textNode = document.createTextNode(value as string)
 
     observable[Symbol.subscribe](value => textNode.nodeValue = String(observable.get?.() ?? value))
 
@@ -265,7 +265,7 @@ class WebInflator extends Inflator {
     if (isRecord(style)) {
       for (const property in style) {
         if (property.startsWith("--")) {
-          WebInflator.subscribe(style[property], value => element.style.setProperty(property, String(value)))
+          WebInflator.subscribe(style[property], value => element.style.setProperty(property, value as string))
           continue
         }
 
@@ -275,7 +275,7 @@ class WebInflator extends Inflator {
       return
     }
 
-    WebInflator.subscribe(style, value => element.style.cssText = String(value))
+    WebInflator.subscribe(style, value => element.style.cssText = value as string)
   }
 
   protected bindEventListeners(listeners: any, element: Element) {
@@ -376,7 +376,7 @@ class WebInflator extends Inflator {
   static subscribeAttribute(target: Element, key: string, value: unknown): void {
     WebInflator.subscribe(value, value => {
       if (value != null) {
-        target.setAttribute(key, String(value))
+        target.setAttribute(key, value as string)
       } else {
         target.removeAttribute(key)
       }
