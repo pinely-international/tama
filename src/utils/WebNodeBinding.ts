@@ -1,4 +1,4 @@
-import Accessor from "../Accessor"
+import { isObservableGetter } from "./testers"
 
 const nativeDescriptors: PropertyDescriptorMap = {}
 
@@ -23,8 +23,8 @@ function getNativeDescriptor(instance: Node, property: keyof never): PropertyDes
 /** @internal */
 namespace WebNodeBinding {
   export function dualSignalBind<T extends Node>(node: T, key: keyof T, value: unknown, changeEventKey: string) {
-    const accessor = Accessor.extractObservable(value)
-    if (accessor == null) return
+    const accessor = value
+    if (!isObservableGetter(accessor)) return
 
     const descriptor = getNativeDescriptor(node, key)
 
