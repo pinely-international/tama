@@ -2,7 +2,10 @@ export const nonGuard = (value: unknown) => value
 
 
 export function iterableOf(object: object): IteratorObject<any> {
-  if (Symbol.iterator in object.valueOf()) return object as never
+  if (Symbol.iterator in object) return object as any
+
+  const value = object.valueOf()
+  if (Symbol.iterator in value) return value as any
 
   throw new TypeError("Given object is not iterable", { cause: { object } })
 }
