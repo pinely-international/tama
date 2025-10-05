@@ -70,14 +70,11 @@ class WebInflator extends Inflator {
   }
 
   public inflateJSX(jsx: JSX.Element): Node {
-    if (jsx instanceof ProtonJSX.Intrinsic) return this.inflateIntrinsic(jsx.type, jsx.props)
-    if (jsx instanceof ProtonJSX.Component) return this.inflateComponent(jsx.type, jsx.props)
-    if (jsx instanceof ProtonJSX.Fragment) return this.inflateFragment()
-
     // Alternatives checks.
     switch (typeof jsx.type) {
       case "string": return this.inflateIntrinsic(jsx.type, jsx.props)
       case "function": return this.inflateComponent(jsx.type, jsx.props)
+      case "symbol": return this.inflateFragment()
       default: break
     }
 
@@ -165,7 +162,7 @@ class WebInflator extends Inflator {
       WebInflator.jsxCache.set(jsx, inflated)
     }
     // Inflation of Component children is handled by the component itself.
-    if (jsx instanceof ProtonJSX.Component) return inflated
+    if (typeof jsx.type === "function") return inflated
 
     this.inflateJSXChildren(jsx, inflated)
 
@@ -211,11 +208,7 @@ class WebInflator extends Inflator {
   /**
    * Creates element and binds properties.
    */
-  public inflateIntrinsic(type: unknown, props?: Record<string, any>): Element | Comment {
-    if (typeof type !== "string") {
-      throw new TypeError(typeof type + " type of intrinsic element is not supported", { cause: { type } })
-    }
-
+  public inflateIntrinsic(type: string, props?: Record<string, any>): Element | Comment {
     const inflated = this.inflateElement(type, props?.ns)
     if (props == null) return inflated
 
