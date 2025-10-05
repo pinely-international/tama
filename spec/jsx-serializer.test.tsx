@@ -105,8 +105,10 @@ describe("WebJSXSerializer", () => {
   })
 
   it("skips elements with [data-nosnippet]", () => {
-    const element = { type: "div", props: { "data-nosnippet": true } }
-
+    const element = <div data-nosnippet />
+    expect(element).toEqual({ type: "div", props: { "data-nosnippet": true } })
+    expect(element.props).toEqual({ "data-nosnippet": true })
+    
     const out = serializer.toString(element)
     expect(out).toBe("")
   })
