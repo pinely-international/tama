@@ -64,6 +64,10 @@ const container = document.querySelector(".container")
 container?.append(Widget.Standalone)
 ```
 
+## DOM First & Easier Intergration
+
+Nodes are allowed in JSX, making it easier to intergate.
+
 ## Observables Allowed in JSX
 
 The turning point is that JSX element attributes and children can consume [WICG Observables](https://github.com/WICG/observable),
