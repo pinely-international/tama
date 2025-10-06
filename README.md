@@ -55,8 +55,7 @@ This allows you to do this: (Somewhat of an alternative to Web Components)
 
 ```jsx
 function Widget() {
-  const element = document.createElement("div")
-  return <div style={...}>{element}</div>
+  return document.createElement("div")
 }
 Widget.Standalone = inflator.inflate(<Widget />)
 
@@ -66,7 +65,16 @@ container?.append(Widget.Standalone)
 
 ## DOM First & Easier Intergration
 
-Nodes are allowed in JSX, making it easier to intergate.
+Nodes are allowed in JSX, making it easier to intergate third-party libraries that are for VanilaJS.
+
+```jsx
+function Widget() {
+  const button = document.getElementById("button")
+  button.append("Click me")
+
+  return <div style={...}>{button}</div>
+}
+```
 
 ## Observables Allowed in JSX
 
