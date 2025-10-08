@@ -2,33 +2,16 @@
 sidebar_position: 1
 ---
 
-# Getting Started with Proton
+# Getting Started
 
-Proton is a lightweight, DOM-first UI framework that brings Signal-based reactivity to web development. With no build configuration required and a tiny ~5kb footprint, you can start building reactive UIs immediately.
-
-## Why Choose Proton?
-
-- 🚀 **Tiny Bundle**: Only ~5kb gzipped
-- 🔄 **Signal-Native**: Built for observable-based state management  
-- 🏗️ **Rootless**: Components can be mounted anywhere
-- ⚡ **Zero Config**: No build plugins or complex setup required
-- 🎯 **Class-Based**: Extensible, tree-shakeable architecture
-- 🔒 **Error Isolation**: Child errors don't crash parent components
-
-## Installation
-
-Install Proton and a bundler (Vite recommended):
+## Install
 
 ```bash
-bun i @denshya/proton
 bun i -D vite
+bun i @denshya/proton
 ```
 
-:::tip
-Any bundler works with Proton - no special plugins required!
-:::
-
-## Project Setup
+## Setup
 
 ### Package Configuration
 
