@@ -241,8 +241,13 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
-    component.view.subscribe(view => {
+    component.view.subscribe((view: unknown) => {
       view = component.inflator.inflate(view)
+
+      if (component.view.transitions.state === "running") {
+        replace(view)
+        return
+      }
 
       cancelAnimationFrame(lastAnimationFrame)
       lastAnimationFrame = requestAnimationFrame(() => replace(view))
@@ -415,7 +420,7 @@ class WebInflator extends Inflator {
     })
   }
 
-  protected static subscribe(source: unknown, targetBindCallback: (value: unknown) => void): void {
+  static subscribe(source: unknown, targetBindCallback: (value: unknown) => void): void {
     if (source == null) return
     return void State.subscribeImmediate(source, targetBindCallback)
   }

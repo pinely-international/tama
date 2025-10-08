@@ -1,7 +1,9 @@
+/** @jsxImportSource ../jsx/virtual */
+
 import "./dom"
 
 import { describe, it, expect, beforeEach } from "bun:test"
-import { WebInflator } from "../build"
+import WebInflator from "../src/Inflator/web/WebInflator"
 
 import { State, StateArray } from "@denshya/reactive"
 

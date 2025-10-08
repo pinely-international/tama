@@ -1,3 +1,5 @@
+/** @jsxImportSource ../jsx/virtual */
+
 import "./dom"
 
 import { State } from "@denshya/reactive"
@@ -5,7 +7,8 @@ import { beforeAll, describe, expect, it } from "bun:test"
 
 import { injectDOMPolyfill } from "./dom"
 
-import { WebInflator, WebJSXSerializer } from "../build"
+import WebInflator from "../src/Inflator/web/WebInflator"
+import WebJSXSerializer from "../src/jsx/JSXSerializer"
 
 
 describe("WebJSXSerializer", () => {
@@ -85,7 +88,7 @@ describe("WebJSXSerializer", () => {
     })
 
     serializer.inherit(inflator)
-    expect(serializer.toString(<div foo="bar">ok</div>)).toContain(" customFoo=\"bar-test\"")
+  expect(serializer.toString(<div {...({ foo: "bar" } as any)}>ok</div>)).toContain(" customFoo=\"bar-test\"")
   })
 
   it("componentToString renders sync component", () => {

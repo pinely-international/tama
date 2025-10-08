@@ -1,3 +1,5 @@
+/** @jsxImportSource ../jsx/virtual */
+
 import { describe, it } from 'bun:test'
 import { State } from "@denshya/reactive"
 

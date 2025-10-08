@@ -1,9 +1,11 @@
+/** @jsxImportSource ../jsx/virtual */
+
 import "./dom"
 
 import { barplot, bench, group, run } from "mitata"
 import { State, StateArray } from "@denshya/reactive"
 import TreeContextAPI from "@/TreeContextAPI"
-import { WebInflator } from "../build"
+import WebInflator from "../src/Inflator/web/WebInflator"
 
 const inflator = new WebInflator
 

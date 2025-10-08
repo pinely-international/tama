@@ -2,7 +2,7 @@ import "./dom"
 
 import { describe, expect, it } from "bun:test"
 
-import { WebInflator, } from "../build"
+import WebInflator from "../src/Inflator/web/WebInflator"
 
 
 /**
