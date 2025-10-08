@@ -3,7 +3,7 @@ export interface Subscriptable<T> {
 }
 
 interface Observable<T> {
-  [Symbol.subscribe](listener: (value: T) => void): Unsubscribe
+  subscribe(listener: (value: T) => void): Unsubscribe
 }
 
 export default Observable
