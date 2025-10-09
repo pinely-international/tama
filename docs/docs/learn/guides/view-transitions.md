@@ -1,6 +1,6 @@
 # View Transitions
 
-`this.view.transitions` exposes a `TransitionAPI` instance – a small finite-state machine that orchestrates swaps between the current and the next view. Each entry in the set receives a `transit` callback together with the previous and the next values supplied to `this.view.set` (or `setAsync`).
+`this.view.transitions` exposes a `TransitionAPI` instance – a small finite-state machine that orchestrates swaps between the current and the next view. Each entry in the set receives a `transit` callback together with the previous and the next values supplied to `this.view.set`.
 
 At runtime you can inspect:
 
@@ -75,7 +75,7 @@ if ("startViewTransition" in document) {
 }
 ```
 
-> Proton automatically binds `document.startViewTransition` to `document`, so you do not have to `bind` manually.
+> Proton invokes `document.startViewTransition` with `document` as the context, so you can pass the method reference without manually binding it.
 
 The returned `ViewTransition` promises (`ready`, `finished`, `updateCallbackDone`, `committed` and `done`) are awaited before the queue settles. This allows the transition to finish fully before Proton exposes the next view.
 
@@ -84,13 +84,13 @@ The returned `ViewTransition` promises (`ready`, `finished`, `updateCallbackDone
 `this.view.transitions` is a `Set`. If you need to replace the whole collection you can do so via:
 
 ```ts
-this.view.useTransitions([
+this.view.transitions = new Set([
   customTransition,
   document.startViewTransition,
 ])
 ```
 
-Each call to `this.view.setAsync(value)` returns a promise that resolves once every transition handler finishes. The synchronous variant `this.view.set(value)` keeps the previous behaviour but now runs in the background, so existing code keeps working without changes. You can also assign a brand new collection directly: `this.view.transitions = new Set([customTransition])`.
+Calling `this.view.set(value)` keeps the previous behaviour but now runs transitions in the background, so existing code keeps working without changes. You can also assign a brand new collection directly, as shown above.
 
 ## Demo
 

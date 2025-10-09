@@ -420,7 +420,8 @@ class WebInflator extends Inflator {
     })
   }
 
-  static subscribe(source: unknown, targetBindCallback: (value: unknown) => void): void {
+  /** @internal */
+  protected static subscribe(source: unknown, targetBindCallback: (value: unknown) => void): void {
     if (source == null) return
     return void State.subscribeImmediate(source, targetBindCallback)
   }

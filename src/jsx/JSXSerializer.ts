@@ -76,25 +76,29 @@ class WebJSXSerializer {
   }
 
   private applyCustomJSXAttributes(props: any) {
-    if (this.inflator == null) return
-    if (this.inflator.jsxAttributes.size === 0) return
+    if (this.inflator == null) return props
+    if (this.inflator.jsxAttributes.size === 0) return props
+
+    const target = Object.isExtensible(props) ? props : { ...props }
 
     const bind = (key: string, value: unknown) => {
-      props[key] = this.gettable(value)
+      target[key] = this.gettable(value)
     }
 
     for (const key of this.inflator.jsxAttributes.keys()) {
-      if (key in props === false) continue
+      if (key in target === false) continue
 
       const attributeSetup = this.inflator.jsxAttributes.get(key)!
-      attributeSetup({ props, key, value: props[key], bind })
+      attributeSetup({ props: target, key, value: target[key], bind })
     }
+
+    return target
   }
 
   jsxAttributesToString(props: any): string {
     if (props == null) return ""
 
-    this.applyCustomJSXAttributes(props)
+    props = this.applyCustomJSXAttributes(props)
 
     let attributes = "", key, value
     for (key in props) {

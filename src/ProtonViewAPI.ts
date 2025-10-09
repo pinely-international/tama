@@ -33,10 +33,6 @@ class ViewAPI extends State<unknown> {
     this.transitionsApi.replaceWith(entries)
   }
 
-  useTransitions(entries: Iterable<ViewTransitionEntry> | null | undefined) {
-    this.transitions = entries ?? null
-  }
-
   attach(component: ProtonComponent) {
     this.component = component
   }
@@ -45,16 +41,12 @@ class ViewAPI extends State<unknown> {
     let yieldResult: IteratorResult<unknown> = { done: false, value: undefined }
     while (yieldResult.done === false) {
       yieldResult = await iterable.next()
-      await this.setAsync(yieldResult.value)
+      await this.scheduleTransition(yieldResult.value)
     }
   }
 
   set(value: unknown) {
     void this.scheduleTransition(value)
-  }
-
-  async setAsync(value: unknown) {
-    await this.scheduleTransition(value)
   }
 
   /** @internal */
@@ -74,7 +66,7 @@ class ViewAPI extends State<unknown> {
     if (returnResult instanceof Promise) returnResult = await returnResult
 
     this.default = returnResult
-    await this.setAsync(this.default)
+    await this.scheduleTransition(this.default)
   }
 
   private commit(value: unknown) {
@@ -82,7 +74,7 @@ class ViewAPI extends State<unknown> {
     this.hasCommitted = true
   }
 
-  private scheduleTransition(next: unknown) {
+  private scheduleTransition(next: unknown): Promise<void> {
     if (this.hasCommitted === false) {
       this.commit(next)
       return Promise.resolve()
@@ -104,7 +96,7 @@ class ViewAPI extends State<unknown> {
 
     const scheduled = this.transitionQueue.then(job, job)
     this.transitionQueue = scheduled.catch(() => undefined)
-    return scheduled
+    return scheduled.then(() => undefined)
   }
 
   private async applyTransitions(previous: unknown, next: unknown) {
