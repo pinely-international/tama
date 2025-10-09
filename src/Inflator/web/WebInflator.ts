@@ -241,7 +241,7 @@ class WebInflator extends Inflator {
 
 
     let lastAnimationFrame = -1
-    component.view.subscribe((view: unknown) => {
+    component.view.subscribe(view => {
       view = component.inflator.inflate(view)
 
       if (component.view.transitions.state === "running") {

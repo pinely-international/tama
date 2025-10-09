@@ -2,12 +2,8 @@ import "./dom"
 
 import { describe, expect, it } from "bun:test"
 
-import { WebInflator } from "../build"
 import { ProtonComponent } from "../src/Proton/ProtonComponent"
-import type SrcWebInflator from "../src/Inflator/web/WebInflator"
-
-type WebInflatorCtor = new () => SrcWebInflator
-const WebInflatorFromBuild = WebInflator as unknown as WebInflatorCtor
+import WebInflator from "../src/Inflator/web/WebInflator"
 
 
 function deferred<T = void>() {
@@ -24,7 +20,7 @@ function deferred<T = void>() {
 
 describe("View transitions", () => {
   it("keeps previous view until transition resolves", async () => {
-  const inflator = new WebInflatorFromBuild()
+    const inflator = new WebInflator()
     const component = new ProtonComponent(inflator)
 
   component.view.set("home")
@@ -63,7 +59,7 @@ describe("View transitions", () => {
   })
 
   it("binds document context for startViewTransition", async () => {
-    const inflator = new WebInflatorFromBuild()
+  const inflator = new WebInflator()
     const component = new ProtonComponent(inflator)
 
     component.view.set("before")
@@ -102,7 +98,7 @@ describe("View transitions", () => {
   })
 
   it("runs transition handlers sequentially", async () => {
-  const inflator = new WebInflatorFromBuild()
+    const inflator = new WebInflator()
     const component = new ProtonComponent(inflator)
 
   component.view.set("initial")

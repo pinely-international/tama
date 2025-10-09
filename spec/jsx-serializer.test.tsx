@@ -1,3 +1,7 @@
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx } from "../src/jsx/jsx-runtime"
+
 import "./dom"
 
 import { State } from "@denshya/reactive"
@@ -106,7 +110,7 @@ describe("WebJSXSerializer", () => {
 
   it("skips elements with [data-nosnippet]", () => {
     const element = <div data-nosnippet />
-    expect(element.type).toBe("div")
+    expect(element).toEqual({ type: "div", props: { "data-nosnippet": true } })
     expect(element.props).toEqual({ "data-nosnippet": true })
     
     const out = serializer.toString(element)
