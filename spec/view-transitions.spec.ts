@@ -2,7 +2,8 @@ import "./dom"
 
 import { describe, expect, it } from "bun:test"
 
-import { ProtonComponent, WebInflator } from "../build"
+import { Proton, WebInflator } from "../build"
+const ProtonComponent = Proton.Component
 
 function deferred<T = void>() {
   let resolve!: (value: T | PromiseLike<T>) => void
