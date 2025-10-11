@@ -1,7 +1,7 @@
 import "./MiniProfile.scss"
 
 import { State } from "@denshya/reactive"
-import { Proton } from "@denshya/proton"
+import { Mount, Proton } from "@denshya/proton"
 
 import UserContext from "@/UserContext"
 
@@ -27,7 +27,7 @@ function MiniProfile(this: Proton.Component, props: MiniProfileProps) {
         <button className="mini-profile__letter" mounted={userAvatar.is(it => !it)}>
           <ColoredLetter letter={user.$.firstName.$[0]} />
         </button>
-        <img className="mini-profile__avatar" src={userAvatar.required} alt="avatar" />
+        <img className="mini-profile__avatar" src={Mount.If(userAvatar)} alt="avatar" />
         <input value={inputValue} mounted={inputMounted} />
         <div className="mini-profile__info">
           <div className="mini-profile__name">{user.$.firstName} {user.$.lastName.$[0]}.</div>
