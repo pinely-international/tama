@@ -49,8 +49,8 @@ const content = new State<string | null>(null)
 
 const Component = () => (
   <>
-    <span className={Mount.avoid(className)}>{Mount.require(content)}</span>
-    <span className={Mount(className, x => !x)}>{Mount(content, x => x)}</span> // Equal Alternative.
+    <span className={Mount.Unless(className)}>{Mount.If(content)}</span>
+    <span className={Mount.If(className, x => !x)}>{Mount.If(content, x => x)}</span> // Equal Alternative.
   </>
 )
 ```
