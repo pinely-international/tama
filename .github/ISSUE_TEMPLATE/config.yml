@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+    - name: 💡 Propose Ideas
+      url: https://github.com/pinely-international/proton/discussions/new?category=ideas
+      about: 
+    - name: 🤔 Questions and Help
+      url: https://github.com/pinely-international/proton/discussions/new?category=q-a
+      about: 
+   - name: 🐈‍⬛ Join Discord
+      url: https://discord.gg/sHp2pxrSws
+      about: 
