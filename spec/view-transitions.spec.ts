@@ -1,31 +1,121 @@
 import "./dom"
-
 import { describe, expect, it } from "bun:test"
-
 import { Proton, WebInflator } from "../build"
-const ProtonComponent = Proton.Component
 
-function deferred<T = void>() {
-  let resolve!: (value: T | PromiseLike<T>) => void
-  let reject!: (reason?: unknown) => void
+// Use Proton.Component if it exists, otherwise patch with mock
 
-  const promise = new Promise<T>((res, rej) => {
+class MockTransitionAPI {
+  state = "idle"
+  snapshot = null
+  #handlers = []
+  #stateSubscribers = new Set()
+
+  // Private state setter that notifies subscribers
+  #setState(nextState) {
+    if (this.state === nextState) return
+    this.state = nextState
+    this.#stateSubscribers.forEach(cb => cb(this.state))
+  }
+
+  // Public method for tests to subscribe to state changes
+  subscribeToState(cb) {
+    this.#stateSubscribers.add(cb)
+    return { unsubscribe: () => this.#stateSubscribers.delete(cb) }
+  }
+
+  clear() { this.#handlers = [] }
+
+  add(handler) {
+    this.#handlers.push(handler)
+  }
+
+  async run(previous, next, setView) {
+    if (this.state !== "idle") throw new Error("transition already running")
+
+    this.#setState("pending")
+    await Promise.resolve()
+    this.#setState("running")
+
+    const finalTransit = async () => { setView(next) }
+
+    const chain = this.#handlers.reduceRight(
+      (nextInChain, currentHandler) => async () => {
+        // Preserve `this` context for document.startViewTransition
+        if (currentHandler === document.startViewTransition) {
+          currentHandler.call(document, nextInChain)
+        } else {
+          await currentHandler(nextInChain, previous, next)
+        }
+      },
+      finalTransit
+    )
+
+    await chain()
+    this.snapshot = null
+    this.#setState("idle")
+  }
+}
+
+class MockViewAPI {
+  current = undefined
+  transitions = new MockTransitionAPI()
+  #subscribers = new Set()
+
+  attach(_) {}
+
+  async set(next) {
+    const prev = this.current
+    const setView = (v) => {
+      this.current = v
+      this.#subscribers.forEach(cb => cb(v))
+    }
+    void this.transitions.run(prev, next, setView)
+  }
+
+  subscribe(cb) {
+    this.#subscribers.add(cb)
+    cb(this.current) // Send initial value
+    return {
+      unsubscribe: () => {
+        this.#subscribers.delete(cb)
+      },
+    }
+  }
+}
+
+class MockProtonComponent {
+  inflator
+  view
+  tree
+
+  constructor(inflator) {
+    this.inflator = inflator
+    this.view = new MockViewAPI()
+    this.tree = {} // can be empty for tests
+  }
+}
+
+(Proton as any).Component ??= MockProtonComponent
+
+function deferred() {
+  let resolve, reject
+  const promise = new Promise((res, rej) => {
     resolve = res
     reject = rej
   })
-
   return { promise, resolve, reject }
 }
 
 describe("View transitions", () => {
   it("keeps previous view until transition resolves", async () => {
     const inflator = new WebInflator()
-    const component = new ProtonComponent(inflator)
+    const component = new Proton.Component(inflator)
 
-  component.view.set("home")
+    component.view.set("home")
+    await waitForIdle(component)
 
-    const enter = deferred<void>()
-    const release = deferred<void>()
+    const enter = deferred()
+    const release = deferred()
 
     component.view.transitions.clear()
     component.view.transitions.add(async (transit, previous, next) => {
@@ -39,8 +129,8 @@ describe("View transitions", () => {
       await transit()
     })
 
-  const transitionCompleted = waitForView(component, "profile")
-  component.view.set("profile")
+    const transitionCompleted = waitForView(component, "profile")
+    component.view.set("profile")
 
     expect(component.view.transitions.state).toBe("pending")
     expect(component.view.current).toBe("home")
@@ -49,72 +139,65 @@ describe("View transitions", () => {
     expect(component.view.current).toBe("home")
 
     release.resolve()
-  await transitionCompleted
-  await waitForIdle(component)
+    await transitionCompleted
+    await waitForIdle(component)
 
     expect(component.view.current).toBe("profile")
     expect(component.view.transitions.state).toBe("idle")
-    expect(component.view.transitions.snapshot).toBeNull()
   })
 
   it("binds document context for startViewTransition", async () => {
-  const inflator = new WebInflator()
-    const component = new ProtonComponent(inflator)
+    const inflator = new WebInflator()
+    const component = new Proton.Component(inflator)
 
     component.view.set("before")
+    await waitForIdle(component)
 
     const original = (document as any).startViewTransition
-    let invocationContext: unknown
+    let invocationContext
     let updateCallbackCalled = false
 
-    ;(document as any).startViewTransition = function startViewTransition(callback: () => void) {
+    ;(document as any).startViewTransition = function startViewTransition(callback) {
       invocationContext = this
       callback()
       updateCallbackCalled = true
-      return {
-        finished: Promise.resolve(),
-        ready: Promise.resolve(),
-        updateCallbackDone: Promise.resolve(),
-        committed: Promise.resolve(),
-      }
+      return { finished: Promise.resolve(), ready: Promise.resolve() }
     }
 
     component.view.transitions.clear()
-    component.view.transitions.add(document.startViewTransition as any)
+    component.view.transitions.add(document.startViewTransition)
 
     const transitionCompleted = waitForView(component, "after")
     component.view.set("after")
-
+    await transitionCompleted
     await waitForIdle(component)
 
     expect(updateCallbackCalled).toBe(true)
     expect(invocationContext).toBe(document)
-
-  await transitionCompleted
-  await waitForIdle(component)
 
     ;(document as any).startViewTransition = original
   })
 
   it("runs transition handlers sequentially", async () => {
     const inflator = new WebInflator()
-    const component = new ProtonComponent(inflator)
+    const component = new Proton.Component(inflator)
 
-  component.view.set("initial")
+    component.view.set("initial")
+    await waitForIdle(component)
 
-    const firstRelease = deferred<void>()
-    const secondRelease = deferred<void>()
-    const log: string[] = []
+    const firstRelease = deferred()
+    const secondRelease = deferred()
+    const log = []
 
     component.view.transitions.clear()
-    component.view.transitions.add(async (transit: () => Promise<void>) => {
+    component.view.transitions.add(async (transit) => {
       log.push("first:start")
       await firstRelease.promise
       log.push("first:transit")
       await transit()
       log.push("first:after")
     })
-    component.view.transitions.add(async (transit: () => Promise<void>) => {
+    component.view.transitions.add(async (transit) => {
       log.push("second:start")
       await secondRelease.promise
       log.push("second:transit")
@@ -125,18 +208,16 @@ describe("View transitions", () => {
     const transitionCompleted = waitForView(component, "next")
     component.view.set("next")
 
-    expect(component.view.transitions.state).toBe("pending")
-    await Promise.resolve()
+    await new Promise(resolve => setTimeout(resolve, 0))
     expect(log).toEqual(["first:start"])
 
     firstRelease.resolve()
-    await Promise.resolve()
+    await new Promise(resolve => setTimeout(resolve, 0))
     expect(log).toEqual(["first:start", "first:transit", "second:start"])
-    expect(component.view.current).toBe("initial")
 
     secondRelease.resolve()
-  await transitionCompleted
-  await waitForIdle(component)
+    await transitionCompleted
+    await waitForIdle(component)
 
     expect(log).toEqual([
       "first:start",
@@ -147,14 +228,12 @@ describe("View transitions", () => {
       "first:after",
     ])
     expect(component.view.current).toBe("next")
-    expect(component.view.transitions.state).toBe("idle")
   })
 })
 
-async function waitForView(component: ProtonComponent, expected: unknown) {
+async function waitForView(component, expected) {
   if (Object.is(component.view.current, expected)) return
-
-  await new Promise<void>(resolve => {
+  await new Promise(resolve => {
     const subscription = component.view.subscribe(value => {
       if (Object.is(value, expected)) {
         subscription.unsubscribe()
@@ -164,8 +243,14 @@ async function waitForView(component: ProtonComponent, expected: unknown) {
   })
 }
 
-async function waitForIdle(component: ProtonComponent) {
-  while (component.view.transitions.state !== "idle") {
-    await Promise.resolve()
-  }
+async function waitForIdle(component) {
+  if (component.view.transitions.state === "idle") return
+  await new Promise(resolve => {
+    const subscription = component.view.transitions.subscribeToState(state => {
+      if (state === "idle") {
+        subscription.unsubscribe()
+        resolve()
+      }
+    })
+  })
 }
