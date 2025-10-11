@@ -18,7 +18,7 @@ interface ProductCardProps extends MarketProduct { }
 function ProductCard(this: Proton.Component, props: ProductCardProps) {
   const market = this.tree.context.require(MarketModel)
 
-  const amount = market.cart.$.get(props.id).to(it => it ?? -1).from(it => it < 0 ? 0 : it)
+  const amount = market.cart.$.get(props.id).to(it => it ?? -1)
   const liked = market.liked.$.has(props.id)
 
   amount.subscribe(it => market.cart.$.set(props.id, it))
@@ -55,7 +55,7 @@ function ProductCard(this: Proton.Component, props: ProductCardProps) {
 
 export default ProductCard
 
-function useSearch(value: StateRead<string | null | undefined>) {
+function useSearch(value: StateOrPlain<string | null | undefined>) {
   const valueNormalized = State.from(value).to(it => it?.toLowerCase() ?? "")
 
   function search(searchable: string | null | undefined, value: string): number {
@@ -80,7 +80,7 @@ function useSearch(value: StateRead<string | null | undefined>) {
       return (
         <>
           {range.$.start}
-          <em>{range.$.highlight.guard(it => !!it)}</em>
+          <em>{range.$.highlight}</em>
           {range.$.end}
         </>
       )
