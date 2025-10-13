@@ -259,6 +259,14 @@ class WebInflator extends Inflator {
            isJSX(view) && 
            !component.view.getTemplate()!.isStale
   }
+      if (component.view.transitions.state === "running") {
+        replace(view)
+        return
+      }
+
+      cancelAnimationFrame(lastAnimationFrame)
+      lastAnimationFrame = requestAnimationFrame(() => replace(view))
+    })
 
   private renderWithTemplate(component: ProtonComponent, componentGroup: InsertionGroup) {
     const template = component.view.getTemplate()
@@ -511,6 +519,7 @@ class WebInflator extends Inflator {
     })
   }
 
+  /** @internal */
   protected static subscribe(source: unknown, targetBindCallback: (value: unknown) => void): void {
     if (source == null) return
     return void State.subscribeImmediate(source, targetBindCallback)
