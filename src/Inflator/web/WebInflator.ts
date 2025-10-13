@@ -11,11 +11,11 @@ import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
 import { isIterable, isJSX, isObservableGetter, isPrimitive, isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
-
-import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
-import { iterableOf, onDemandRef } from "./helpers"
+import { TemplateHydrator } from "@/utils/TemplateHydrator"
 
 import Inflator from "../Inflator"
+import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
+import { iterableOf, onDemandRef } from "./helpers"
 
 
 type WebInflateResult<T> =
@@ -42,11 +42,7 @@ class WebInflator extends Inflator {
     skipAsync: false,
     disableJSXCache: false,
   }
-  /**
-   * Custom JSX attributes.
-   * Adds or Overrides JSX attribute to provide new behavior.
-   * These attributes are virtual and won't be presented in the element.
-   * */
+  // Custom JSX attributes map
   jsxAttributes: CustomAttributesMap = new Map<string, JSXAttributeSetup<any>>()
 
   protected clone() {
@@ -71,7 +67,6 @@ class WebInflator extends Inflator {
   }
 
   public inflateJSX(jsx: JSX.Element): Node {
-    // Alternatives checks.
     switch (typeof jsx.type) {
       case "string": return this.inflateIntrinsic(jsx.type, jsx.props)
       case "function": return this.inflateComponent(jsx.type, jsx.props)
@@ -149,7 +144,6 @@ class WebInflator extends Inflator {
       inflated = this.inflateJSX(jsx)
       WebInflator.jsxCache.set(jsx, inflated)
     }
-    // Inflation of Component children is handled by the component itself.
     if (typeof jsx.type === "function") return inflated
 
     this.inflateJSXChildren(jsx, inflated)
@@ -163,17 +157,12 @@ class WebInflator extends Inflator {
     // @ts-expect-error 123
     const actualParent = parent.nodeType === Node.COMMENT_NODE ? parent.inflated : parent
 
-    try {
-      if (isIterable(jsx.props.children)) {
-        this.inflateIterable(jsx.props.children, actualParent)
-      } else if (isObservableGetter(jsx.props.children) || isPrimitive(jsx.props.children)) {
-        WebInflator.subscribeProperty("textContent", jsx.props.children, actualParent)
-      } else {
-        actualParent.appendChild(this.inflate(jsx.props.children))
-      }
-    } catch (error) {
-      console.trace(error, "inflateJSXChildren")
-      throw error
+    if (isIterable(jsx.props.children)) {
+      this.inflateIterable(jsx.props.children, actualParent)
+    } else if (isObservableGetter(jsx.props.children) || isPrimitive(jsx.props.children)) {
+      WebInflator.subscribeProperty("textContent", jsx.props.children, actualParent)
+    } else {
+      actualParent.appendChild(this.inflate(jsx.props.children))
     }
   }
 
@@ -186,9 +175,6 @@ class WebInflator extends Inflator {
     return document.createElement(type, options)
   }
 
-  /**
-   * Creates element and binds properties.
-   */
   public inflateIntrinsic(type: string, props?: Record<string, any>): Element | Comment {
     const inflated = this.inflateElement(type, props?.ns)
     if (props == null) return inflated
@@ -226,29 +212,139 @@ class WebInflator extends Inflator {
       component.view.initWith(factory.call(component, props))
     } catch (thrown) {
       component.tree.caught(thrown)
-      console.error(thrown)
       return componentGroup
     }
 
+    // Initial render - create template if enabled
+    this.renderComponentView(component, componentGroup)
 
-    const currentView = component.inflator.inflate(component.view.current) as ChildNode | null
-    replace(currentView)
-
-    function replace(view: unknown | null) {
-      if (view == null) componentGroup.replaceChildren()
-      if (view instanceof Node) componentGroup.replaceChildren(view)
-    }
-
-
+    // Subscribe to view changes
     let lastAnimationFrame = -1
-    component.view.subscribe(view => {
-      view = component.inflator.inflate(view)
-
+    component.view.subscribe(() => {
       cancelAnimationFrame(lastAnimationFrame)
-      lastAnimationFrame = requestAnimationFrame(() => replace(view))
+      lastAnimationFrame = requestAnimationFrame(() => {
+        this.renderComponentView(component, componentGroup)
+      })
     })
 
     return componentGroup
+  }
+
+  private renderComponentView(component: ProtonComponent, componentGroup: InsertionGroup) {
+    const view = component.view.current
+    if (view == null) {
+      componentGroup.replaceChildren()
+      return
+    }
+
+    // Check if we can use template-based rendering
+    if (component.view.hasValidTemplate() && this.shouldUseTemplate(component, view)) {
+      this.renderWithTemplate(component, componentGroup)
+    } else {
+      // Fallback to regular inflation
+      this.renderWithInflation(component, componentGroup, view)
+    }
+  }
+
+  private shouldUseTemplate(component: ProtonComponent, view: unknown): boolean {
+    // Use template if:
+    // 1. Template is enabled
+    // 2. View is the same type as the template (JSX element)
+    // 3. Template is not stale
+    return component.view.getTemplate() !== null && 
+           isJSX(view) && 
+           !component.view.getTemplate()!.isStale
+  }
+
+  private renderWithTemplate(component: ProtonComponent, componentGroup: InsertionGroup) {
+    const template = component.view.getTemplate()
+    if (!template) return
+
+    const clonedTemplate = component.view.cloneTemplate()
+    if (!clonedTemplate) return
+
+    // Hydrate the template with current data
+    const hydratedNode = TemplateHydrator.hydrate(
+      clonedTemplate.node,
+      component.view.current,
+      {
+        dynamicZones: clonedTemplate.dynamicZones,
+        eventBindings: clonedTemplate.eventBindings,
+        subscriptions: []
+      }
+    )
+
+    componentGroup.replaceChildren(hydratedNode)
+  }
+
+  private renderWithInflation(component: ProtonComponent, componentGroup: InsertionGroup, view: unknown) {
+    const inflatedView = component.inflator.inflate(view) as ChildNode | null
+    
+    if (inflatedView) {
+      // Check if this should become a template
+      if (isJSX(view) && component.view.getTemplate() === null) {
+        this.createTemplateFromView(component, inflatedView, view)
+      }
+      
+      componentGroup.replaceChildren(inflatedView)
+    } else {
+      componentGroup.replaceChildren()
+    }
+  }
+
+  private createTemplateFromView(component: ProtonComponent, inflatedView: Node, jsxView: any) {
+    // Mark dynamic zones in the inflated view
+    this.markDynamicZones(inflatedView, jsxView)
+    
+    // Extract event bindings
+    const eventBindings = TemplateHydrator.extractEventBindings(inflatedView)
+    
+    // Find dynamic zones
+    const dynamicZones = TemplateHydrator.findDynamicZones(inflatedView)
+    
+    // Store as template
+    component.view.setTemplate(inflatedView, dynamicZones, eventBindings)
+  }
+
+  private markDynamicZones(domNode: Node, jsxNode: any) {
+    if (!isJSX(jsxNode)) return
+
+    const walker = document.createTreeWalker(
+      domNode,
+      NodeFilter.SHOW_ELEMENT,
+      null
+    )
+
+    let domElement = walker.nextNode()
+    const jsxElement = jsxNode
+
+    while (domElement && jsxElement) {
+      if (domElement instanceof Element) {
+        if (jsxElement.props?.children && this.hasDynamicContent(jsxElement.props.children)) {
+          TemplateHydrator.markDynamicZone(domElement, "children")
+        }
+
+        for (const [key, value] of Object.entries(jsxElement.props || {})) {
+          if (key !== "children" && this.isDynamicValue(value)) {
+            TemplateHydrator.markDynamicZone(domElement, `attr-${key}`)
+          }
+        }
+      }
+
+      domElement = walker.nextNode()
+    }
+  }
+
+  private hasDynamicContent(content: unknown): boolean {
+    if (isObservableGetter(content)) return true
+    if (Array.isArray(content)) {
+      return content.some(item => this.hasDynamicContent(item))
+    }
+    return false
+  }
+
+  private isDynamicValue(value: unknown): boolean {
+    return isObservableGetter(value) || typeof value === "function"
   }
 
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {
@@ -395,16 +491,10 @@ class WebInflator extends Inflator {
     return overrides
   }
 
-  /**
-   * Binds a property.
-   */
   static subscribeProperty(key: keyof never, source: unknown, target: unknown): void {
     WebInflator.subscribe(source, value => (target as any)[key] = value)
   }
 
-  /**
-   * Binds an attribute.
-   */
   static subscribeAttribute(target: Element, key: string, value: unknown): void {
     WebInflator.subscribe(value, value => {
       if (value != null) {
