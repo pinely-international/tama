@@ -1,7 +1,8 @@
 import "./DropDown.scss"
 
-import { State, StateArray, StateOrPlain } from "@denshya/reactive"
+import { State, StateArray } from "@denshya/reactive"
 import { Proton } from "@denshya/proton"
+import { castArray } from "@/utils/common"
 
 
 export type DropDownOption<V = unknown> = { type: "option", props: JSX.HTMLElements["option"] & { value?: V }, children?: unknown }
@@ -14,7 +15,7 @@ interface DropDownProps<T> {
 }
 
 function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
-  const optionsList = new StateArray(props.children)
+  const optionsList = new StateArray(castArray(props.children))
 
   function onSelect(option: DropDownOption<T>) {
     props.selected.set(option)
@@ -33,7 +34,7 @@ function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
 
   const mutation = new MutationObserver(() => contain(this.view.current as HTMLElement))
 
-  this.use(view => {
+  this.view.subscribe(view => {
     if (view instanceof HTMLElement === false) return
 
     const expandedSubscription = props.expanded.subscribe(it => !it && contain(view))
