@@ -12,6 +12,7 @@ import { ProtonComponent } from "@/Proton/ProtonComponent"
 import { TemplateHydrator } from "@/utils/TemplateHydrator"
 import { isIterable, isJSX, isObservableGetter, isPrimitive, isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
+
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
 import { iterableOf, onDemandRef } from "./helpers"
 
@@ -237,6 +238,11 @@ class WebInflator extends Inflator {
       return
     }
 
+    // Handle view transitions
+    if (component.view.transitions.state === "running") {
+      return
+    }
+
     // Increment render count
     component.incrementRenderCount()
 
@@ -259,14 +265,6 @@ class WebInflator extends Inflator {
            isJSX(view) && 
            !component.view.getTemplate()!.isStale
   }
-      if (component.view.transitions.state === "running") {
-        replace(view)
-        return
-      }
-
-      cancelAnimationFrame(lastAnimationFrame)
-      lastAnimationFrame = requestAnimationFrame(() => replace(view))
-    })
 
   private renderWithTemplate(component: ProtonComponent, componentGroup: InsertionGroup) {
     const template = component.view.getTemplate()
