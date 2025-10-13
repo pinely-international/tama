@@ -8,8 +8,7 @@ import type { ProtonComponent } from "./Proton/ProtonComponent"
 
 
 class ViewAPI extends EventSignal<unknown> {
-  //readonly life = new Life
-  public readonly life = new Life();
+  readonly life = new Life
 
   declare default: unknown
 

@@ -1,35 +1,29 @@
 export class Life {
   public alive = false;
-  private controllers = new Set<AbortController>();
+  private controller!: AbortController;
 
+  /** @internal*/
   public enter(): void {
     this.alive = true;
+    this.controller = new AbortController();
   }
 
+  /**@internal*/
   public exit(): void {
     this.alive = false;
-    for (const controller of this.controllers) {
-      controller.abort();
-    }
-    this.controllers.clear();
+    this.controller.abort();
   }
 
+  /** @param setup*/
   public scoped(setup: (signal: AbortSignal) => void): void {
     if (!this.alive) {
       return;
     }
 
-    const controller = new AbortController();
-    this.controllers.add(controller);
-
     try {
-      setup(controller.signal);
+      setup(this.controller.signal);
     } catch (error) {
       console.error("Error executing a scoped lifecycle function:", error);
-      this.controllers.delete(controller);
     }
   }
-
-  public when(event: "enter" | "exit") {}
-  public adopt(value: { onEnter?(): void; onExit?(): void }) {}
 }
