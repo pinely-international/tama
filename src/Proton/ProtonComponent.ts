@@ -5,7 +5,6 @@ import TreeContextAPI from "@/TreeContextAPI"
 
 import ViewAPI from "../ProtonViewAPI"
 
-
 export class ProtonComponent {
   public readonly view: ViewAPI
   public readonly tree: TreeAPI
