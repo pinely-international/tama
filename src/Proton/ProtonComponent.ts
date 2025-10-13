@@ -12,6 +12,8 @@ export class ProtonComponent {
   public readonly inflator: Inflator
   private isMounted = false
   private cleanupCallbacks: (() => void)[] = []
+  private renderCount = 0
+  private readonly templateThreshold = 3
 
   constructor(inflator: Inflator, parent?: ProtonComponent) {
     this.inflator = Inflator.cloneWith(inflator, this)
@@ -77,6 +79,9 @@ export class ProtonComponent {
     // Clear template cache to prevent memory leaks
     this.view.clearTemplate()
     
+    // Reset render count for potential reuse
+    this.renderCount = 0
+    
     this.isMounted = false
   }
 
@@ -85,6 +90,35 @@ export class ProtonComponent {
    */
   get mounted(): boolean {
     return this.isMounted
+  }
+
+  /**
+   * Increment render count and return current count
+   */
+  incrementRenderCount(): number {
+    this.renderCount++
+    return this.renderCount
+  }
+
+  /**
+   * Get current render count
+   */
+  getRenderCount(): number {
+    return this.renderCount
+  }
+
+  /**
+   * Check if component should use template-based rendering
+   */
+  shouldUseTemplate(): boolean {
+    return this.renderCount >= this.templateThreshold
+  }
+
+  /**
+   * Reset render count (useful for testing or component reuse)
+   */
+  resetRenderCount(): void {
+    this.renderCount = 0
   }
 }
 

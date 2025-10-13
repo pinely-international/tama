@@ -9,13 +9,13 @@ import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAP
 import { MountGuard } from "@/MountGuard"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
+import { TemplateHydrator } from "@/utils/TemplateHydrator"
 import { isIterable, isJSX, isObservableGetter, isPrimitive, isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
-import { TemplateHydrator } from "@/utils/TemplateHydrator"
-
-import Inflator from "../Inflator"
 import { NAMESPACE_MATH, NAMESPACE_SVG } from "./consts"
 import { iterableOf, onDemandRef } from "./helpers"
+
+import Inflator from "../Inflator"
 
 
 type WebInflateResult<T> =
@@ -237,6 +237,9 @@ class WebInflator extends Inflator {
       return
     }
 
+    // Increment render count
+    component.incrementRenderCount()
+
     // Check if we can use template-based rendering
     if (component.view.hasValidTemplate() && this.shouldUseTemplate(component, view)) {
       this.renderWithTemplate(component, componentGroup)
@@ -248,10 +251,11 @@ class WebInflator extends Inflator {
 
   private shouldUseTemplate(component: ProtonComponent, view: unknown): boolean {
     // Use template if:
-    // 1. Template is enabled
-    // 2. View is the same type as the template (JSX element)
-    // 3. Template is not stale
-    return component.view.getTemplate() !== null && 
+    // 1. Component has reached render threshold
+    // 2. Template is available and not stale
+    // 3. View is the same type as the template (JSX element)
+    return component.shouldUseTemplate() &&
+           component.view.getTemplate() !== null && 
            isJSX(view) && 
            !component.view.getTemplate()!.isStale
   }
@@ -281,8 +285,10 @@ class WebInflator extends Inflator {
     const inflatedView = component.inflator.inflate(view) as ChildNode | null
     
     if (inflatedView) {
-      // Check if this should become a template
-      if (isJSX(view) && component.view.getTemplate() === null) {
+      // Check if this should become a template (only after threshold reached)
+      if (isJSX(view) && 
+          component.view.getTemplate() === null && 
+          component.shouldUseTemplate()) {
         this.createTemplateFromView(component, inflatedView, view)
       }
       
