@@ -94,7 +94,6 @@ export class ProtonComponent {
 
   /**
    * Increment render count and return current count
-   * @internal
    */
   incrementRenderCount(): number {
     this.renderCount++
@@ -102,7 +101,6 @@ export class ProtonComponent {
   }
   /**
    * Check if component should use template-based rendering
-   * @internal
    */
   shouldUseTemplate(): boolean {
     return this.renderCount >= this.templateThreshold

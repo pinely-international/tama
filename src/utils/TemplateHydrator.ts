@@ -12,7 +12,6 @@ export class TemplateHydrator {
 
   /**
    * Hydrate a template with new data
-   * @internal
    */
   static hydrate(
     template: Node, 
@@ -31,7 +30,6 @@ export class TemplateHydrator {
 
   /**
    * Mark a node as a dynamic zone for template optimization
-   * @internal
    */
   static markDynamicZone(node: Node, zoneId: string): void {
     if (node instanceof Element) {
@@ -42,7 +40,6 @@ export class TemplateHydrator {
 
   /**
    * Find all dynamic zones in a template
-   * @internal
    */
   static findDynamicZones(template: Node): Map<string, Node[]> {
     const zones = new Map<string, Node[]>()
@@ -70,7 +67,6 @@ export class TemplateHydrator {
 
   /**
    * Extract event bindings from a template
-   * @internal
    */
   static extractEventBindings(): Map<Node, Map<string, EventListenerOrEventListenerObject[]>> {
     // Event bindings are supplied from the caller (built on the cloned tree).

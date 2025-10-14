@@ -186,7 +186,6 @@ class ViewAPI extends EventSignal<unknown> {
 
   /**
    * Check if template is available and not stale
-   * @internal
    */
   hasValidTemplate(): boolean {
     return this.templateCache !== null && !this.templateCache.isStale
@@ -194,7 +193,6 @@ class ViewAPI extends EventSignal<unknown> {
 
   /**
    * Get the cached template if available
-   * @internal
    */
   getTemplate(): TemplateInfo | null {
     return this.templateCache
@@ -202,7 +200,6 @@ class ViewAPI extends EventSignal<unknown> {
 
   /**
    * Set a new template with dynamic zones and event bindings
-   * @internal
    */
   setTemplate(template: Node, dynamicZones: Map<string, Node[]> = new Map(), eventBindings: Map<Node, Map<string, EventListenerOrEventListenerObject[]>> = new Map()) {
     this.templateCache = {
@@ -216,7 +213,6 @@ class ViewAPI extends EventSignal<unknown> {
 
   /**
    * Clear the template cache
-   * @internal
    */
   clearTemplate() {
     this.templateCache = null
@@ -224,7 +220,6 @@ class ViewAPI extends EventSignal<unknown> {
 
   /**
    * Clone the template for hydration
-   * @internal
    */
   cloneTemplate(): { node: Node, dynamicZones: Map<string, Node[]>, eventBindings: Map<Node, Map<string, EventListenerOrEventListenerObject[]>> } | null {
     if (!this.templateCache) return null
