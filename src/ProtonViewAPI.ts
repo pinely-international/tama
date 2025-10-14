@@ -183,15 +183,6 @@ class ViewAPI extends State<unknown> {
     return this.component ?? this
   }
 
-  /**
-   * Enable or disable template-based rendering for this component
-   */
-  setTemplateEnabled(enabled: boolean) {
-    this.templateEnabled = enabled
-    if (!enabled) {
-      this.clearTemplate()
-    }
-  }
 
   /**
    * Check if template is available and not stale
@@ -219,14 +210,6 @@ class ViewAPI extends State<unknown> {
     }
   }
 
-  /**
-   * Mark template as stale (needs regeneration)
-   */
-  markTemplateStale() {
-    if (this.templateCache) {
-      this.templateCache.isStale = true
-    }
-  }
 
   /**
    * Clear the template cache
@@ -242,58 +225,16 @@ class ViewAPI extends State<unknown> {
     if (!this.templateCache) return null
 
     const clonedNode = this.templateCache.template.cloneNode(true) as Node
-    const clonedDynamicZones = new Map<string, Node[]>()
-    const clonedEventBindings = new Map<Node, Map<string, EventListenerOrEventListenerObject[]>>()
-
-    // Clone dynamic zones mapping
-    for (const [zoneId, nodes] of this.templateCache.dynamicZones) {
-      const clonedNodes: Node[] = []
-      for (const node of nodes) {
-        // Find corresponding node in cloned tree
-        const correspondingNode = this.findCorrespondingNode(clonedNode, node)
-        if (correspondingNode) clonedNodes.push(correspondingNode)
-      }
-      clonedDynamicZones.set(zoneId, clonedNodes)
-    }
-
-    // Clone event bindings mapping
-    for (const [node, bindings] of this.templateCache.eventBindings) {
-      const correspondingNode = this.findCorrespondingNode(clonedNode, node)
-      if (correspondingNode) {
-        clonedEventBindings.set(correspondingNode, new Map(bindings))
-      }
-    }
-
+    
+    // For now, return empty maps - the TemplateHydrator will find dynamic zones fresh
+    // This simplifies the complex node matching logic
     return {
       node: clonedNode,
-      dynamicZones: clonedDynamicZones,
-      eventBindings: clonedEventBindings
+      dynamicZones: new Map(),
+      eventBindings: new Map()
     }
   }
 
-  /**
-   * Find corresponding node in cloned tree by comparing structure
-   */
-  private findCorrespondingNode(clonedRoot: Node, originalNode: Node): Node | null {
-    // Simple implementation - in practice, you might want a more sophisticated matching
-    const walker = document.createTreeWalker(
-      clonedRoot,
-      NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-      null
-    )
-
-    let node = walker.nextNode()
-    while (node) {
-      if (node.nodeType === originalNode.nodeType && 
-          node.nodeName === originalNode.nodeName &&
-          node.textContent === originalNode.textContent) {
-        return node
-      }
-      node = walker.nextNode()
-    }
-
-    return null
-  }
 }
 
 export default ViewAPI

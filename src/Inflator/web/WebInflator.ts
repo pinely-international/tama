@@ -273,13 +273,17 @@ class WebInflator extends Inflator {
     const clonedTemplate = component.view.cloneTemplate()
     if (!clonedTemplate) return
 
+    // Find dynamic zones fresh in the cloned template
+    const dynamicZones = TemplateHydrator.findDynamicZones(clonedTemplate.node)
+    const eventBindings = TemplateHydrator.extractEventBindings(clonedTemplate.node)
+
     // Hydrate the template with current data
     const hydratedNode = TemplateHydrator.hydrate(
       clonedTemplate.node,
       component.view.current,
       {
-        dynamicZones: clonedTemplate.dynamicZones,
-        eventBindings: clonedTemplate.eventBindings,
+        dynamicZones,
+        eventBindings,
         subscriptions: []
       }
     )
@@ -332,12 +336,20 @@ class WebInflator extends Inflator {
 
     while (domElement && jsxElement) {
       if (domElement instanceof Element) {
-        if (jsxElement.props?.children && this.hasDynamicContent(jsxElement.props.children)) {
-          TemplateHydrator.markDynamicZone(domElement, "children")
+        // Check children for dynamic content (inlined hasDynamicContent logic)
+        if (jsxElement.props?.children) {
+          const hasDynamic = isObservableGetter(jsxElement.props.children) || 
+            (Array.isArray(jsxElement.props.children) && 
+             jsxElement.props.children.some((item: unknown) => isObservableGetter(item)))
+          
+          if (hasDynamic) {
+            TemplateHydrator.markDynamicZone(domElement, "children")
+          }
         }
 
+        // Check attributes for dynamic values (inlined isDynamicValue logic)
         for (const [key, value] of Object.entries(jsxElement.props || {})) {
-          if (key !== "children" && this.isDynamicValue(value)) {
+          if (key !== "children" && (isObservableGetter(value) || typeof value === "function")) {
             TemplateHydrator.markDynamicZone(domElement, `attr-${key}`)
           }
         }
@@ -345,18 +357,6 @@ class WebInflator extends Inflator {
 
       domElement = walker.nextNode()
     }
-  }
-
-  private hasDynamicContent(content: unknown): boolean {
-    if (isObservableGetter(content)) return true
-    if (Array.isArray(content)) {
-      return content.some(item => this.hasDynamicContent(item))
-    }
-    return false
-  }
-
-  private isDynamicValue(value: unknown): boolean {
-    return isObservableGetter(value) || typeof value === "function"
   }
 
   protected bindStyle(style: unknown, element: ElementCSSInlineStyle) {

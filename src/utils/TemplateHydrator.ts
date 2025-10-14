@@ -69,26 +69,10 @@ export class TemplateHydrator {
    * Extract event bindings from a template
    */
   static extractEventBindings(template: Node): Map<Node, Map<string, EventListenerOrEventListenerObject[]>> {
-    const bindings = new Map<Node, Map<string, EventListenerOrEventListenerObject[]>>()
-    
-    const walker = document.createTreeWalker(
-      template,
-      NodeFilter.SHOW_ELEMENT,
-      null
-    )
-
-    let node = walker.nextNode()
-    while (node) {
-      if (node instanceof Element) {
-        const nodeBindings = new Map<string, EventListenerOrEventListenerObject[]>()
-        if (nodeBindings.size > 0) {
-          bindings.set(node, nodeBindings)
-        }
-      }
-      node = walker.nextNode()
-    }
-
-    return bindings
+    // Event bindings are supplied from the caller (built on the cloned tree).
+    // For now, this function returns an empty map as we do not extract
+    // listeners from DOM nodes.
+    return new Map<Node, Map<string, EventListenerOrEventListenerObject[]>>()
   }
 
   /**
@@ -178,48 +162,47 @@ export class TemplateHydrator {
     subscriptions: (() => void)[]
   ): void {
     const currentValue = observable.get?.()
-    
-    if (key === "textContent") {
-      element.textContent = String(currentValue)
-      const unsubscribe = observable.subscribe?.((value: unknown) => {
-        element.textContent = String(value)
-      })
-      if (unsubscribe) subscriptions.push(() => {
-        if (typeof unsubscribe === "function") {
-          (unsubscribe as () => void)()
-        }
-      })
-    } else if (key === "className" || key === "class") {
-      element.className = String(currentValue)
-      const unsubscribe = observable.subscribe?.((value: unknown) => {
-        element.className = String(value)
-      })
-      if (unsubscribe) subscriptions.push(() => {
-        if (typeof unsubscribe === "function") {
-          (unsubscribe as () => void)()
-        }
-      })
-    } else if (key.startsWith("data-") || key.includes("-")) {
-      element.setAttribute(key, String(currentValue))
-      const unsubscribe = observable.subscribe?.((value: unknown) => {
-        element.setAttribute(key, String(value))
-      })
-      if (unsubscribe) subscriptions.push(() => {
-        if (typeof unsubscribe === "function") {
-          (unsubscribe as () => void)()
-        }
-      })
-    } else {
-      (element as any)[key] = currentValue
-      const unsubscribe = observable.subscribe?.((value: unknown) => {
-        (element as any)[key] = value
-      })
+
+    const pushUnsubscribe = (unsubscribe: unknown) => {
       if (unsubscribe) subscriptions.push(() => {
         if (typeof unsubscribe === "function") {
           (unsubscribe as () => void)()
         }
       })
     }
+
+    if (key === "textContent") {
+      element.textContent = String(currentValue)
+      const unsub = observable.subscribe?.((value: unknown) => {
+        element.textContent = String(value)
+      })
+      pushUnsubscribe(unsub)
+      return
+    }
+
+    if (key === "className" || key === "class") {
+      ;(element as HTMLElement).className = String(currentValue)
+      const unsub = observable.subscribe?.((value: unknown) => {
+        ;(element as HTMLElement).className = String(value)
+      })
+      pushUnsubscribe(unsub)
+      return
+    }
+
+    if (key.startsWith("data-") || key.includes("-")) {
+      element.setAttribute(key, String(currentValue))
+      const unsub = observable.subscribe?.((value: unknown) => {
+        element.setAttribute(key, String(value))
+      })
+      pushUnsubscribe(unsub)
+      return
+    }
+
+    ;(element as any)[key] = currentValue
+    const unsub = observable.subscribe?.((value: unknown) => {
+      (element as any)[key] = value
+    })
+    pushUnsubscribe(unsub)
   }
 
   /**
@@ -245,42 +228,19 @@ export class TemplateHydrator {
     context: HydrationContext,
     subscriptions: (() => void)[]
   ): void {
-    for (const [originalNode, eventMap] of context.eventBindings) {
-      const clonedNode = this.findCorrespondingNode(template, originalNode)
-      if (clonedNode && clonedNode instanceof Element) {
+    // Event bindings map keys are expected to be nodes from the cloned tree.
+    for (const [node, eventMap] of context.eventBindings) {
+      if (node instanceof Element) {
         for (const [eventType, listeners] of eventMap) {
           for (const listener of listeners) {
-            clonedNode.addEventListener(eventType, listener)
+            node.addEventListener(eventType, listener)
             subscriptions.push(() => {
-              clonedNode.removeEventListener(eventType, listener)
+              node.removeEventListener(eventType, listener)
             })
           }
         }
       }
     }
-  }
-
-  /**
-   * Find corresponding node in cloned tree
-   */
-  private static findCorrespondingNode(clonedRoot: Node, originalNode: Node): Node | null {
-    const walker = document.createTreeWalker(
-      clonedRoot,
-      NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-      null
-    )
-
-    let node = walker.nextNode()
-    while (node) {
-      if (node.nodeType === originalNode.nodeType && 
-          node.nodeName === originalNode.nodeName &&
-          node.textContent === originalNode.textContent) {
-        return node
-      }
-      node = walker.nextNode()
-    }
-
-    return null
   }
 
   /**
