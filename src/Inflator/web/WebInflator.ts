@@ -231,7 +231,11 @@ class WebInflator extends Inflator {
     return componentGroup
   }
 
-  private renderComponentView(component: ProtonComponent, componentGroup: InsertionGroup) {
+  /**
+   * Main component rendering logic with template optimization
+   * @internal
+   */
+  renderComponentView(component: ProtonComponent, componentGroup: InsertionGroup) {
     const view = component.view.current
     if (view == null) {
       componentGroup.replaceChildren()
@@ -255,7 +259,11 @@ class WebInflator extends Inflator {
     }
   }
 
-  private shouldUseTemplate(component: ProtonComponent, view: unknown): boolean {
+  /**
+   * Check if component should use template-based rendering
+   * @internal
+   */
+  shouldUseTemplate(component: ProtonComponent, view: unknown): boolean {
     // Use template if:
     // 1. Component has reached render threshold
     // 2. Template is available and not stale
@@ -266,7 +274,11 @@ class WebInflator extends Inflator {
            !component.view.getTemplate()!.isStale
   }
 
-  private renderWithTemplate(component: ProtonComponent, componentGroup: InsertionGroup) {
+  /**
+   * Render component using cached template
+   * @internal
+   */
+  renderWithTemplate(component: ProtonComponent, componentGroup: InsertionGroup) {
     const template = component.view.getTemplate()
     if (!template) return
 
@@ -275,7 +287,7 @@ class WebInflator extends Inflator {
 
     // Find dynamic zones fresh in the cloned template
     const dynamicZones = TemplateHydrator.findDynamicZones(clonedTemplate.node)
-    const eventBindings = TemplateHydrator.extractEventBindings(clonedTemplate.node)
+    const eventBindings = TemplateHydrator.extractEventBindings()
 
     // Hydrate the template with current data
     const hydratedNode = TemplateHydrator.hydrate(
@@ -291,7 +303,11 @@ class WebInflator extends Inflator {
     componentGroup.replaceChildren(hydratedNode)
   }
 
-  private renderWithInflation(component: ProtonComponent, componentGroup: InsertionGroup, view: unknown) {
+  /**
+   * Render component using regular inflation (fallback)
+   * @internal
+   */
+  renderWithInflation(component: ProtonComponent, componentGroup: InsertionGroup, view: unknown) {
     const inflatedView = component.inflator.inflate(view) as ChildNode | null
     
     if (inflatedView) {
@@ -308,12 +324,16 @@ class WebInflator extends Inflator {
     }
   }
 
-  private createTemplateFromView(component: ProtonComponent, inflatedView: Node, jsxView: any) {
+  /**
+   * Create template from inflated view for caching
+   * @internal
+   */
+  createTemplateFromView(component: ProtonComponent, inflatedView: Node, jsxView: any) {
     // Mark dynamic zones in the inflated view
     this.markDynamicZones(inflatedView, jsxView)
     
     // Extract event bindings
-    const eventBindings = TemplateHydrator.extractEventBindings(inflatedView)
+    const eventBindings = TemplateHydrator.extractEventBindings()
     
     // Find dynamic zones
     const dynamicZones = TemplateHydrator.findDynamicZones(inflatedView)
@@ -322,7 +342,11 @@ class WebInflator extends Inflator {
     component.view.setTemplate(inflatedView, dynamicZones, eventBindings)
   }
 
-  private markDynamicZones(domNode: Node, jsxNode: any) {
+  /**
+   * Mark dynamic zones in DOM nodes for template optimization
+   * @internal
+   */
+  markDynamicZones(domNode: Node, jsxNode: any) {
     if (!isJSX(jsxNode)) return
 
     const walker = document.createTreeWalker(
