@@ -15,7 +15,6 @@ export class ProtonComponent {
     this.view = new ViewAPI
     this.view.attach(this)
     this.tree = new TreeAPI(parent?.tree)
-    this.view.life.enter();
   }
 }
 

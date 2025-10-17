@@ -2,24 +2,20 @@ export class Life {
   public alive = false;
   private controller!: AbortController;
 
-  /** @internal*/
+  /** @internal */
   public enter(): void {
     this.alive = true;
     this.controller = new AbortController();
   }
 
-  /**@internal*/
+  /** @internal */
   public exit(): void {
     this.alive = false;
     this.controller.abort();
   }
 
-  /** @param setup*/
   public scoped(setup: (signal: AbortSignal) => void): void {
-    if (!this.alive) {
-      return;
-    }
-
+    if (!this.alive) return;
     try {
       setup(this.controller.signal);
     } catch (error) {
