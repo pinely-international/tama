@@ -280,15 +280,6 @@ class WebInflator extends Inflator {
     const currentView = component.inflator.inflate(component.view.current) as ChildNode | null
     replace(currentView)
 
-    const connection = ElementLifecycle.connection(componentGroup);
-    connection.state.subscribe(connected => {
-      if (connected) {
-        component.view.life.enter();
-      } else {
-        component.view.life.exit();
-      }
-    });
-
     function replace(view: unknown | null) {
       if (view == null) componentGroup.replaceChildren()
       if (view instanceof Node) componentGroup.replaceChildren(view)
