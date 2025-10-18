@@ -4,6 +4,7 @@ import Inflator from "@/Inflator/Inflator"
 import TreeContextAPI from "@/TreeContextAPI"
 
 import ViewAPI from "../ProtonViewAPI"
+import { ElementLifecycle } from "@/utils/ElementLifecycle";
 
 export class ProtonComponent {
   public readonly view: ViewAPI
