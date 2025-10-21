@@ -49,7 +49,7 @@ Enable Proton JSX
 
 :::info
 
-Any JSX may work well in Proton, it depends on deviations from React/Proton JSX, but you can fix them with [JSX customization](./custom/custom-jsx.md).
+Any JSX may work well in TamaJs, it depends on deviations from React/Tama JSX, but you can fix them with [JSX customization](./custom/custom-jsx.md).
 
 :::
 

@@ -9,7 +9,7 @@ namespace ProtonJSX {
   export function Element(type: keyof never | Function | Node, props: Props | null) {
     return { type, props }
   }
-  export const FragmentSymbol = Symbol.for("Proton.Fragment")
+  export const FragmentSymbol = Symbol.for("Tama.Fragment")
 }
 
 export default ProtonJSX

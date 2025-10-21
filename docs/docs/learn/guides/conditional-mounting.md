@@ -24,7 +24,7 @@ Passing plain values to `mounted` is not allowed, it clearly indicates a mistake
 
 [Guard pattern](https://en.wikipedia.org/wiki/Guard_(computer_science)) usually refers to a Return/Throw Guard in JavaScript.
 
-However, in Proton it is a predicate, which defines if an object is ok to use. If the `valid` guard return `false`, normally it is simply skipped.
+However, in TamaJs it is a predicate, which defines if an object is ok to use. If the `valid` guard return `false`, normally it is simply skipped.
 
 ```tsx
 const plain = { value: 1 }
@@ -49,8 +49,8 @@ const content = new State<string | null>(null)
 
 const Component = () => (
   <>
-    <span className={Proton.guard.avoid(className)}>{Proton.guard.require(content)}</span>
-    <span className={Proton.guard(className, x => !x)}>{Proton.guard(content, x => x)}</span> // Equal Alternative.
+    <span className={Tama.guard.avoid(className)}>{Tama.guard.require(content)}</span>
+    <span className={Tama.guard(className, x => !x)}>{Tama.guard(content, x => x)}</span> // Equal Alternative.
   </>
 )
 ```
@@ -89,7 +89,7 @@ function MiniProfile(props: MiniProfileProps) {
         <button className="mini-profile__letter" mounted={user.$.avatar.is(null)}>
          <ColoredLetter letter={user.$.firstName.$[0]} />
         </button>
-        <img className="mini-profile__avatar" src={Proton.guard.require(user.$.avatar)} alt="avatar" />
+        <img className="mini-profile__avatar" src={Tama.guard.require(user.$.avatar)} alt="avatar" />
         <input value={inputValue} mounted={inputMounted} />
         <div className="mini-profile__info">
           <div className="mini-profile__name">{user.$.firstName} {user.$.lastName.$[0]}.</div>

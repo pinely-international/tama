@@ -1,5 +1,5 @@
 function CompanyPreview(this: any, props: any) {
-  this.fallback = new Proton.Fallback({})
+  this.fallback = new Tama.Fallback({})
   this.fallback.error.set(new TypeError("")) // Equals `throw new TypeError("")`.
 
   // this.fallback.

@@ -4,8 +4,8 @@ import { ProtonLazy as Lazy } from "./ProtonLazy"
 import { ProtonSwitch as Switch } from "./ProtonSwitch"
 
 
-declare namespace Proton {
+declare namespace Tama {
   export { Component, Dynamic, Lazy, Switch }
 }
 
-export default Proton
+export default Tama

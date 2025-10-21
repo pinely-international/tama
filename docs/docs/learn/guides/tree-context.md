@@ -11,7 +11,7 @@ class MyContext { constructor(readonly value: string) {} }
 The child must define the context it requires
 
 ```tsx
-function Child(this: Proton.Component) {
+function Child(this: Tama.Component) {
   const context = this.context.require(MyContext)
 
   return <span>{context.value}</span>
@@ -21,7 +21,7 @@ function Child(this: Proton.Component) {
 The parent provides the context at will
 
 ```tsx
-function Parent(this: Proton.Component) {
+function Parent(this: Tama.Component) {
   this.context.provide(new MyContext("Cool"))
 
   return <div><Child /></div>
@@ -31,7 +31,7 @@ function Parent(this: Proton.Component) {
 If children require contexts but no parent is providing one, they will error.
 
 ```tsx
-function Child(this: Proton.Component) {
+function Child(this: Tama.Component) {
   const context = this.context.require(MyContext) // Error: No context provided.
 
   return <span>{context.value}</span>

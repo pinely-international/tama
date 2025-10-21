@@ -4,7 +4,7 @@ sidebar_position: 5
 
 # Custom Inflate
 
-One of the pillars of Proton is "extensibility", so you can modify output of `inflate` method or children of JSX.
+One of the pillars of Tama is "extensibility", so you can modify output of `inflate` method or children of JSX.
 
 ## Inflator Adapters
 
