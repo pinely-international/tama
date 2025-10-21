@@ -49,8 +49,8 @@ const content = new State<string | null>(null)
 
 const Component = () => (
   <>
-    <span className={Tama.guard.avoid(className)}>{Tama.guard.require(content)}</span>
-    <span className={Tama.guard(className, x => !x)}>{Tama.guard(content, x => x)}</span> // Equal Alternative.
+    <span className={Mount.Unless(className)}>{Mount.If(content)}</span>
+    <span className={Mount.If(className, x => !x)}>{Mount.If(content, x => x)}</span> // Equal Alternative.
   </>
 )
 ```
@@ -89,7 +89,7 @@ function MiniProfile(props: MiniProfileProps) {
         <button className="mini-profile__letter" mounted={user.$.avatar.is(null)}>
          <ColoredLetter letter={user.$.firstName.$[0]} />
         </button>
-        <img className="mini-profile__avatar" src={Tama.guard.require(user.$.avatar)} alt="avatar" />
+        <img className="mini-profile__avatar" src={Mount.require(user.$.avatar)} alt="avatar" />
         <input value={inputValue} mounted={inputMounted} />
         <div className="mini-profile__info">
           <div className="mini-profile__name">{user.$.firstName} {user.$.lastName.$[0]}.</div>

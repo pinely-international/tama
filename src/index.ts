@@ -5,3 +5,5 @@ export { default as Tama } from "./Proton/Proton"
 export { ProtonSwitchWebInflator } from "./Proton/ProtonSwitch"
 
 export { default as WebJSXSerializer } from "./jsx/JSXSerializer"
+
+export { default as Mount } from "./Mount"
