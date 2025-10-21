@@ -1,5 +1,7 @@
 import { State } from "@denshya/reactive"
-import { Subscriptable } from "@/Observable" 
+
+import { Subscriptable } from "@/Observable"
+
 type ConnectionSet = Set<(connected: boolean) => void> & { connected?: boolean }
 
 export namespace ElementLifecycle {
@@ -15,8 +17,8 @@ class ElementConnection {
       for (const entry of entries) {
         const subs = ElementConnection.subscriptions.get(entry.target)!
 
-        if (!subs) continue; 
-        
+        if (!subs) continue
+
         const connected = entry.target.isConnected
 
         if (subs.connected === connected) continue
