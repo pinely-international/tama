@@ -3,9 +3,9 @@
 <h4 align="center">Full TypeScript Support, Based on the <a href="https://dev.to/framemuse/no-framework-principle-arised-2n39">No Framework Principle</a></h4>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@denshya/tama">
-    <img src="https://img.shields.io/npm/v/@denshya/tama?color=007ec6" />
-    <img alt="npm package minimized gzipped size" src="https://img.shields.io/bundlejs/size/@denshya/tama">
+  <a href="https://www.npmjs.com/package/@denshya/proton">
+    <img src="https://img.shields.io/npm/v/@denshya/proton?color=007ec6" />
+    <img alt="npm package minimized gzipped size" src="https://img.shields.io/bundlejs/size/@denshya/proton">
   </a>
   <a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly" /></a>
 </p>
@@ -13,7 +13,7 @@
 ## Install
 
 ```bash
-bun i @denshya/tama
+bun i @denshya/proton
 ```
 
 [Quick Demos](https://stackblitz.com/@FrameMuse/collections/tama)
