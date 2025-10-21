@@ -1,6 +1,6 @@
 # Redux Demo
 
-This is how you can use Redux in Proton.
+This is how you can use Redux in Tama.
 
 ## Preparation
 
@@ -25,7 +25,7 @@ const store = configureStore({
 })
 ```
 
-As we now, **Proton** relies on observables to handle element updates and connections, so you need a wrapper to tell Proton to handle this.
+As we now, **TamaJs** relies on observables to handle element updates and connections, so you need a wrapper to tell Tama to handle this.
 It's done in very simple way as Redux is very close to observable on its own.
 
 For simplicity reasons, let's use [Reactive](https://github.com/denshya/reactive) library as it has Reactive Accessor (`$`), which will help us accessing underlying properties of your store.
@@ -46,6 +46,7 @@ function Component() {
 ```
 
 If you don't like such accessor, you can use `to` method to select desired property
+
 ```tsx
 function Component() {
   const username = storeState.to(state => state.user.name)

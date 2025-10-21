@@ -24,7 +24,7 @@ Passing plain values to `mounted` is not allowed, it clearly indicates a mistake
 
 [Guard pattern](https://en.wikipedia.org/wiki/Guard_(computer_science)) usually refers to a Return/Throw Guard in JavaScript.
 
-However, in Proton it is a predicate, which defines if an object is ok to use. If the `valid` guard return `false`, normally it is simply skipped.
+However, in TamaJs it is a predicate, which defines if an object is ok to use. If the `valid` guard return `false`, normally it is simply skipped.
 
 ```tsx
 const plain = { value: 1 }

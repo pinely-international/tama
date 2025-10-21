@@ -1,11 +1,11 @@
-<h1 align="center">🔵 Proton - UI Composition</h1>
-<h3 align="center">😱 ~5kb gzip, DOM-first, Rootless, Android-style, Component-based, No build</h3>
+<h1 align="center">🐈‍⬛ Tama - Reactive UI Composition</h1>
+<h3 align="center">😱 ~5kb gzip, DOM-first, Rootless, Class-based internals, No build</h3>
 <h4 align="center">Full TypeScript Support, Based on the <a href="https://dev.to/framemuse/no-framework-principle-arised-2n39">No Framework Principle</a></h4>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@denshya/proton">
-    <img src="https://img.shields.io/npm/v/@denshya/proton?color=007ec6" />
-    <img alt="npm package minimized gzipped size" src="https://img.shields.io/bundlejs/size/@denshya/proton">
+  <a href="https://www.npmjs.com/package/@denshya/tama">
+    <img src="https://img.shields.io/npm/v/@denshya/tama?color=007ec6" />
+    <img alt="npm package minimized gzipped size" src="https://img.shields.io/bundlejs/size/@denshya/tama">
   </a>
   <a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly" /></a>
 </p>
@@ -13,10 +13,10 @@
 ## Install
 
 ```bash
-bun i @denshya/proton
+bun i @denshya/tama
 ```
 
-[Quick Demos](https://stackblitz.com/@FrameMuse/collections/proton)
+[Quick Demos](https://stackblitz.com/@FrameMuse/collections/tama)
 
 ## What is "Rootless"?
 
@@ -27,6 +27,7 @@ These all stand for a component (or element) factory function producing/providin
 which only modifies a given element.
 
 From querying the element and modifying it:
+
 ```js
 const element = document.getElementById("id")
 makeWidget(element)
@@ -38,6 +39,7 @@ function makeWidget(element) {
 ```
 
 To creating the desired element and sharing ownership:
+
 ```js
 function createWidget() { // returns an element instead.
   const element = document.createElement("div")
@@ -49,7 +51,7 @@ function createWidget() { // returns an element instead.
 ```
 
 This forces you to find the exact place where the new element should go, which may be tricky.
-This is what Proton solves with JSX while still letting you choose the place to attach or reattach a Proton Component.
+This is what Tama solves with JSX while still letting you choose the place to attach or reattach a Tama Component.
 
 This allows you to do this: (Somewhat of an alternative to Web Components)
 
@@ -63,9 +65,9 @@ const container = document.querySelector(".container")
 container?.append(Widget.Standalone)
 ```
 
-## DOM First & Easier Intergration
+## DOM First & Easier Integration
 
-Nodes are allowed in JSX, making it easier to intergate third-party libraries that are for VanilaJS.
+Nodes are allowed in JSX, making it easier to integrate third-party libraries that are for VanillaJS.
 
 ```jsx
 function Widget() {
@@ -90,13 +92,14 @@ button.append(inflate.inflate(<div>{text}</div>))
 text.set("Some text")
 ```
 
-_Continue reading about_ [JSX Reactivity](https://pinely-international.github.io/proton/learn/unwinding/reactivity)
+_Continue reading about_ [JSX Reactivity](https://tama.denshya.dev/learn/unwinding/reactivity)
 
 ## Customization
 
 Adding your own JSX Attribute for any element is as easy as ever.
 
 For example, **`classMods`** - it will ensure BEM for elements without annoying imports.
+
 ```jsx
 inflator.jsxAttributes.set("classMods", context => {
   if (context.value == null) return
@@ -104,20 +107,20 @@ inflator.jsxAttributes.set("classMods", context => {
 })
 ```
 
-More about [customization](https://pinely-international.github.io/proton/category/custom-behavior)
+More about [customization](https://tama.denshya.dev/category/custom-behavior)
 
 ## Fault Tolerance
 
-Unlike React, Proton will not propagate thrown errors to parents - errors in Children will not break Parents, while you can still catch them.
+Unlike React, Tama will not propagate thrown errors to parents - errors in Children will not break Parents, while you can still catch them.
 
 ```jsx
 function Child() { throw new Error("Test") }
-function Parent(this: Proton.Component) { return <div>123<Child /></div> }
+function Parent(this: Tama.Component) { return <div>123<Child /></div> }
 
 document.body.append(inflate.inflate(<Parent />)) // Will render `123` without errors.
 ```
 
-Learn how you can [catch errors](https://pinely-international.github.io/proton/learn/guides/error)
+Learn how you can [catch errors](https://tama.denshya.dev/learn/guides/error)
 
 ## Open Internals
 
@@ -129,9 +132,9 @@ which gives you proper types while not stopping you from experimenting with inte
 If you want to manage your components in a somewhat complex way (like in React), you can continue reading this, but otherwise, you may want to consider these alternatives:
 
 - <https://github.com/kitajs/html>
-- https://github.com/reactivehtml/rimmel
+- <https://github.com/reactivehtml/rimmel>
 
-## Why Proton over React?
+## Why Tama over React?
 
 It is very similar to React, it tries to simplify development as we know it in React.
 
@@ -143,7 +146,7 @@ It is very similar to React, it tries to simplify development as we know it in R
 |Signals/Observables Support|Native support for [WICG Observables](https://github.com/WICG/observable) and Signal-like structures|
 |No root elements|Any component can be **inflated** and attached anywhere|
 |Components can be Async 😱 (Client side)|Await your values and delay/schedule the views with fallbacks and an initial view.|
-|Top-level allowed|You can do anything in any scope, Proton doesn't put any constraints on where or from what something is initialized - enjoy!|
+|Top-level allowed|You can do anything in any scope, Tama doesn't put any constraints on where or from what something is initialized - enjoy!|
 |Children don't crash Parents|An error in the subtree will not break the rendering of parents.|
 |Return any value|Components can be returned with **any** value, no seriously, even DOM Nodes/Elements will work.|
 |Class-based|Enables **tree-shaking**, **extensibility**, and **open internals**|
@@ -153,19 +156,19 @@ It is very similar to React, it tries to simplify development as we know it in R
 |Feature|Description|
 |-------|-----------|
 |Tree Context|Explicit context sharing between subtree components|
-|Conditional Rendering|Proton implements Conditional Mounting|
+|Conditional Rendering|Tama implements Conditional Mounting|
 |Layouts Swapping|Conditionally changing the whole component layout|
-|JSX|Proton supports React JSX, but it also has its own flavor|
+|JSX|Tama supports React JSX, but it also has its own flavor|
 |`ref` attribute|Access a DOM element when it's ready - supports refs merging as well|
-|Event delegation|Proton subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/proton/issues/53))|
+|Event delegation|Tama subscribes to parents rather than directly to elements too (for lists) ([WIP](https://github.com/pinely-international/tama/issues/53))|
 |SSR|Provides an extendable `JSXSerializer` and examples with full DOM support in DOM-less environments like servers|
 |Portal|Portals are natural and very easy, you just use a component-scoped inflator|
-|Error catching|Proton exposes a clear API to catch errors and others|
+|Error catching|Tama exposes a clear API to catch errors and others|
 
 **Problems to solve:**
 
-Proton isn't perfect, it's being developed.
-https://github.com/pinely-international/proton/milestones
+Tama isn't perfect, it's being developed.
+<https://github.com/pinely-international/tama/milestones>
 
 ## Getting Started
 
@@ -182,7 +185,7 @@ document.getElementById("root").replaceChildren(AppView)
 
 ## JSX
 
-Proton supports JSX. It maps directly to [Document](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) elements and allows any value to be put into attributes or as children of **any element**. And it has a different flavor compared to React JSX.
+Tama supports JSX. It maps directly to [Document](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) elements and allows any value to be put into attributes or as children of **any element**. And it has a different flavor compared to React JSX.
 
 ```xml
 <div className="product-card">
@@ -204,8 +207,8 @@ Report if there is anything uncovered for TypeScript.
 ## FAQ
 
 <details>
-  <summary>Do React hooks work in Proton?</summary>
-  No, but it's very extensible, so some enthusiasts might implement it. BTW, even though libraries from other "frameworks" won't work in Proton, libraries for Proton are supposed to work in other frameworks too.
+  <summary>Do React hooks work in Tama?</summary>
+  No, but it's very extensible, so some enthusiasts might implement it. BTW, even though libraries from other "frameworks" won't work in Tama, libraries for Tama are supposed to work in other frameworks too.
 </details>
 <!-- <details>
   <summary>question?</summary>

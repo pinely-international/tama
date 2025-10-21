@@ -1,6 +1,7 @@
 {
   "type": "module",
-  "name": "@denshya/proton",
+  "name": "@denshya/tama",
+  "version": "0.8.0",
   "private": false,
   "sideEffects": false,
   "main": "build/index.js",
@@ -44,9 +45,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/denshya/proton.git"
+    "url": "git+https://github.com/pinely-international/tama.git"
   },
-  "description": "Light weight, zero-configuration, component-based Web Inflator (JSX parser) for building UI. | React/SolidJS alike library.",
+  "description": "Light weight, zero-configuration, component-based Web Inflator (JSX parser) for building UI. | Alternative to React or SolidJS.",
   "keywords": [
     "framework",
     "ui",
@@ -56,7 +57,7 @@
   "author": "FrameMuse",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/denshya/proton/issues"
+    "url": "https://github.com/pinely-international/tama/issues"
   },
-  "homepage": "https://github.com/denshya/proton#readme"
+  "homepage": "https://github.com/pinely-international/tama#readme"
 }

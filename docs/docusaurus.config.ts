@@ -3,8 +3,8 @@ import type { Config } from "@docusaurus/types"
 import { themes as prismThemes } from "prism-react-renderer"
 
 const config: Config = {
-  title: "Proton",
-  tagline: "Rootless UI Building | Encapsulated Micro-Frontends",
+  title: "TamaJs",
+  tagline: "Reactive UI Rendering without Roots",
   favicon: "img/logo.svg",
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -13,15 +13,15 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: "https://denshya.github.io/",
+  url: "https://tama.denshya.dev/",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: "/proton",
+  baseUrl: "/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: "denshya", // Usually your GitHub org/user name.
-  projectName: "proton", // Usually your repo name.
+  projectName: "tama", // Usually your repo name.
 
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
@@ -69,9 +69,9 @@ const config: Config = {
     // Replace with your project's social card
     image: "img/docusaurus-social-card.jpg",
     navbar: {
-      title: "Proton",
+      title: "Tama",
       logo: {
-        alt: "Proton Logo",
+        alt: "Tama Logo",
         src: "img/logo.svg",
       },
       items: [

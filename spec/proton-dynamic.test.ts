@@ -7,7 +7,7 @@
 // describe("ProtonDynamic", () => {
 //   const inflator = new WebInflator()
 
-//   const make = (source?: State<unknown>) => Proton.Dynamic(inflator, () => null, source)
+//   const make = (source?: State<unknown>) => Tama.Dynamic(inflator, () => null, source)
 
 //   // it("initializes with a component and optional State", () => {
 //   //   const dyn = make()

@@ -10,7 +10,7 @@ import { Unsubscribe } from "../Observable"
  * In case of being part of JSX, you should connect `ProtonSwitchWebInflator`.
  *
  * @example
- * function SwitchComponent(this: Proton.Component) {
+ * function SwitchComponent(this: Tama.Component) {
     const switcher = new ProtonSwitch({
       banned: <span>Banned</span>,
       pending: <span>Pending</span>,
@@ -26,7 +26,7 @@ import { Unsubscribe } from "../Observable"
   }
  * @example
   async function UserProfile() {
-    const userStatusSwitch = new Proton.Switch({
+    const userStatusSwitch = new Tama.Switch({
       banned: <Status color="red">Banned</Status>,
       pending: <Status color="yellow">Pending</Status>,
       default: <Status color="green">Active</Status>

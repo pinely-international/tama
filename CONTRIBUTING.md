@@ -1,17 +1,18 @@
 # Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+email, or any other method with the owners of this repository before making a change.
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
+Please, star the repository if you find it useful, it really helps!
 
 ## Pull Request Process
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
+1. Ensure any install or build dependencies are removed before the end of the layer when doing a
    build.
-2. Update the docs and types with details of changes to the interface, this includes new environment 
+2. Update the docs and types with details of changes to the interface, this includes new environment
    variables, exposed ports, useful file locations and container parameters.
-3. You may merge the Pull Request in once you have the approvals of developers, or if you 
+3. You may merge the Pull Request in once you have the approvals of developers, or if you
    do not have permission to do that, you may request the a reviewer to merge it for you.
 
 ## Code of Conduct
@@ -71,7 +72,7 @@ further defined and clarified by project maintainers.
 ### Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at minicablestone@gmail.com. All
+reported by contacting the project team at <valery.zinchenko@pinely.eu>, mentioning "Denshya TamaJs" in the subject. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.
