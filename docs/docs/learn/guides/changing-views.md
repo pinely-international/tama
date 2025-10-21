@@ -6,8 +6,10 @@ Switching between different markups within a component.
 
 Controls which element is displayed under a component
 
+> For animated swaps, check the [View Transitions guide](./view-transitions.md) to coordinate custom effects and the browser View Transition API.
+
 ```tsx
-function MyView(this: Proton.Component) {
+function MyView(this: Tama.Component) {
   this.view.set(<div>Hello World!</div>)
 
   setTimeout(() => {
@@ -16,10 +18,10 @@ function MyView(this: Proton.Component) {
 }
 ```
 
-In TypeScript, by typing `this` will cast a Proton Component signature to your function, which will reduce chances of using this functions out of JSX Inflator.
+In TypeScript, by typing `this` will cast a Tama Component signature to your function, which will reduce chances of using this functions out of JSX Inflator.
 
 As you already know a component can **return** nothing - it may set a view via `this.view.set`.
-`return` in a Proton Component Factory function calls `this.view.set` internally.
+`return` in a Tama Component Factory function calls `this.view.set` internally.
 `return` also defines a `default` view for a component under `this.view.default` property for re-usage.
 
 ### Caching Elements
@@ -27,7 +29,7 @@ As you already know a component can **return** nothing - it may set a view via `
 Optionally, you can optimize your elements by inflating them beforehand.
 
 ```tsx
-function MyView(this: Proton.Component) {
+function MyView(this: Tama.Component) {
   const helloWorldView = this.inflator.inflate(<div>Hello World!</div>)
   const replacedView = this.inflator.inflate(<div>I'm Replaced!</div>)
 
@@ -41,7 +43,7 @@ function MyView(this: Proton.Component) {
 Or using the same JSX since inflated JSX elements are cached automatically
 
 ```tsx
-function MyView(this: Proton.Component) {
+function MyView(this: Tama.Component) {
   const helloWorldView = <div>Hello World!</div>
   const replacedView = <div>I'm Replaced!</div>
 
@@ -53,7 +55,7 @@ function MyView(this: Proton.Component) {
 ```
 
 :::tip
-Or use [`Proton.Switch`](../helpers/Switch.md) helper.
+Or use [`Tama.Switch`](../helpers/Switch.md) helper.
 :::
 
 ## Generators

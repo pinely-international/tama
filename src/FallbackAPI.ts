@@ -21,7 +21,7 @@ export class Fallback<ErrorView = unknown, PendingView = unknown> {
       return this.views.pending
     }
 
-    throw new TypeError("Unreachable code, something went wrong during Proton Fallback Resolution", { cause: this })
+    throw new TypeError("Unreachable code, something went wrong during Tama Fallback Resolution", { cause: this })
   }
 }
 

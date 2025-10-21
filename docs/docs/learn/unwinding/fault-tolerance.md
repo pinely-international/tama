@@ -1,8 +1,8 @@
 # Fault Tolerance
 
-Proton is designed with a tolerance to any kind of errors in mind.
+Tama is designed with a tolerance to any kind of errors in mind.
 
-Proton gracefully shutdowns failed part
+Tama gracefully shutdowns failed part
 
 - If error happens in a Component factory function
 - If error happens in an event callback

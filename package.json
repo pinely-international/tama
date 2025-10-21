@@ -1,6 +1,7 @@
 {
   "type": "module",
-  "name": "@denshya/proton",
+  "name": "@denshya/tama",
+  "version": "0.8.0",
   "private": false,
   "sideEffects": false,
   "main": "build/index.js",
@@ -31,22 +32,22 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@typescript-eslint/eslint-plugin": "^8.19.0",
-    "@typescript-eslint/parser": "^8.19.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
     "eslint": "9.35.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "tsup": "^8.3.5",
     "typescript": "^5.9.2",
-    "vite": "^7.1.5",
+    "vite": "^7.1.11",
     "vite-bundle-visualizer": "^1.2.1",
     "vite-plugin-externalize-deps": "^0.9.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/denshya/proton.git"
+    "url": "git+https://github.com/pinely-international/tama.git"
   },
-  "description": "Light weight, zero-configuration, component-based Web Inflator (JSX parser) for building UI. | React/SolidJS alike library.",
+  "description": "Light weight, zero-configuration, component-based Web Inflator (JSX parser) for building UI. | Alternative to React or SolidJS.",
   "keywords": [
     "framework",
     "ui",
@@ -56,7 +57,7 @@
   "author": "FrameMuse",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/denshya/proton/issues"
+    "url": "https://github.com/pinely-international/tama/issues"
   },
-  "homepage": "https://github.com/denshya/proton#readme"
+  "homepage": "https://github.com/pinely-international/tama#readme"
 }

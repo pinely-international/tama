@@ -1,8 +1,8 @@
 # Component API
 
-The components are not actually components, they are constructors and evaluators for `Proton.Component`, this is a heart of every component.
+The components are not actually components, they are constructors and evaluators for `Tama.Component`, this is a heart of every component.
 
-However, it doesn't mean component **creates** a `Proton.Component`, actually it is created **before** constructor is invoked, but when it's done the component instance is passed as `this` argument.
+However, it doesn't mean component **creates** a `Tama.Component`, actually it is created **before** constructor is invoked, but when it's done the component instance is passed as `this` argument.
 
 Which opens controls to the APIs of component behavior.
 
@@ -34,13 +34,13 @@ function MyApp(props = new MyAppProps) {
 }
 ```
 
-Creation of `Proton.Component` is skipped for arrow functions (it can't access `this`), but not for async arrow functions (swapping views is controlled by `Proton.Component`, then it's garbage collected).
+Creation of `Tama.Component` is skipped for arrow functions (it can't access `this`), but not for async arrow functions (swapping views is controlled by `Tama.Component`, then it's garbage collected).
 
 ```tsx
 const MyApp = () => <div></div> // Component API can't be accessed.
 ```
 
-## `Proton.Component` as "Class Component"
+## `Tama.Component` as "Class Component"
 
-Currently there is no such concept as Class Component, you can't use `Proton.Component` as a component.
+Currently there is no such concept as Class Component, you can't use `Tama.Component` as a component.
 *But if you have an interest in having it, please, create/support discussions on github.*
