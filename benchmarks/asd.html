@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Benchmark — cloneNode vs naive createElement (fixed)</title>
+    <style>
+      body {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        padding: 20px;
+        line-height: 1.4
+      }
+
+      h1 {
+        font-size: 18px;
+        margin: 0 0 12px
+      }
+
+      .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap
+      }
+
+      .controls input[type=number] {
+        width: 120px;
+        padding: 6px
+      }
+
+      .controls label {
+        font-size: 13px
+      }
+
+      button {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: #f7f7f7;
+        cursor: pointer
+      }
+
+      .row {
+        display: flex;
+        gap: 12px
+      }
+
+      .col {
+        flex: 1;
+        min-width: 0
+      }
+
+      .panel {
+        border: 1px solid #e6e6e6;
+        padding: 12px;
+        border-radius: 8px;
+        background: #fff;
+        max-height: 620px;
+        overflow: auto
+      }
+
+      .result {
+        font-weight: 700;
+        margin-top: 8px
+      }
+
+      .stats {
+        font-size: 13px;
+        color: #444
+      }
+
+      .item {
+        padding: 6px;
+        border-bottom: 1px solid #f0f0f0
+      }
+
+      .page-content__link {
+        display: inline-block;
+        padding: 6px 8px;
+        text-decoration: none;
+        border-radius: 6px
+      }
+
+      .page-content__link--active {
+        background: #e0f1ff
+      }
+
+      #log {
+        white-space: pre-wrap;
+        font-family: monospace;
+        background: #fbfbfb;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #eee;
+        height: 160px;
+        overflow: auto
+      }
+
+      footer {
+        margin-top: 12px;
+        color: #666;
+        font-size: 12px
+      }
+
+      .small {
+        font-size: 12px;
+        color: #666
+      }
+
+      select {
+        padding: 6px
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        border: 1px solid #e6e7ea;
+        font-size: 12px
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <h1>Benchmark: naive createElement vs improved cloneNode</h1>
+    <div class="controls">
+      <label>Items: <input id="count" type="number" value="1000" min="1" step="1"></label>
+      <label><input id="mixed" type="checkbox"> mixed types</label>
+      <label>Strategy: <select id="strategy">
+          <option value="naive">Naive (createElement)</option>
+          <option value="clone">Optimized (clone + naive patch)</option>
+          <option value="patch">Optimized (template + placeholders)</option>
+          <option value="reuse">Optimized + reuse pool</option>
+        </select></label>
+      <button id="gen">Generate data</button>
+      <button id="run">Run selected</button>
+      <button id="run-all">Run all (naive/patch/reuse)</button>
+      <button id="clear">Clear</button>
+      <div style="margin-left:auto" class="small">Note: run a few times — JIT matters.</div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="panel">
+          <strong>Container</strong>
+          <div id="container" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="col" style="flex-basis:420px;flex-grow:0">
+        <div class="panel">
+          <strong>Results</strong>
+          <div id="results"></div>
+          <div class="result" id="summary"></div>
+          <hr>
+          <strong>Log</strong>
+          <div id="log"></div>
+        </div>
+      </div>
+    </div>
+    <footer>Improved optimized strategies: detect placeholders once, patch only dynamic bits, and optionally reuse
+      clones across runs. These reduce writes and allocations when many nodes share structure.</footer>
+    <script>
+      let items = [];
+      function genData(count, mixed) {
+        items = new Array(count).fill(0).map((_, i) => {
+          const isLink = mixed ? (Math.random() > 0.3) : true;
+          return {
+            id: 'id' + i,
+            title: 'Item ' + i,
+            type: isLink ? 'link' : 'block',
+            hidden: false,
+            active: (i % 37) === 0
+          };
+        });
+        log('Generated ' + items.length + ' items. mixed=' + mixed);
+        renderSummary();
+      }
+
+      function log(s) {
+        const el = document.getElementById('log');
+        el.innerHTML = (el.innerHTML ? el.innerHTML + '<br>' : '') + s;
+        el.scrollTop = el.scrollHeight;
+      }
+      function clearLog() { document.getElementById('log').innerHTML = ''; }
+
+      function renderSummary() {
+        const el = document.getElementById('results');
+        el.innerHTML = '<div class="stats">items: ' + items.length + '</div>';
+      }
+
+      // Existing render functions remain unchanged...
+
+      document.getElementById('gen').addEventListener('click', () => {
+        const count = Number(document.getElementById('count').value) || 1000;
+        const mixed = document.getElementById('mixed').checked;
+        genData(count, mixed);
+        clear();
+      });
+
+      function clear() { document.getElementById('container').innerHTML = ''; document.getElementById('summary').textContent = ''; }
+      document.getElementById('clear').addEventListener('click', () => { clear(); clearLog(); });
+
+      document.getElementById('run').addEventListener('click', () => {
+        const strategy = document.getElementById('strategy').value;
+        switch (key) {
+          case value:
+
+            break;
+
+          default:
+            break;
+        }
+      });
+
+
+      // --- Naive: createElement per item ---
+      function renderNaive(container, data) {
+        const start = performance.now();
+        const frag = document.createDocumentFragment();
+        let created = 0;
+        for (let i = 0; i < data.length; i++) {
+          const it = data[i];
+          if (it.hidden) continue;
+          let node;
+          if (it.type === 'link') {
+            node = document.createElement('a');
+            node.className = 'page-content__link' + (it.active ? ' page-content__link--active' : '');
+            node.href = '#' + it.id;
+            node.textContent = it.title;
+            node.setAttribute('data-id', it.id);
+          } else {
+            node = document.createElement('div');
+            node.className = 'page-content__block';
+            node.textContent = it.title;
+          }
+          frag.appendChild(node);
+          created++;
+        }
+        container.innerHTML = '';
+        container.appendChild(frag);
+        const end = performance.now();
+        return { created, time: end - start };
+      }
+
+      // Run buttons remain unchanged...
+
+      genData(1000, false);
+      renderSummary();
+    </script>
+  </body>
+
+</html>
