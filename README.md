@@ -1,6 +1,6 @@
 <h1 align="center">🐈‍⬛ Tama - Reactive UI Rendering</h1>
 <h3 align="center">😱 5kb gzip, DOM-first, Rootless, Class-based internals, No build, Fully customizable</h3>
-<h4 align="center">Full TypeScript Support, Based on the <a href="https://dev.to/framemuse/no-framework-principle-arised-2n39">No Framework Principle</a></h4>
+<h4 align="center">Full TypeScript Support, Treeshakable, Based on the <a href="https://dev.to/framemuse/no-framework-principle-arised-2n39">No Framework Principle</a></h4>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@denshya/proton">
@@ -8,6 +8,7 @@
     <img alt="npm package minimized gzipped size" src="https://img.shields.io/bundlejs/size/@denshya/proton">
   </a>
   <a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly" /></a>
+  <a href="https://stackblitz.com/@FrameMuse/collections/tama"><img alt="Static Badge" src="https://img.shields.io/badge/Playground%20Available-1389fd?logo=lightning"></a>
 </p>
 
 ## Install
@@ -15,8 +16,6 @@
 ```bash
 bun i @denshya/proton
 ```
-
-[Quick Demos](https://stackblitz.com/@FrameMuse/collections/tama)
 
 ## What is "Rootless"?
 
