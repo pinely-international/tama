@@ -6,7 +6,7 @@ sidebar_position: 3
 
 [WICG Observable (Web Standard)](https://github.com/WICG/observable)
 
-Proton adopts observable as another primitive. Any object that has `Symbol.subscribe` considered to be an observable.
+Tama adopts observable as another primitive. Any object that has `Symbol.subscribe` considered to be an observable.
 
 Beyond that, it treats any object that has either `get` or `set` to be an accessor. Which can be combined with observable, getting an **Observable Accessor**.
 
@@ -14,7 +14,7 @@ Beyond that, it treats any object that has either `get` or `set` to be an access
 
 ---
 
-There is no built-in state manager (in the library), Proton only handles Observables as is. Now creating data flows is your problem :) Joking, it always was, now it's separated from the "framework", so you can use any library that supports Observables. Like the one Denshya has - [Reactive](https://github.com/denshya/reactive).
+There is no built-in state manager (in the library), Tama only handles Observables as is. Now creating data flows is your problem :) Joking, it always was, now it's separated from the "framework", so you can use any library that supports Observables. Like the one Denshya has - [Reactive](https://github.com/denshya/reactive).
 
 ```tsx
 const regularText = "Static Value"

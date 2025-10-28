@@ -3,10 +3,10 @@
 
 // import { Proton, WebInflator } from "../build"
 
-// describe("Proton.Switch", () => {
+// describe("Tama.Switch", () => {
 //   const inflator = new WebInflator()
 
-//   const make = (source?: State<unknown>) => new Proton.Switch(inflator, () => null, source)
+//   const make = (source?: State<unknown>) => new Tama.Switch(inflator, () => null, source)
 
 //   it("initializes a component", () => {
 //     const sw = make()

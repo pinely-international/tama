@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Benchmark — cloneNode vs naive createElement (improved)</title>
+    <style>
+      body {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        padding: 20px;
+        line-height: 1.4
+      }
+
+      h1 {
+        font-size: 18px;
+        margin: 0 0 12px
+      }
+
+      .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap
+      }
+
+      .controls input[type=number] {
+        width: 120px;
+        padding: 6px
+      }
+
+      .controls label {
+        font-size: 13px
+      }
+
+      button {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: #f7f7f7;
+        cursor: pointer
+      }
+
+      .row {
+        display: flex;
+        gap: 12px
+      }
+
+      .col {
+        flex: 1;
+        min-width: 0
+      }
+
+      .panel {
+        border: 1px solid #e6e6e6;
+        padding: 12px;
+        border-radius: 8px;
+        background: #fff;
+        max-height: 620px;
+        overflow: auto
+      }
+
+      .result {
+        font-weight: 700;
+        margin-top: 8px
+      }
+
+      .stats {
+        font-size: 13px;
+        color: #444
+      }
+
+      .item {
+        padding: 6px;
+        border-bottom: 1px solid #f0f0f0
+      }
+
+      .page-content__link {
+        display: inline-block;
+        padding: 6px 8px;
+        text-decoration: none;
+        border-radius: 6px
+      }
+
+      .page-content__link--active {
+        background: #e0f1ff
+      }
+
+      #log {
+        white-space: pre-wrap;
+        font-family: monospace;
+        background: #fbfbfb;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #eee;
+        height: 160px;
+        overflow: auto
+      }
+
+      footer {
+        margin-top: 12px;
+        color: #666;
+        font-size: 12px
+      }
+
+      .small {
+        font-size: 12px;
+        color: #666
+      }
+
+      select {
+        padding: 6px
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        border: 1px solid #e6e7ea;
+        font-size: 12px
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <h1>Benchmark: naive createElement vs improved cloneNode</h1>
+    <div class="controls">
+      <label>Items: <input id="count" type="number" value="10000" min="1" step="1"></label>
+      <label><input id="mixed" type="checkbox"> mixed types</label>
+      <label>Strategy: <select id="strategy">
+          <option value="naive">Naive (createElement)</option>
+          <option value="clone">Optimized (clone + naive patch)</option>
+          <option value="patch">Optimized (template + placeholders)</option>
+          <option value="reuse">Optimized + reuse pool</option>
+        </select></label>
+      <button id="gen">Generate data</button>
+      <button id="run">Run selected</button>
+      <button id="run-all">Run all (naive/patch/reuse)</button>
+      <button id="clear">Clear</button>
+      <div style="margin-left:auto" class="small">Note: run a few times — JIT matters.</div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="panel">
+          <strong>Container</strong>
+          <div id="container" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="col" style="flex-basis:420px;flex-grow:0">
+        <div class="panel">
+          <strong>Results</strong>
+          <div id="results"></div>
+          <div class="result" id="summary"></div>
+          <hr>
+          <strong>Log</strong>
+          <div id="log"></div>
+        </div>
+      </div>
+    </div>
+    <footer>Improved optimized strategies: detect placeholders once, patch only dynamic bits, and optionally reuse
+      clones across runs. These reduce writes and allocations when many nodes share structure.</footer>
+    <script>
+      // Dataset
+      let items = [];
+      function genData(count, mixed) {
+        items = new Array(count).fill(0).map((_, i) => {
+          const isLink = mixed ? (Math.random() > 0.3) : true;
+          return {
+            id: 'id' + i,
+            title: 'Item ' + i,
+            type: isLink ? 'link' : 'block',
+            hidden: false,
+            active: (i % 37) === 0
+          };
+        });
+        log('Generated ' + items.length + ' items. mixed=' + mixed);
+        renderSummary();
+      }
+
+      function log(s) {
+        const el = document.getElementById('log'); el.textContent = (el.textContent ? el.textContent + '' : '') + s; el.scrollTop = el.scrollHeight;
+      }
+      function clearLog() { document.getElementById('log').textContent = ''; }
+
+      function renderSummary() {
+        const el = document.getElementById('results');
+        el.innerHTML = '<div class="stats">items: ' + items.length + '</div>';
+      }
+
+      // --- Naive: createElement per item ---
+      function renderNaive(container, data) {
+        const start = performance.now();
+        const items = []
+        let created = 0;
+        for (let i = 0; i < data.length; i++) {
+          const it = data[i];
+          if (it.hidden) continue;
+          let node;
+          if (it.type === 'link') {
+            node = document.createElement('a');
+            node.className = 'page-content__link' + (it.active ? ' page-content__link--active' : '');
+            node.href = '#' + it.id;
+            node.textContent = it.title;
+            node.setAttribute('data-id', it.id);
+          } else {
+            node = document.createElement('div');
+            node.className = 'page-content__block';
+            node.textContent = it.title;
+          }
+          items.push(node);
+          created++;
+        }
+        container.innerHTML = '';
+        container.append(...items);
+        const end = performance.now();
+        return { created, time: end - start };
+      }
+
+      // --- Simple clone: clone proto and set all dynamic fields (previously used) ---
+      function renderCloneNaive(container, data) {
+        const start = performance.now();
+        const variants = new Map();
+        // build prototypes
+        for (let i = 0; i < data.length; i++) {
+          const it = data[i]; if (it.hidden) continue;
+          const sig = it.type === 'link' ? 'a.link' : 'div.block';
+          if (!variants.has(sig)) {
+            if (it.type === 'link') {
+              const a = document.createElement('a'); a.className = 'page-content__link'; a.href = '#proto'; a.textContent = 'PROTO'; a.setAttribute('data-id', 'proto');
+              variants.set(sig, { proto: a });
+            } else {
+              const d = document.createElement('div'); d.className = 'page-content__block'; d.textContent = 'PROTO';
+              variants.set(sig, { proto: d });
+            }
+          }
+        }
+        const items = []
+        let created = 0;
+        for (let i = 0; i < data.length; i++) {
+          const it = data[i]; if (it.hidden) continue;
+          const sig = it.type === 'link' ? 'a.link' : 'div.block';
+          const tpl = variants.get(sig);
+          const clone = tpl.proto.cloneNode(true);
+          if (it.type === 'link') {
+            // set everything (naive patch)
+            clone.textContent = it.title;
+            clone.href = '#' + it.id;
+            clone.setAttribute('data-id', it.id);
+            clone.className = 'page-content__link' + (it.active ? ' page-content__link--active' : '');
+          } else {
+            clone.textContent = it.title;
+            clone.className = 'page-content__block';
+          }
+          items.push(clone);
+          created++;
+        }
+        container.innerHTML = '';
+        container.append(...items);
+        const end = performance.now();
+        return { created, time: end - start, variants: variants.size };
+      }
+
+      // --- Optimized: detect placeholders once and patch only those ---
+      function buildTemplate(renderExampleA, renderExampleB) {
+        // both are Element roots
+        const a = renderExampleA.cloneNode(true);
+        const b = renderExampleB ? renderExampleB.cloneNode(true) : null;
+
+        // find placeholders by comparing a and b; if b is null, be conservative (text + attrs)
+        const placeholders = [];
+
+        function walk(nA, nB, path) {
+          if (!nA) return;
+          if (nA.nodeType === Node.TEXT_NODE) {
+            if (!nB || nB.nodeType !== Node.TEXT_NODE || (nA.textContent !== nB.textContent)) placeholders.push({ type: 'text', path: path.slice() });
+            return;
+          }
+          if (nA.nodeType === Node.ELEMENT_NODE) {
+            const eA = nA;
+            const eB = nB && nB.nodeType === Node.ELEMENT_NODE ? nB : null;
+            if (!eB || eA.tagName !== eB.tagName) { placeholders.push({ type: 'node', path: path.slice() }); return; }
+            // attributes
+            const names = new Set();
+            for (let i = 0; i < eA.attributes.length; i++) names.add(eA.attributes[i].name);
+            if (eB) for (let i = 0; i < eB.attributes.length; i++) names.add(eB.attributes[i].name);
+            for (const n of names) {
+              const va = eA.getAttribute(n); const vb = eB ? eB.getAttribute(n) : null;
+              if (va !== vb) placeholders.push({ type: 'attr', path: path.slice(), name: n });
+            }
+            const len = Math.max(eA.childNodes.length, eB ? eB.childNodes.length : 0);
+            for (let i = 0; i < len; i++) walk(eA.childNodes[i], eB ? eB.childNodes[i] : null, path.concat(i));
+          }
+        }
+
+        walk(a, b, []);
+        return { proto: a, placeholders };
+      }
+
+      function renderTemplatePatch(container, data) {
+        const start = performance.now();
+        // Build templates per signature with two examples if possible
+        const examples = new Map();
+        function signature(el) { if (!el || !(el instanceof Element)) return 'NODE'; return el.tagName + '|' + (el.getAttribute('class') || ''); }
+
+        for (let i = 0; i < data.length; i++) {
+          const it = data[i]; if (it.hidden) continue;
+          const sig = it.type === 'link' ? 'A.link' : 'DIV.block';
+          if (!examples.has(sig)) {
+            // render two examples
+            const ex1 = (function () { if (it.type === 'link') { const a = document.createElement('a'); a.className = 'page-content__link'; a.href = '#' + it.id; a.textContent = it.title; a.setAttribute('data-id', it.id); return a; } else { const d = document.createElement('div'); d.className = 'page-content__block'; d.textContent = it.title; return d; } })();
+            // try to find second example with same sig and different data
+            let ex2 = null;
+            for (let j = i + 1; j < data.length; j++) { const it2 = data[j]; if (it2.hidden) continue; const sig2 = it2.type === 'link' ? 'A.link' : 'DIV.block'; if (sig2 === sig) { ex2 = (function () { if (it2.type === 'link') { const a = document.createElement('a'); a.className = 'page-content__link'; a.href = '#' + it2.id; a.textContent = it2.title; a.setAttribute('data-id', it2.id); return a; } else { const d = document.createElement('div'); d.className = 'page-content__block'; d.textContent = it2.title; return d; } })(); break; } }
+            const tpl = buildTemplate(ex1, ex2);
+            examples.set(sig, { tpl, sampleExample: ex1 });
+          }
+        }
+
+        const items = []
+        let created = 0;
+        for (let i = 0; i < data.length; i++) {
+          const it = data[i]; if (it.hidden) continue;
+          const sig = it.type === 'link' ? 'A.link' : 'DIV.block'; const slot = examples.get(sig);
+          if (!slot) continue; const { proto, placeholders } = slot.tpl;
+          const clone = proto.cloneNode(true);
+          // patch only placeholders
+          for (const ph of placeholders) {
+            const node = nodeByPath(clone, ph.path);
+            if (!node) continue;
+            if (ph.type === 'text') {
+              // map heuristics
+              node.textContent = it.title;
+            } else if (ph.type === 'attr') {
+              const name = ph.name;
+              if (name === 'href') node.setAttribute('href', '#' + it.id);
+              else if (name === 'data-id') node.setAttribute('data-id', it.id);
+              else if (name === 'class') node.setAttribute('class', it.type === 'link' ? ('page-content__link' + (it.active ? ' page-content__link--active' : '')) : 'page-content__block');
+              else {
+                const val = it[name] ?? null; if (val == null) node.removeAttribute(name); else node.setAttribute(name, String(val));
+              }
+            } else if (ph.type === 'node') {
+              node.textContent = it.title;
+            }
+          }
+          items.push(clone);
+          created++;
+        }
+
+        container.innerHTML = '';
+        container.append(...items);
+        const end = performance.now();
+        return { created, time: end - start, templates: examples.size };
+      }
+
+      // helper: get node by path
+      function nodeByPath(root, path) {
+        let n = root;
+        for (let i = 0; i < path.length; i++) { if (!n) return null; n = n.childNodes[path[i]]; }
+        return n;
+      }
+
+      // --- Optimized with reuse pool ---
+      function renderReusePool(container, data) {
+        const start = performance.now();
+        const pool = new Map();
+        const templates = new Map();
+
+        // build templates (like templatePatch) but store pool for each sig
+        function signatureFor(it) { return it.type === 'link' ? 'A.link' : 'DIV.block'; }
+        for (let i = 0; i < data.length; i++) {
+          const it = data[i]; if (it.hidden) continue; const sig = signatureFor(it); if (!templates.has(sig)) {
+            // create proto
+            if (it.type === 'link') { const a = document.createElement('a'); a.className = 'page-content__link'; a.href = '#' + it.id; a.textContent = it.title; a.setAttribute('data-id', it.id); templates.set(sig, { proto: a, placeholders: ['text', 'href', 'data-id', 'class'] }); }
+            else { const d = document.createElement('div'); d.className = 'page-content__block'; d.textContent = it.title; templates.set(sig, { proto: d, placeholders: ['text', 'class'] }); }
+            pool.set(sig, []);
+          }
+        }
+
+        const items = []
+        let created = 0;
+        for (let i = 0; i < data.length; i++) {
+          const it = data[i]; if (it.hidden) continue; const sig = signatureFor(it); const tpl = templates.get(sig); const p = pool.get(sig);
+          let node = p.length ? p.pop() : tpl.proto.cloneNode(true);
+          // patch minimal fields
+          if (it.type === 'link') {
+            // only update if different to avoid unnecessary paints (cheap heuristic)
+            if (node.textContent !== it.title) node.textContent = it.title;
+            if (node.getAttribute('data-id') !== it.id) node.setAttribute('data-id', it.id);
+            if (node.href !== (location.origin + '/' + ('#' + it.id))) node.href = '#' + it.id; // access may normalize
+            const wantedClass = 'page-content__link' + (it.active ? ' page-content__link--active' : ''); if (node.className !== wantedClass) node.className = wantedClass;
+          } else {
+            if (node.textContent !== it.title) node.textContent = it.title;
+            if (node.className !== 'page-content__block') node.className = 'page-content__block';
+          }
+          items.push(node);
+          created++;
+        }
+
+        container.innerHTML = '';
+        container.append(...items);
+        const end = performance.now();
+        return { created, time: end - start, templates: templates.size };
+      }
+
+      // UI wiring
+      document.getElementById('gen').addEventListener('click', () => {
+        const count = Number(document.getElementById('count').value) || 1000;
+        const mixed = document.getElementById('mixed').checked;
+        genData(count, mixed);
+        clear();
+      });
+
+      function clear() { document.getElementById('container').innerHTML = ''; document.getElementById('summary').textContent = ''; }
+      document.getElementById('clear').addEventListener('click', () => { clear(); clearLog(); });
+
+      document.getElementById('run').addEventListener('click', () => {
+        clearLog(); const container = document.getElementById('container');
+        const strat = document.getElementById('strategy').value;
+        let res;
+        if (strat === 'naive') res = renderNaive(container, items);
+        else if (strat === 'clone') res = renderCloneNaive(container, items);
+        else if (strat === 'patch') res = renderTemplatePatch(container, items);
+        else if (strat === 'reuse') res = renderReusePool(container, items);
+        document.getElementById('summary').textContent = `${strat.toUpperCase()}: created=${res.created} time=${res.time.toFixed(2)}ms`;
+        log(`${strat.toUpperCase()}: created=${res.created} time=${res.time.toFixed(2)}ms`);
+      });
+
+      document.getElementById('run-all').addEventListener('click', async () => {
+        clearLog(); const container = document.getElementById('container');
+        const rNaive = renderNaive(container, items); log('NAIVE ' + rNaive.time.toFixed(2) + 'ms'); await new Promise(r => requestAnimationFrame(r));
+        const rClone = renderCloneNaive(container, items); log('CLONE-NAIVE ' + rClone.time.toFixed(2) + 'ms'); await new Promise(r => requestAnimationFrame(r));
+        const rPatch = renderTemplatePatch(container, items); log('TEMPLATE-PATCH ' + rPatch.time.toFixed(2) + 'ms'); await new Promise(r => requestAnimationFrame(r));
+        const rReuse = renderReusePool(container, items); log('REUSE-POOL ' + rReuse.time.toFixed(2) + 'ms');
+        document.getElementById('summary').textContent = `NAIVE ${rNaive.time.toFixed(2)}ms · CLONE ${rClone.time.toFixed(2)}ms · PATCH ${rPatch.time.toFixed(2)}ms · REUSE ${rReuse.time.toFixed(2)}ms`;
+      });
+
+      // initial generate
+      genData(10000, false);
+      renderSummary();
+    </script>
+  </body>
+
+</html>

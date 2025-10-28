@@ -1,8 +1,8 @@
 import "./dom"
 import { describe, expect, it } from "bun:test"
-import { Proton, WebInflator } from "../build"
+import { Tama, WebInflator } from "../build"
 
-// Use Proton.Component if it exists, otherwise patch with mock
+// Use Tama.Component if it exists, otherwise patch with mock
 
 class MockTransitionAPI {
   state = "idle"
@@ -83,7 +83,7 @@ class MockViewAPI {
   }
 }
 
-class MockProtonComponent {
+class MockTamaComponent {
   inflator
   view
   tree
@@ -95,7 +95,7 @@ class MockProtonComponent {
   }
 }
 
-(Proton as any).Component ??= MockProtonComponent
+(Tama as any).Component ??= MockTamaComponent
 
 function deferred() {
   let resolve, reject
@@ -109,7 +109,7 @@ function deferred() {
 describe("View transitions", () => {
   it("keeps previous view until transition resolves", async () => {
     const inflator = new WebInflator()
-    const component = new Proton.Component(inflator)
+    const component = new Tama.Component(inflator)
 
     component.view.set("home")
     await waitForIdle(component)
@@ -148,7 +148,7 @@ describe("View transitions", () => {
 
   it("binds document context for startViewTransition", async () => {
     const inflator = new WebInflator()
-    const component = new Proton.Component(inflator)
+    const component = new Tama.Component(inflator)
 
     component.view.set("before")
     await waitForIdle(component)
@@ -180,7 +180,7 @@ describe("View transitions", () => {
 
   it("runs transition handlers sequentially", async () => {
     const inflator = new WebInflator()
-    const component = new Proton.Component(inflator)
+    const component = new Tama.Component(inflator)
 
     component.view.set("initial")
     await waitForIdle(component)

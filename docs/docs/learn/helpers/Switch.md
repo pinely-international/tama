@@ -1,10 +1,10 @@
-# `Proton.Switch`
+# `Tama.Switch`
 
 It can be used both for Component View swapping and as a part of any JSX element.
 
 ```tsx
-function SwitchComponent(this: Proton.Component) {
-  const switcher = new Proton.Switch({
+function SwitchComponent(this: Tama.Component) {
+  const switcher = new Tama.Switch({
     banned: <span>Banned</span>,
     pending: <span>Pending</span>,
     default: <span>Loading...</span>
@@ -28,7 +28,7 @@ inflator.adapters.add(ProtonSwitchWebInflator)
 
 ```tsx
 async function UserProfile() {
-  const userStatusSwitch = new Proton.Switch({
+  const userStatusSwitch = new Tama.Switch({
     banned: <Status color="red">Banned</Status>,
     pending: <Status color="yellow">Pending</Status>,
     default: <Status color="green">Active</Status>

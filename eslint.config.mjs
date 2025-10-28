@@ -17,6 +17,7 @@ const compat = new FlatCompat({
   allConfig: js.configs.all
 })
 
+/** @type {Linter.Config[]} */
 export default [...compat.extends(
   "eslint:recommended",
   "plugin:@typescript-eslint/recommended",
@@ -47,6 +48,8 @@ export default [...compat.extends(
       requireConfigFile: false,
     },
   },
+
+  files: ["src/**/*.ts"],
 
   rules: {
     "default-case": "error",

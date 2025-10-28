@@ -1,90 +1,40 @@
 # Contributing
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+This is a practical guidance for contributions to this repository. Give the repository a star ⭐, it really helps!
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
+## Mindset
 
-## Pull Request Process
+When you start a conversation, you don't have to be **welcoming** (e.g. Hello), or mention authors (e.g. @FrameMuse) every time.
+We all understand our assignement here and don't get upset if we don't get "hello".
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
-   build.
-2. Update the docs and types with details of changes to the interface, this includes new environment 
-   variables, exposed ports, useful file locations and container parameters.
-3. You may merge the Pull Request in once you have the approvals of developers, or if you 
-   do not have permission to do that, you may request the a reviewer to merge it for you.
+When people reply you with _neutral_ sounding text, it may sound rude - while **it's not**, please, don't take it personal.
 
-## Code of Conduct
+Be proffesional, tactical and straighforward. If you want to relax and get chills with authors and some other contributors,
+you can visit our [Dicord Server](https://discord.gg/sHp2pxrSws).
 
-### Our Pledge
+**AI (Assisted Insecurity)**
+Don't use Language Models, Copilots, Generated content or any Coding Assistance tools, they usually get everything wrong.
+You can use it if it really just eases your work. If you don't understand what you're doing and prompting it with some descriptions,
+you may not create a Pull Request - you will suffer from numerous (endless) change requests.
+In simple words, if you wait for ideas from AI - don't create a PR, if you put **your ideas** in prompting and refine generated content - you're good.
 
-In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to making participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, gender identity and expression, level of experience,
-nationality, personal appearance, race, religion, or sexual identity and
-orientation.
+## Taking over Issues
 
-### Our Standards
+1. Choose what you think you're confident in
+2. Make you sure you understand the scope of the work, you can do it via a single comment, letting maintainers know what you're willing to change and how you approach it
+3. Get approval and Assigement to the issue
+4. Make a fork (and branch optionally)
+5. Start working
+6. Open a Pull Request
 
-Examples of behavior that contributes to creating a positive environment
-include:
+## Pull Request
 
-* Using welcoming and inclusive language
-* Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
-* Focusing on what is best for the community
-* Showing empathy towards other community members
+- PR should have a summary if you feel like it needs explanation (you don't need to force yourself to write it, keep it as short as possible)
+- Commits should follow ["conventional commits"](https://www.conventionalcommits.org/en/v1.0.0/)
+- Code style should be similar to what it is currently written in
+- Follow the spec, create tests and documentation if you're not so lazy 😊
+- Get PR approval
+- If there was some time after approval, kindly ask to merge
 
-Examples of unacceptable behavior by participants include:
-
-* The use of sexualized language or imagery and unwelcome sexual attention or
-advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or electronic
-  address, without explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
-  professional setting
-
-### Our Responsibilities
-
-Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.
-
-Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, wiki edits, issues, and other contributions
-that are not aligned to this Code of Conduct, or to ban temporarily or
-permanently any contributor for other behaviors that they deem inappropriate,
-threatening, offensive, or harmful.
-
-### Scope
-
-This Code of Conduct applies both within project spaces and in public spaces
-when an individual is representing the project or its community. Examples of
-representing a project or community include using an official project e-mail
-address, posting via an official social media account, or acting as an appointed
-representative at an online or offline event. Representation of a project may be
-further defined and clarified by project maintainers.
-
-### Enforcement
-
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at minicablestone@gmail.com. All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. The project team is
-obligated to maintain confidentiality with regard to the reporter of an incident.
-Further details of specific enforcement policies may be posted separately.
-
-Project maintainers who do not follow or enforce the Code of Conduct in good
-faith may face temporary or permanent repercussions as determined by other
-members of the project's leadership.
-
-### Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at [http://contributor-covenant.org/version/1/4][version]
-
-[homepage]: http://contributor-covenant.org
-[version]: http://contributor-covenant.org/version/1/4/
+If you have any questions or would like to consult, don't be shy to text maintainers in the [Discord Server](https://discord.gg/sHp2pxrSws), via email or [open discussions](https://github.com/pinely-international/tama/discussions).
+Try to not open **unrelated** conversations in issues just to contact maintainers (if there are other ways to).

@@ -31,8 +31,8 @@ export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={siteConfig.tagline}
+      description="Tama (TamaJs) - a lightweight (~5 KB gzip) rootless reactive UI rendering library with JSX support, native observables. Don't bother yourself with re-renders and useEffect like you do in React.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
