@@ -9,6 +9,7 @@ import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAP
 import { MountGuard } from "@/MountGuard"
 import Observable from "@/Observable"
 import { ProtonComponent } from "@/Proton/ProtonComponent"
+import { ProtonRef } from "@/Proton/ProtonRef"
 import { isIterable, isJSX, isObservableGetter, isPrimitive, isRecord } from "@/utils/testers"
 import WebNodeBinding from "@/utils/WebNodeBinding"
 
@@ -33,7 +34,7 @@ class ElementConnection {
     window.requestAnimationFrame(() => {
       for (const entry of entries) {
         const subs = ElementConnection.subscriptions.get(entry.target)
-        if (!subs) continue;
+        if (!subs) continue
 
         const connected = entry.target.isConnected
 
@@ -241,6 +242,8 @@ class WebInflator extends Inflator {
 
     const overridden = this.bindCustomProperties(props, inflated)
     const properties = this.bindProperties(props, inflated, overridden)
+
+    if (props.ref != null) ProtonRef.resolve(props.ref, inflated)
 
     const mountGuard = new MountGuard(inflated)
     for (const { key, value } of properties) {

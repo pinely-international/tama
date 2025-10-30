@@ -89,6 +89,36 @@ declare global {
     }
 
     interface IntrinsicAttributes {
+      // /**
+      //  * You can create `ref` forwards on components.
+      //  * Define a `ref` attribute on your component props with `JSX.Ref` and apply it to an element.
+      //  *
+      //  * @example
+      //  * ```tsx
+      //  * interface ComponentProps {
+      //  *   // ...
+      //  *   ref?: JSX.Ref<HTMLElement>
+      //  * }
+      //  *
+      //  * function Component(props: ComponentProps) {
+      //  *   return <div ref={props.ref} />
+      //  * }
+      //  *
+      //  * const someRef = new Tama.Ref<HTMLElement>
+      //  * <Component ref={someRef} />
+      //  * ```
+      //  *
+      //  * @example
+      //  * ```tsx
+      //  * function Component(props: ComponentProps) {
+      //  *   return <div ref={props.ref} />
+      //  * }
+      //  *
+      //  * const someRef = new Tama.Ref<HTMLElement>
+      //  * <Component ref={someRef} />
+      //  * ```
+      // */
+      // ref?: never // Developer-defined
       mounted?: AccessorGet<any> | Observable<any>
     }
 
@@ -98,12 +128,52 @@ declare global {
       style?: Attribute<Record<string, Attribute<string | CSSStyleValue>> | { [K in keyof CSSStyleDeclaration]?: Attribute<CSSStyleDeclaration[K] | CSSStyleValue | null | undefined> } | string>
     }
 
+    type Ref<T> = { current: T | null | undefined } | ((current: T) => void)
     type AttributesOf<T> = _AttributesOf<T>["Attributes"]
 
     type ElementAttributes<T> =
       & Partial<AttributesOf<AugmentedAria<T>>>
       & CustomAttributes
       & IntrinsicAttributes
+      & {
+        /**
+         * Assigns an HTMLElement instance to given `ref`.
+         * Accepts either a mutable object with a `current` property or a callback function.
+         * Accepts multiple refs as an array.
+         * Fires after the element attributes are set, but before it's connected to the DOM.
+         *
+         * [Documentation](https://tama.denshya.dev/learn/guides/ref)
+         *
+         * @example
+         * ```tsx
+         * const elementRef = new Tama.Ref<HTMLElement>(null)
+         * <div ref={elementRef} />
+         * ```
+         *
+         * @example
+         * ```tsx
+         * const myRef: { current: HTMLElement | null } = { current: null }
+         * <div ref={myRef} />
+         * ```
+         *
+         * @example
+         * ```tsx
+         * <div ref={element => {
+         *   element.style.backgroundColor = "red"
+         * }} />
+         * ```
+         *
+         * @example
+         * ```tsx
+         * const ref1 = new Tama.Ref<HTMLElement>(null)
+         * const ref2 = { current: HTMLElement | null } = { current: null }
+         * const moveLeft = (element: HTMLElement) => element.style.transform = "translateX(-100%)"
+         *
+         * <div ref={[ref1, ref2, moveLeft]} />
+         * ```
+         */
+        ref?: Ref<T> | Ref<T>[]
+      }
       & { children?: unknown }
     // & {
     //   /**
