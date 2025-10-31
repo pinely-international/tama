@@ -1,0 +1,35 @@
+@use "@/assets/scss/bundle" as *;
+
+.button {
+	padding: 0.625em 1em;
+	background: $color-dark;
+	border: 1px solid transparent;
+	border-radius: 0.5em;
+
+	color: white;
+	transition: 150ms ease background-color, 100ms ease opacity;
+
+	&:not(:disabled):active {
+		opacity: 0.75;
+	}
+
+	&--white {
+		background: white;
+		border-color: rgba(black, 0.2);
+
+		color: $color-dark;
+	}
+
+	&--pink {
+		background: #b441ba;
+	}
+
+	&--blue {
+		background: #2968A3;
+	}
+}
+
+a.button {
+	display: inline-flex;
+	text-decoration: none;
+}

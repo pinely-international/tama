@@ -1,0 +1,32 @@
+@use "@/assets/scss/bundle" as *;
+
+.project-summary {
+  @include PressPanelAppearance;
+}
+
+.project-summary__info {
+  display: grid;
+  gap: 0.25em;
+
+  em {
+    font-style: normal;
+    font-weight: bold;
+  }
+}
+
+.project-summary__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-summary__summary {
+  white-space: pre-wrap;
+}
+
+.project-summary__status {
+  margin-left: auto;
+
+  font-size: $font-size-text-small;
+  color: rgba($color-press-dark, 0.65);
+}

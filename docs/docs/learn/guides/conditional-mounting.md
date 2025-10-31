@@ -16,9 +16,8 @@ function ColorApp() {
 <ColorApp mounted={new State(false)} />
 ```
 
-:::note
-Passing plain values to `mounted` is not allowed, it clearly indicates a mistake as it will never be changed.
-:::
+> [!Note]
+> Passing plain values to `mounted` is not allowed, it clearly indicates a mistake as it will never be changed.
 
 ## Guard Pattern
 

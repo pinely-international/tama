@@ -1,0 +1,28 @@
+@use "@/assets/scss/bundle" as *;
+
+.notice {
+  color: #231a35;
+
+  display: grid;
+  gap: 1em;
+
+  width: fit-content;
+
+  padding: 1em 1.5em;
+  background: rgba(122, 50, 218, 0.05);
+  border-left: 0.25em solid rgba(122, 50, 218, 0.2);
+  border-radius: 0.75em;
+}
+
+.notice__title {
+  --icon-size: 1.5rem;
+  --icon-color: #{rgba(#883ab8, 0.75)};
+
+
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+
+  font-size: 1.25rem;
+  font-weight: 600;
+}

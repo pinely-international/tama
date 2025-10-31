@@ -1,0 +1,63 @@
+@use "@/assets/scss/bundle" as *;
+
+.loader {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	margin: auto;
+
+	&::before {
+		content: "";
+		padding: 0.5em;
+		border: 3px solid var(--loader-color, rgba(black, 0.5));
+		border-right-color: var(--loader-part-color, rgba(black, 1));
+		border-radius: 50%;
+
+		animation: 1s linear infinite spin;
+
+		@keyframes spin {
+			from {
+				transform: rotate(0deg);
+			}
+
+			to {
+				transform: rotate(360deg);
+			}
+		}
+	}
+}
+
+/* Cover */
+
+.loader-cover {
+	position: relative;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	flex: 1;
+
+	margin: auto;
+	padding: 5em;
+
+
+	&--absolute {
+		position: absolute;
+		inset: 0;
+	}
+
+	&--white {
+		--loader-color: #{rgba(white, 0.5)};
+		--loader-part-color: #{rgba(white, 1)};
+	}
+
+	&--dimmed {
+		background: rgba(black, 0.75);
+	}
+}
+
+.loader-cover__loader {}

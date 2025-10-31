@@ -1,0 +1,109 @@
+@use "@/assets/scss/bundle" as *;
+
+.pack-card {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2em;
+
+  padding: 1.5em 1.5em;
+  background: white;
+  border-radius: 1em;
+}
+
+.pack-card__header {
+  --icon-size: 2rem;
+
+  display: flex;
+  gap: 0.75em;
+  align-items: end;
+
+  &>hgroup {
+    display: grid;
+    gap: 0.25em;
+  }
+}
+
+.pack-card__title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.pack-card__description {
+  color: rgba(black, 0.75);
+}
+
+.pack-card__features {
+  all: unset;
+
+  display: grid;
+
+  gap: 0.75em;
+
+  &>li {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+
+    --icon-color: #{rgba(black, 0.5)};
+    --icon-size: 1.5rem;
+
+    color: rgba(black, 0.9);
+
+    &>.icon {
+      flex-shrink: 0;
+    }
+  }
+}
+
+.pack-card__button {
+  margin-top: auto;
+
+  display: flex;
+  align-self: center;
+
+  padding: 0.75em 1.25em;
+  background: white;
+  border: 2px solid rgba(black, 0.1);
+  border-radius: 0.5em;
+
+  font-weight: 600;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+
+  transition: 200ms ease background-color;
+
+  &:hover {
+    background: rgba(black, 0.1);
+  }
+}
+
+
+
+.pack-card-container {
+  display: flex;
+  gap: 2vw;
+
+  padding: 0.5em;
+  background: rgba(#7a32da, 0.05);
+  border-radius: 1.25em;
+
+  &>* {
+    flex: 1;
+    background: rgba(white, 0.5);
+    border: 2px solid white;
+  }
+
+  &>*:first-child {
+    background: white;
+  }
+
+  @include DesktopLowResolution {
+    flex-wrap: wrap;
+  }
+
+  @include Mobile {
+    display: grid;
+  }
+}

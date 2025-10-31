@@ -1,0 +1,70 @@
+@use "@/assets/scss/bundle" as *;
+
+.footer {
+  display: grid;
+  gap: 2em;
+
+  margin-top: 6em;
+  @include WidthLimit;
+}
+
+.footer__top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+
+  padding: 2em 1em;
+  border-top: 1px solid rgba(black, 0.1);
+
+  @include Mobile {
+    display: grid;
+    gap: 2.5em;
+
+    padding: 2em 1vw;
+  }
+}
+
+.footer__secondary {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.footer__sitemap {
+  display: flex;
+  gap: 4em;
+
+  &>menu {
+    display: grid;
+    align-content: baseline;
+    gap: 1.5em;
+  }
+}
+
+.footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 2em 1em;
+  border-top: 2px dashed rgba(black, 0.1);
+
+  &>span {
+    @include DisabledTextSizeAdjust
+  }
+
+  &>menu {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 1.5em;
+    color: #666;
+  }
+
+  @include Mobile {
+    display: grid;
+    gap: 1.5em;
+
+    padding: 2em 1vw;
+  }
+}

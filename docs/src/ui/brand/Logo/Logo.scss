@@ -1,0 +1,21 @@
+@use "@/assets/scss/bundle" as *;
+
+.logo {
+  --icon-size: 2.675rem;
+  --icon-color: #CC52D2;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 1em;
+
+  &--blue {
+    --icon-color: #2968A3;
+  }
+}
+
+.logo__text {
+  font-size: 1.25rem;
+  font-weight: bold;
+}

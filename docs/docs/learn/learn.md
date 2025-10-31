@@ -28,11 +28,8 @@ Use `vite`
 }
 ```
 
-:::info
-
-Any bundler works (not just `vite`), no bundler plugins required.
-
-:::
+> [!Note]
+>Any bundler works (not just `vite`), no bundler plugins required.
 
 Enable Proton JSX
 
@@ -47,11 +44,8 @@ Enable Proton JSX
 }
 ```
 
-:::info
-
-Any JSX may work well in TamaJs, it depends on deviations from React/Tama JSX, but you can fix them with [JSX customization](./custom/custom-jsx.md).
-
-:::
+> [!Note]
+> Any JSX may work well in TamaJs, it depends on deviations from React/Tama JSX, but you can fix them with [JSX customization](./custom/custom-jsx.md).
 
 ## Quick Start
 
@@ -176,9 +170,8 @@ const items = new State([1, 2, 3])
 <div>{items.map(items => items.map(item => <span>{item}</span>))}</div>
 ```
 
-:::info
-This is a bit confusing snippet, you can ease it by using [`StateArray`](./unwinding/reactivity.md#statearray).
-:::
+> [!Note]
+> This is a bit confusing snippet, you can ease it by using [`StateArray`](./unwinding/reactivity.md#statearray).
 
 ## Extend Code
 
@@ -208,6 +201,5 @@ function App() {
 }
 ```
 
-:::info
-You should acknowledge that this example uses `@denshya/reactive`, which is complementary, any **observable-based** state library works.
-:::
+> [!Note]
+> You should acknowledge that this example uses `@denshya/reactive`, which is complementary, any **observable-based** state library works.

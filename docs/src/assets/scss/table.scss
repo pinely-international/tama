@@ -1,0 +1,34 @@
+@use "@/assets/scss/bundle" as *;
+
+table {
+  width: 100%;
+  // border-collapse: collapse;
+  border-spacing: 0;
+
+  border: 1px solid rgba(159, 189, 223, 0.5);
+  border-radius: 0.5rem;
+
+  th,
+  td {
+    font-size: 1rem;
+    line-height: 1.4;
+    vertical-align: middle;
+  }
+
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(159, 189, 223, 0.5);
+    border-left: unset;
+    border-top: unset;
+  }
+
+  th:last-child,
+  td:last-child {
+    border-right: unset;
+  }
+
+  tr:last-child td {
+    border-bottom: unset;
+  }
+}

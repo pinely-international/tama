@@ -1,50 +1,61 @@
 {
-  "name": "docs",
-  "version": "0.0.0",
+  "type": "module",
+  "name": "tama-docs",
+  "version": "0.1.0",
   "private": true,
+  "main": "build/index.js",
   "scripts": {
-    "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
-    "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
-    "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
-    "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "dev": "bunx --bun vite",
+    "build": "bunx --bun vite build",
+    "preview": "vite preview",
+    "serve:ssr": "bun run server/ssr.ts"
   },
   "dependencies": {
-    "@docusaurus/core": "3.8.1",
-    "@docusaurus/preset-classic": "3.8.1",
-    "@mdx-js/react": "^3.0.0",
-    "ansi-to-html": "^0.7.2",
-    "clsx": "^2.0.0",
-    "glob": "^11.0.2",
-    "prism-react-renderer": "^2.3.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "ts-morph": "^26.0.0"
+    "@denshya/navigation": "^0.2.2",
+    "@denshya/proton": "^0.7.4",
+    "@denshya/reactive": "^0.9.0",
+    "@denshya/router": "^0.1.0",
+    "iterator-helpers-polyfill": "latest",
+    "markdown-lexer": "^0.1.4",
+    "prism-themes": "^1.9.0",
+    "type-fest": "^4.31.0",
+    "urlpattern-polyfill": "latest"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.8.1",
-    "@docusaurus/tsconfig": "3.8.1",
-    "@docusaurus/types": "3.8.1",
-    "typescript": "~5.6.2"
-  },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 3 chrome version",
-      "last 3 firefox version",
-      "last 5 safari version"
-    ]
-  },
-  "engines": {
-    "node": ">=18.0"
+    "@mdx-js/rollup": "^3.1.0",
+    "@types/bun": "^1.2.21",
+    "@types/compression": "^1.7.5",
+    "@types/express": "^5.0.0",
+    "@types/opentype.js": "^1.3.8",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "bun": "^1.2.21",
+    "canvas": "^3.2.0",
+    "compression": "^1.8.0",
+    "eslint": "9.34.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "express": "^4.21.2",
+    "happy-dom": "^18.0.1",
+    "html-entities": "^2.6.0",
+    "mermaid": "^11.11.0",
+    "opentype.js": "^1.3.4",
+    "prismjs": "^1.30.0",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-highlight": "^7.0.2",
+    "rehype-pretty-code": "^0.14.1",
+    "rehype-prism-plus": "^2.0.1",
+    "rehype-slug": "^6.0.0",
+    "rehype-starry-night": "^2.2.0",
+    "remark-gfm": "^4.0.1",
+    "remark-github": "^12.0.0",
+    "sass-embedded": "^1.83.4",
+    "sharp": "^0.34.3",
+    "sirv": "^3.0.1",
+    "svg-path-bbox": "^2.1.0",
+    "svgo": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^7.1.3",
+    "vite-plugin-image-optimizer": "^2.0.2"
   }
 }

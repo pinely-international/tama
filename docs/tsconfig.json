@@ -1,8 +1,57 @@
 {
-  // This file is not used in compilation. It is here just for a nice editor experience.
-  "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
-    "baseUrl": "."
+    "target": "ES2020",
+    "useDefineForClassFields": false,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    // App
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/docs/*": [
+        "./docs/*"
+      ]
+    },
+    "types": [
+      "bun",
+      "vite/client"
+    ],
+    "verbatimModuleSyntax": false,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "exactOptionalPropertyTypes": false,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "build",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@denshya/proton/jsx/virtual",
+    /* Linting */
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmitOnError": false
   },
-  "exclude": [".docusaurus", "build"]
+  "include": [
+    "src",
+    "server",
+    "eslint.config.mts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

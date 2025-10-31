@@ -1,0 +1,115 @@
+@use "@/assets/scss/bundle" as *;
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 2em;
+
+  @include Mobile {
+    display: none;
+  }
+}
+
+.navbar__link {
+  padding: 0.375em 0.5em;
+  border: 1px dashed transparent;
+  border-radius: 0.25em;
+
+  background: $color-dark;
+  background-clip: text;
+  background-size: 200% 200%;
+  color: transparent;
+
+  font-weight: 500;
+
+  transition: 5s ease background-position, 5s ease background-size;
+
+  &:hover {
+    background-image: linear-gradient(to right, #1d5aad, #9f0ea6 0%);
+    background-position: 100%;
+  }
+
+  &--active {
+    font-weight: bold;
+
+    background-image: linear-gradient(to right, #1d5aad, #9f0ea6);
+    background-size: unset;
+    background-position: unset;
+  }
+}
+
+a.navbar__link {
+  text-decoration: none;
+}
+
+
+
+.mobile-navbar {
+  position: fixed;
+  top: 4vh;
+  left: 0;
+  bottom: 4vh;
+
+  width: 15em;
+
+  display: grid;
+  gap: 0.5em;
+  align-content: baseline;
+
+  padding: 1em;
+
+  overflow: auto;
+  animation: 500ms ease SlideIn forwards;
+
+  .navbar__link {
+    padding: 0.75em 1em;
+  }
+}
+
+.mobile-navbar__cover {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+
+  transition: 250ms ease background-color;
+  transition-behavior: discrete;
+
+  @starting-style {
+    background: transparent;
+  }
+}
+
+.mobile-navbar__cover-info {
+  --icon-size: 2rem;
+  --icon-color: white;
+
+  display: grid;
+  gap: 0.5em;
+
+  align-content: baseline;
+  justify-items: center;
+  text-align: center;
+
+  padding-top: 3.5em;
+
+  width: calc(((100vw - 15em) / 1));
+  height: calc(100vh - 2em);
+
+  span {
+    color: white;
+    font-size: 0.75rem;
+  }
+}
+
+@keyframes SlideIn {
+  from {
+    opacity: 0.25;
+    transform: translateX(-50%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+}

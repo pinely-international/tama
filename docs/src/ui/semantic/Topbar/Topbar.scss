@@ -1,0 +1,60 @@
+@use "@/assets/scss/bundle" as *;
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0.5em 0;
+  padding-left: 1.5em;
+  padding-right: 0.75em;
+
+  background: white;
+  border-radius: 0.5em;
+  box-shadow: 0px 2px 4px rgba(#2b093c, 0.25);
+
+  @include WidthLimit;
+
+  @include MobileLow {
+    display: grid;
+    gap: 0.75em;
+    justify-content: unset;
+
+    padding: 0.75em;
+    padding-top: 0.5em;
+  }
+}
+
+.topbar__wow {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+
+  @include MobileLow {
+    justify-content: space-between;
+  }
+}
+
+.topbar__mobile {
+  display: none;
+
+  @include Mobile {
+    display: unset;
+  }
+}
+
+.topbar__secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+
+  @include MobileLow {
+    width: 100%;
+
+    &>* {
+      flex: 1;
+      text-align: center;
+      justify-content: center;
+    }
+  }
+}
