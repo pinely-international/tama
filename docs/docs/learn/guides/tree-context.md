@@ -38,8 +38,8 @@ function Child(this: Tama.Component) {
 }
 ```
 
-> [!Note]
+> [!NOTE]
 > Learn what happens when component faces error at [Fault Tolerance](../unwinding/fault-tolerance.md)
 
-> [!Note]
+> [!NOTE]
 >Learn how to react to component errors at [Error catching](./error.md)

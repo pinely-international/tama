@@ -28,7 +28,7 @@ Use `vite`
 }
 ```
 
-> [!Note]
+> [!TIP]
 >Any bundler works (not just `vite`), no bundler plugins required.
 
 Enable Proton JSX
@@ -44,18 +44,16 @@ Enable Proton JSX
 }
 ```
 
-> [!Note]
+> [!NOTE]
 > Any JSX may work well in TamaJs, it depends on deviations from React/Tama JSX, but you can fix them with [JSX customization](./custom/custom-jsx.md).
 
 ## Quick Start
 
 ### Code
 
-```tsx
+```tsx title="/src/main.tsx"
 import { WebInflator } from "@denshya/proton"
-```
 
-```tsx
 function RangeApp() {
   return (
     <div>
@@ -65,9 +63,7 @@ function RangeApp() {
     </div>
   )
 }
-```
 
-```tsx
 const inflator = new WebInflator
 const AppView = inflator.inflate(<App />)
 
@@ -170,7 +166,7 @@ const items = new State([1, 2, 3])
 <div>{items.map(items => items.map(item => <span>{item}</span>))}</div>
 ```
 
-> [!Note]
+> [!NOTE]
 > This is a bit confusing snippet, you can ease it by using [`StateArray`](./unwinding/reactivity.md#statearray).
 
 ## Extend Code
@@ -201,5 +197,5 @@ function App() {
 }
 ```
 
-> [!Note]
+> [!NOTE]
 > You should acknowledge that this example uses `@denshya/reactive`, which is complementary, any **observable-based** state library works.

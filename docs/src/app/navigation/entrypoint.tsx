@@ -3,7 +3,6 @@ import { State } from "@denshya/reactive"
 import globalNavigation from "@/app/navigation/navigation"
 import fileRouter from "../router/file-router"
 import Link from "./Link"
-import { getH1Titles } from "@/titles"
 
 
 
@@ -33,6 +32,13 @@ async function NavigationEntrypoint() {
         <article style={{ flex: 1 }}>
           <Default />
         </article>
+        <aside style={{ display: "grid", alignContent: "baseline", width: "15em" }}>
+          {fileRouter.routes.filter(route => route.pattern.startsWith("/learn")).map(route => (
+            <Link to={route.pattern}>
+              {route.pattern.substring(7)}
+            </Link>
+          ))}
+        </aside>
       </main>
     </>
   )
@@ -45,9 +51,3 @@ async function* StateWalker<T>(state: State<T>) {
   // Temporal solution, it should be improved when `Proton` and `State` have lifecycle APIs.
   while (true) yield await state.upcoming
 }
-
-
-
-
-// const titles = await getH1Titles(import.meta.glob('~docs/**/*.md', { as: 'url' }));
-// console.log(titles); // [{ path: '/src/content/a.md', title: 'My Title' }, ...]

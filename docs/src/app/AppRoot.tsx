@@ -1,5 +1,6 @@
 import "@/assets/scss/reset.scss"
 import "@/assets/scss/base.scss"
+import "@/assets/scss/shiki.scss"
 
 
 import NavigationEntrypoint from "./navigation/entrypoint"
