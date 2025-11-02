@@ -50,6 +50,8 @@ b {
 }
 
 main {
+	@include WidthLimit;
+
 	&>section {
 		@include WidthLimit;
 	}

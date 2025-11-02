@@ -71,6 +71,9 @@ class JSXParserMarkdown {
       case "list": return { type: "ul", props: { children: token.items.map(resolveToken) } }
       case "list_item": return { type: "li", props: { children: token.text } }
 
+      case "codespan":
+        return { type: "code", props: { children: token.text } }
+
       default:
         // @ts-expect-error `text` may exist in other tokens.
         return { type: token.type, props: { children: token.text } }

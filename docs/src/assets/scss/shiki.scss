@@ -31,6 +31,8 @@ pre.shiki {
 	}
 
 	code {
+		line-height: 1.4;
+
 		counter-reset: step;
 		counter-increment: step 0;
 

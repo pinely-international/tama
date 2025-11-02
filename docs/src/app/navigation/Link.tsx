@@ -9,6 +9,7 @@ interface LinkProps {
   classMods?: JSX.CustomAttributes["classMods"]
   label?: string
   children?: unknown
+  id?: string
 }
 
 function Link(props: LinkProps & { label: string, children?: never }): unknown
@@ -31,6 +32,7 @@ function Link(props: LinkProps) {
 
   return (
     <a
+      id={props.id}
       className={props.className ?? "nav-link"}
       classMods={[{ active }, props.classMods]}
       href={resolvedPath ?? undefined}

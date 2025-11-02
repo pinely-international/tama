@@ -1,29 +1,27 @@
 import "./Topbar.scss"
 
 import Logo from "@/ui/brand/Logo/Logo"
-import ScheduleButton from "@/ui/brand/ScheduleButton"
-import Button from "@/ui/kit/Button/Button"
 import Icon from "@/ui/static/Icon/Icon"
 
+import ButtonLink from "@/ui/kit/Button/ButtonLink"
 import Navbar from "../Navbar/Navbar"
 import NavbarMobile from "../Navbar/NavbarMobile"
-
-
 
 
 function Topbar() {
   return (
     <div className="topbar">
-      <div className="topbar__wow">
-        <Logo />
-        <div className="topbar__mobile">
-          <NavbarMobile.ToggleButton />
+      <div className="topbar__container">
+        <div className="topbar__wow">
+          <Logo />
+          <div className="topbar__mobile">
+            <NavbarMobile.ToggleButton />
+          </div>
         </div>
-      </div>
-      <Navbar links={[]} />
-      <div className="topbar__secondary">
-        <Button color="white"><Icon name="fountain-pen" /> Blog</Button>
-        <ScheduleButton color="pink" />
+        <Navbar links={[]} />
+        <div className="topbar__secondary">
+          <ButtonLink color="white" to="https://github.com/pinely-international/tama"><Icon name="github" /> Github</ButtonLink>
+        </div>
       </div>
     </div>
   )
