@@ -1,21 +1,32 @@
 @use "@/assets/scss/bundle" as *;
 
 .logo {
-  --icon-size: 2.675rem;
-  --icon-color: #CC52D2;
+	--icon-size: 2.675rem;
+	--icon-color: #CC52D2;
 
-  position: relative;
+	position: relative;
 
-  display: flex;
-  align-items: center;
-  gap: 1em;
+	display: grid;
+	align-items: center;
+	// gap: 0.25em;
 
-  &--blue {
-    --icon-color: #2968A3;
-  }
+	&--blue {
+		--icon-color: #2968A3;
+	}
 }
 
 .logo__text {
-  font-size: 1.25rem;
-  font-weight: bold;
+	font-size: 1.375rem;
+	font-weight: bold;
+
+	.weak {
+		font-size: 1rem;
+		font-weight: 400;
+		color: #999;
+	}
+}
+
+.logo__subtext {
+	font-size: 0.875rem;
+	// font-weight: bold;
 }

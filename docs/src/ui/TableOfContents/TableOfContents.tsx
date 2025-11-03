@@ -16,7 +16,7 @@ function TableOfContents(props: TableOfContentsProps) {
       <div className="table-of-contents__title">On this page</div>
       {props.items.map(item => (
         <div className="table-of-contents__item" style={{ marginLeft: `${(item.level - 2) * 8}px` }}>
-          <Link to={"#" + snakeCase(item.text)} className="table-of-contents__link">{JSXParser.fromMarkdown(item.text)}</Link>
+          <Link to={"#" + snakeCase(item.text)} className="table-of-contents__link">{item.text}</Link>
         </div>
       ))}
     </div>

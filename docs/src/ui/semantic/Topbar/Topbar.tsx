@@ -21,6 +21,8 @@ function Topbar() {
         <Navbar links={[]} />
         <div className="topbar__secondary">
           <ButtonLink color="white" to="https://github.com/pinely-international/tama"><Icon name="github" /> Github</ButtonLink>
+          <ButtonLink color="white" to="https://discord.gg/sHp2pxrSws"><Icon name="touch" /> Discord</ButtonLink>
+          <ButtonLink color="white" to="/"><Icon name="github" /> BlueSky</ButtonLink>
         </div>
       </div>
     </div>
