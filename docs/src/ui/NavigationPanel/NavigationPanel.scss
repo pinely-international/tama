@@ -11,6 +11,7 @@
 
 	min-width: 15em;
 	padding: 2em 0;
+	padding-right: 1em;
 }
 
 .navigation-panel__link {
@@ -52,7 +53,7 @@
 		content: "";
 
 		position: absolute;
-		left: calc(0.125em + (var(--level) * 0.75em));
+		left: calc(var(--level) * 0.75em);
 
 		width: min(1px, calc(var(--level) * 1px));
 		height: 75%;
@@ -96,7 +97,6 @@
 		content: "";
 
 		position: absolute;
-		left: 0.125em;
 
 		width: 1px;
 		height: 100%;

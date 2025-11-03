@@ -1,14 +1,12 @@
 import { State, StateArray } from "@denshya/reactive"
 
 import globalNavigation from "@/app/navigation/navigation"
-import fileRouter from "../router/file-router"
-import Link from "./Link"
-import TableOfContents from "@/ui/TableOfContents/TableOfContents"
-import Icon from "@/ui/static/Icon/Icon"
+import Breadcrumbs from "@/ui/Breadcrumbs/Breadcrumbs"
 import NavigationPanel from "@/ui/NavigationPanel/NavigationPanel"
-import Logo from "@/ui/brand/Logo/Logo"
-import Navbar from "@/ui/semantic/Navbar/Navbar"
+import TableOfContents from "@/ui/TableOfContents/TableOfContents"
+import Footer from "@/ui/semantic/Footer/Footer"
 import Topbar from "@/ui/semantic/Topbar/Topbar"
+import fileRouter from "../router/file-router"
 
 
 
@@ -25,12 +23,12 @@ async function NavigationEntrypoint() {
     }
   }
 
-  const asd = new StateArray
+  const pageContents = new StateArray
   globalNavigation.match.subscribeImmediate(async match => {
     if (match == null) return
 
     const { default: textMD } = await import(match!.route.filePath + "?raw")
-    asd.set(getPageHeadings(textMD))
+    pageContents.set(getPageHeadings(textMD))
   })
 
   return (
@@ -43,12 +41,14 @@ async function NavigationEntrypoint() {
           <NavigationPanel tree={getPages(fileRouter.routes.map(x => x.pattern))} active={globalNavigation.match.to(x => x?.route.pattern.slice(1) ?? "")} />
         </aside>
         <article style={{ flex: 1 }}>
+          <Breadcrumbs path={globalNavigation.match.$.route.$.pattern} />
           <Default />
         </article>
         <aside style={{ display: "grid", alignContent: "baseline", width: "15em" }}>
-          <TableOfContents items={asd} />
+          <TableOfContents items={pageContents} />
         </aside>
       </main>
+      <Footer />
     </>
   )
 }

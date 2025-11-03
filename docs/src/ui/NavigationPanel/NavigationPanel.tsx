@@ -29,12 +29,14 @@ function NavigationTreeLink(props: { item: FolderTree, active: State<string>, le
   const active = props.active.is(folder.path)
   const expanded = new State(props.active.current.startsWith(props.item.path))
 
+  const linkEvents = { click: () => expanded.set(x => !x) }
+
   if (folder.children.length > 0) {
     return (
       <div className="navigation-panel__folder">
-        <div className="navigation-panel__link" classMods={{ active, expanded }} style={{ "--level": level }}>
+        <div className="navigation-panel__link" classMods={{ active, expanded }} style={{ "--level": level }} on={linkEvents}>
           <Link to={"/" + folder.path}>{startCase(folder.name)}</Link>
-          <button on={{ click: () => expanded.set(x => !x) }}><Icon name="chevron-right" /></button>
+          <button><Icon name="chevron-right" /></button>
         </div>
         <div className="navigation-panel__sub-tree" classMods={{ expanded }}>
           {folder.children.map(folder => (
@@ -45,7 +47,7 @@ function NavigationTreeLink(props: { item: FolderTree, active: State<string>, le
     )
   }
   return (
-    <div className="navigation-panel__link" classMods={{ active }} style={{ "--level": level }}>
+    <div className="navigation-panel__link" classMods={{ active }} style={{ "--level": level }} on={linkEvents}>
       <Link to={"/" + folder.path}>{startCase(folder.name)}</Link>
     </div>
   )

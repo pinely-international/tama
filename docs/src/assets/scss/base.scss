@@ -64,12 +64,12 @@ main>* {
 }
 
 article {
-	padding: 1.5em 2em;
+	padding: 1.5em 0;
 
 	@include WidthLimit;
 
 	&>* {
-		margin: 0.5em 0;
+		margin: 0.75em 0;
 		line-height: 1.5;
 	}
 
@@ -112,6 +112,7 @@ article {
 			left: -0.5rem;
 
 			display: flex;
+			margin: 0.5em 0;
 			padding: 0.5rem;
 			margin-right: 0.5rem;
 
@@ -199,7 +200,6 @@ p {
 a {
 	color: inherit;
 	font-weight: inherit;
-	word-break: break-all;
 
 	&:hover {
 		text-decoration: none;

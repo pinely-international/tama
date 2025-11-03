@@ -1,0 +1,32 @@
+.breadcrumbs {
+	--icon-size: 0.625rem;
+
+	display: flex;
+	align-items: center;
+
+	&>ol {
+		all: unset;
+
+		display: flex;
+		align-items: center;
+	}
+
+	&>ol>li {
+		list-style: none;
+
+		display: flex;
+		align-items: center;
+		gap: 0.25em;
+
+		&:last-child>a {
+			background: rgba(black, 0.1);
+			border-radius: 0.25em;
+		}
+	}
+
+	a {
+		padding: 0.25em 0.375em;
+		text-decoration: none;
+		font-size: 0.875rem;
+	}
+}

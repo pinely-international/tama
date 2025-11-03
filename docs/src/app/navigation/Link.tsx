@@ -10,6 +10,7 @@ interface LinkProps {
   label?: string
   children?: unknown
   id?: string
+  style?: JSX.CustomAttributes["style"]
 }
 
 function Link(props: LinkProps & { label: string, children?: never }): unknown
@@ -35,6 +36,7 @@ function Link(props: LinkProps) {
       id={props.id}
       className={props.className ?? "nav-link"}
       classMods={[{ active }, props.classMods]}
+      style={props.style}
       href={resolvedPath ?? undefined}
       on={{ click: onClick }}
       aria={{ ariaLabel: props.label }}

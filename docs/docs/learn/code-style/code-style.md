@@ -5,10 +5,10 @@
 It's a good practice in the industry to choose favourite code style and follow it across the codebase,
 but it can deviate from project to project.
 
-### Explicit Tama API Usage
+### Tama APIs mixing
 
-If you started using `this.view` Component API, it would be a good tone, to keep using it for this purpose exclusively,
-meaning without using Generator syntax (`async function* Component`) or etc.
+If you started using `this.view` Component API, it would be a good tone, to avoid mixing alternatives for this API,
+e.g. using Generator syntax (`async function* Component`) together with `this.view.set`.
 
 **Example**: If you started a component like this
 
@@ -16,7 +16,7 @@ meaning without using Generator syntax (`async function* Component`) or etc.
 async function Todo(this: Tama.Component) {
   await new Promise(resolve => setTimeout(resolve, Math.random() * 1000))
 
-  const todoContext = this.context.require(TodoContext)
+  const todoContext = this.tree.context.require(TodoContext)
 
   this.view.set(
     <div className="todo">
@@ -27,13 +27,13 @@ async function Todo(this: Tama.Component) {
 }
 ```
 
-Don't mix with `return` statements
+Don't mix with `return` or `yield` statements
 
 ```tsx
 async function Todo(this: Tama.Component) {
   await new Promise(resolve => setTimeout(resolve, Math.random() * 1000))
 
-  const todoContext = this.context.require(TodoContext)
+  const todoContext = this.tree.context.require(TodoContext)
 
   return ( // Works the same way though.
     <div className="todo">
@@ -43,3 +43,5 @@ async function Todo(this: Tama.Component) {
   )
 }
 ```
+
+However, you can still use other APIs like **context** in this example.
