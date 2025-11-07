@@ -54,9 +54,8 @@ function MyView(this: Tama.Component) {
 }
 ```
 
-:::tip
-Or use [`Tama.Switch`](../helpers/Switch.md) helper.
-:::
+> [!TIP]
+> Or use [`Tama.Switch`](../helpers/Switch.md) helper.
 
 ## Generators
 

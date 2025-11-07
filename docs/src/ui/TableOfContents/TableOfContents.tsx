@@ -1,7 +1,6 @@
 import "./TableOfContents.scss"
 
 import Link from "@/app/navigation/Link"
-import JSXParser from "@/JSXParser"
 import { StateArray } from "@denshya/reactive"
 import { snakeCase } from "lodash-es"
 

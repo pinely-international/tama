@@ -13,7 +13,7 @@
   "dependencies": {
     "@denshya/navigation": "^0.2.2",
     "@denshya/proton": "^0.7.4",
-    "@denshya/reactive": "^0.9.0",
+    "@denshya/reactive": "^0.10.0",
     "@denshya/router": "^0.1.0",
     "iterator-helpers-polyfill": "latest",
     "lodash-es": "^4.17.21",

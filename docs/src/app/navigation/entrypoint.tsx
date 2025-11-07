@@ -7,6 +7,8 @@ import TableOfContents from "@/ui/TableOfContents/TableOfContents"
 import Footer from "@/ui/semantic/Footer/Footer"
 import Topbar from "@/ui/semantic/Topbar/Topbar"
 import fileRouter from "../router/file-router"
+import { PathRouteMatch } from "@denshya/router"
+import { PageModule } from "../router/page-module.types"
 
 
 
@@ -17,19 +19,18 @@ async function NavigationEntrypoint() {
   })
   await module.current
 
+
   async function* Default() {
-    for await (const pageModule of StateWalker(module)) {
+    // yield* module.to(async module => (await module).default()).toAsyncIterable()
+    // yield* module.toAwaited(module => module.default()).toAsyncIterable()
+    // return State.toAsyncIterable(module.toAwaited(module => module.default()))
+    // yield* module.toAsyncIterable().map(module => module.default())
+    for await (const pageModule of State.asyncIterableOf(module)) {
       yield pageModule.default()
     }
   }
 
-  const pageContents = new StateArray
-  globalNavigation.match.subscribeImmediate(async match => {
-    if (match == null) return
-
-    const { default: textMD } = await import(match!.route.filePath + "?raw")
-    pageContents.set(getPageHeadings(textMD))
-  })
+  const pageContents = StateArray.fromAsync(globalNavigation.match.to(pageHeadingsFromRoute))
 
   return (
     <>
@@ -55,11 +56,20 @@ async function NavigationEntrypoint() {
 
 export default NavigationEntrypoint
 
-async function* StateWalker<T>(state: State<T>) {
-  yield await state.get()
-  // Temporal solution, it should be improved when `Proton` and `State` have lifecycle APIs.
-  while (true) yield await state.upcoming
+
+async function pageHeadingsFromRoute(match: PathRouteMatch<PageModule> | null) {
+  if (match == null) return []
+
+  try {
+    const { default: textMD } = await import(match!.route.filePath + "?raw")
+    return getPageHeadings(textMD)
+  } catch (error) {
+    console.error(error)
+    return []
+  }
 }
+
+
 
 
 function getPageHeadings(markdown: string) {
@@ -70,7 +80,7 @@ function getPageHeadings(markdown: string) {
     const level = match[1].length
     const text = match[2].trim()
     return { level, text }
-  }).filter(Boolean)
+  }).filter(x => !!x)
 
   return headings
 }
@@ -99,5 +109,3 @@ function getPages(paths: string[]) {
 
   return root;
 }
-
-

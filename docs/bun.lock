@@ -6,7 +6,7 @@
       "dependencies": {
         "@denshya/navigation": "^0.2.2",
         "@denshya/proton": "^0.7.4",
-        "@denshya/reactive": "^0.9.0",
+        "@denshya/reactive": "^0.10.0",
         "@denshya/router": "^0.1.0",
         "iterator-helpers-polyfill": "latest",
         "lodash-es": "^4.17.21",
@@ -85,7 +85,7 @@
 
     "@denshya/proton": ["@denshya/proton@0.7.4", "", { "dependencies": { "node-group": "^0.1.4" }, "peerDependencies": { "@denshya/reactive": ">=0.5.2", "type-fest": ">=4.31.0" } }, "sha512-+9QfsKKERytWPy6DjHGfAG6tg+nDvTpc6v0KCM2uDhd/c5IFtnvw71f8kvFFTMngXeV+bQT8xQdNdDg3Efc8AQ=="],
 
-    "@denshya/reactive": ["@denshya/reactive@0.9.0", "", {}, "sha512-TpnLk7Ga5nsSON35FBIfYe5fjS2AbsS9PgmOjVz2iDfy+H7YM4llADLF8MsAnSmQvPHxUmkCCUdt1TJJot3Mcw=="],
+    "@denshya/reactive": ["@denshya/reactive@0.10.0", "", {}, "sha512-wMLKw7jgZ2xL6rl+KWw/8yw6D5lsRsasOUwgttjE+ML10WcmhLpG2b7tAPc29wU1KtWwGcBRJrd1Aukk77SA+g=="],
 
     "@denshya/router": ["@denshya/router@0.1.0", "", { "dependencies": { "@denshya/flow": ">0.2.0", "type-fest": "^4.31.0" } }, "sha512-ymuQ1Okwc1VdqfjAwK46JIA2aN2U9QzyXyF5kJL1zeUGxTCntrhokFC+YsvHNHBsOly0hgHgo164zBIK/dN0yQ=="],
 

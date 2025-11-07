@@ -56,11 +56,8 @@ const Component = () => (
 
 As you can see even the children can be guarded. The `guard` method can be implemented by your State library or you can create your own utility function do that to cover your special cases.
 
-:::tip
-
-If you dislike this approach, you can implement the way SolidJS does it or your unique way by [Extending Default Behavior](../custom/custom-jsx.md).
-
-:::
+> [!TIP]
+> If you dislike this approach, you can implement the way SolidJS does it or your unique way by [Extending Default Behavior](../custom/custom-jsx.md).
 
 ## Real-World Example
 

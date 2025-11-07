@@ -1,0 +1,32 @@
+@use "@/assets/scss/bundle" as *;
+
+.group-contents {
+	display: grid;
+	gap: 2em;
+
+	grid-template-columns: repeat(2, 1fr);
+}
+
+.group-contents__panel {
+	position: relative;
+
+	display: grid;
+	gap: 0.5em;
+
+	padding: 1em 1.25em;
+	background: white;
+	border: 1px solid rgba(black, 0.1);
+	border-radius: 0.5em;
+	transition: 250ms ease background-color, 250ms ease border-color;
+
+	&>span {
+		display: flex;
+		align-items: center;
+		gap: 0.75em;
+	}
+
+	&:hover {
+		background: rgba(black, 0.025);
+		border-color: rgba(black, 0.5);
+	}
+}
