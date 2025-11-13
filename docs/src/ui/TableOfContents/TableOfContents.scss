@@ -37,12 +37,19 @@ a.table-of-contents__link {
 	text-decoration: none;
 	font-size: 0.875rem;
 
-	// max-width: 100%;
-	// overflow: hidden;
-	// text-wrap: nowrap;
-	// text-overflow: ellipsis;
-
 	&--active {
 		color: red;
+	}
+}
+
+.table-of-contents__placeholder {
+	padding: 1.5em 0.5em;
+	background: rgba(black, 0.05);
+	border: 1px solid rgba(black, 0.05);
+	border-radius: 0.25em;
+	text-align: center;
+
+	span {
+		font-size: 1.25rem;
 	}
 }

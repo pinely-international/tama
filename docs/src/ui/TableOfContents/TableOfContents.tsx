@@ -1,7 +1,7 @@
 import "./TableOfContents.scss"
 
 import Link from "@/app/navigation/Link"
-import { StateArray } from "@denshya/reactive"
+import { State, StateArray } from "@denshya/reactive"
 import { snakeCase } from "lodash-es"
 
 
@@ -16,6 +16,11 @@ function TableOfContents(props: TableOfContentsProps) {
       {props.items.map(item => (
         <div className="table-of-contents__item" style={{ marginLeft: `${(item.level - 2) * 8}px` }}>
           <Link to={"#" + snakeCase(item.text)} className="table-of-contents__link">{item.text}</Link>
+        </div>
+      ))}
+      {State.from(props.items).to(items => items.length === 0 && (
+        <div className="table-of-contents__placeholder">
+          <span aria={{ ariaLabel: "speechless because not a single heading was put" }}>(`•ω•`)?</span>
         </div>
       ))}
     </div>

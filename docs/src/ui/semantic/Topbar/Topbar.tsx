@@ -3,7 +3,7 @@ import "./Topbar.scss"
 import Logo from "@/ui/brand/Logo/Logo"
 import Icon from "@/ui/static/Icon/Icon"
 
-import ButtonLink from "@/ui/kit/Button/ButtonLink"
+import Link from "@/app/navigation/Link"
 import Navbar from "../Navbar/Navbar"
 import NavbarMobile from "../Navbar/NavbarMobile"
 
@@ -20,9 +20,9 @@ function Topbar() {
         </div>
         <Navbar links={[]} />
         <div className="topbar__secondary">
-          <ButtonLink color="white" to="https://github.com/pinely-international/tama"><Icon name="github" /> Github</ButtonLink>
-          <ButtonLink color="white" to="https://discord.gg/sHp2pxrSws"><Icon name="touch" /> Discord</ButtonLink>
-          <ButtonLink color="white" to="/"><Icon name="github" /> BlueSky</ButtonLink>
+          <Link to="https://github.com/pinely-international/tama"><Icon name="github" /></Link>
+          <Link to="https://discord.gg/sHp2pxrSws"><Icon name="discord" /></Link>
+          <Link to="https://bsky.app/profile/denshya.bsky.social"><Icon name="bluesky" /></Link>
         </div>
       </div>
     </div>

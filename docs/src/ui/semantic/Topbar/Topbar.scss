@@ -52,6 +52,12 @@
 	align-items: center;
 	gap: 0.75em;
 
+	a {
+		--icon-size: 1.75rem;
+
+		text-decoration: none;
+	}
+
 	@include MobileLow {
 		width: 100%;
 

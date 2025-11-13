@@ -23,5 +23,20 @@
     "pinely",
     "Upwork",
     "urlpattern"
-  ]
+  ],
+  "files.watcherExclude": {
+    "**/.git/objects/**": false,
+    "**/.git/subtree-cache/**": false,
+    "**/.hg/store/**": true,
+    "**/.eslintcache": true,
+    "**/.git/**": true,
+    "**/bootstrap/*/**": true,
+    "**/build/**/*": true,
+    "**/database/*/**": true,
+    "**/node_modules/**": true,
+    "**/node_modules/*/**": false,
+    "**/package-lock.json": true,
+    "**/vendor/*/**": true,
+    "**/.vscode/**": true
+  }
 }

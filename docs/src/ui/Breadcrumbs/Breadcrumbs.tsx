@@ -1,8 +1,10 @@
 import "./Breadcrumbs.scss"
 
-import Link from "@/app/navigation/Link"
 import { State, StateArray } from "@denshya/reactive"
 import { startCase } from "lodash-es"
+
+import Link from "@/app/navigation/Link"
+
 import Icon from "../static/Icon/Icon"
 
 
@@ -24,5 +26,5 @@ export default function Breadcrumbs(props: BreadcrumbsProps) {
         ))}
       </ol>
     </nav>
-  );
+  )
 }

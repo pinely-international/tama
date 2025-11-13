@@ -4,6 +4,8 @@ import { startCase } from "lodash-es"
 import GroupContents from "@/ui/GroupContents/GroupContents"
 
 import { PageModule } from "./page-module.types"
+import JSXParser from "@/JSXParser"
+import { Lexer } from "markdown-lexer"
 
 
 
@@ -162,7 +164,7 @@ const result = fillMissingIndexRoutes(fileRouter.routes, {
       default: () => <GroupContents title={startCase(parent)} contents={contents.map(({ pattern: path, module }) => ({
         path,
         title: startCase(path.substring(path.lastIndexOf("/"))),
-        description: module.default.substring(0, 100)
+        description: JSXParser.fromMarkdown(new Lexer({ gfm: true, gfmLineBreaks: true }).lex(module.default).find(x => x.type === "paragraph")?.raw.replace(/\n{1,}/g, " ") ?? "")
       }))} />
     }
   },

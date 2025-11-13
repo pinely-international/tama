@@ -24,7 +24,7 @@
 	align-items: center;
 	justify-content: space-between;
 
-	padding: 0.375em 0.75em;
+	padding: 0.5em 0.75em;
 	padding-left: calc(0.75em + (var(--level) * 0.75em));
 
 	margin-left: calc(var(--level) * -0.75em);
@@ -56,7 +56,8 @@
 		left: calc(var(--level) * 0.75em);
 
 		width: min(1px, calc(var(--level) * 1px));
-		height: 75%;
+		height: 66%;
+
 	}
 
 	&:hover {
@@ -69,6 +70,7 @@
 
 		&::before {
 			background: #666;
+			animation: 250ms ease tall forwards;
 		}
 	}
 
@@ -102,5 +104,13 @@
 		height: 100%;
 
 		background: rgba(black, 0.1);
+	}
+}
+
+
+
+@keyframes tall {
+	from {
+		height: 0%
 	}
 }

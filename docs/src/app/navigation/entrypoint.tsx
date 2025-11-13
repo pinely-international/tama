@@ -21,10 +21,6 @@ async function NavigationEntrypoint() {
 
 
   async function* Default() {
-    // yield* module.to(async module => (await module).default()).toAsyncIterable()
-    // yield* module.toAwaited(module => module.default()).toAsyncIterable()
-    // return State.toAsyncIterable(module.toAwaited(module => module.default()))
-    // yield* module.toAsyncIterable().map(module => module.default())
     for await (const pageModule of State.asyncIterableOf(module)) {
       yield pageModule.default()
     }
