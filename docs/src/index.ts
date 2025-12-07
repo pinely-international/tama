@@ -1,9 +1,9 @@
-import { component, inflator } from "./essential"
-import NavbarMobile from "./ui/semantic/Navbar/NavbarMobile"
+import AppRoot from "./app/AppRoot"
+import { inflator } from "./essential"
 
 
-const inflated = inflator.inflateComponent(component)
+const inflated = inflator.inflateComponent(AppRoot)
 const rootElement = document.getElementById("root")!
 rootElement.replaceChildren(inflated)
 
-NavbarMobile.makeOverlayFor(rootElement)
+// NavbarMobile.makeOverlayFor(rootElement)

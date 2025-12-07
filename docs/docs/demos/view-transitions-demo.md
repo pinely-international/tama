@@ -3,27 +3,29 @@ title: View Transition Playground
 sidebar_position: 5
 ---
 
-Use the [Proton Elements StackBlitz template](https://stackblitz.com/edit/proton-elements-range?file=src%2FApp.tsx&view=editor) to try the transition queue without cloning the repository.
+Use the [Tama Elements StackBlitz template](https://stackblitz.com/edit/proton-elements-range?file=src%2FApp.tsx&view=editor) to try the transition queue without cloning the repository.
 
 1. Open the linked template and replace the contents of `src/App.tsx` with the snippet below.
 2. Save the file. StackBlitz will hot-reload and run the transition handlers in the browser.
-3. Tweak the animation timings or add more handlers to see how Proton keeps the previous view alive until all of them resolve.
+3. Tweak the animation timings or add more handlers to see how TamaJs keeps the previous view alive until all of them resolve.
 
 ```tsx title="src/App.tsx"
-import { Proton } from "@denshya/proton"
 import "./style.css"
+
+import { Tama } from "@denshya/tama"
+
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-function App(this: Proton.Component) {
+function App(this: Tama.Component) {
   this.view.transitions = [
     async (transit, previous, next) => {
-      const previousEl = this.inflator.inflate(previous) as HTMLElement
+      const previousEl = this.inflator.inflate<HTMLElement>(previous)
       previousEl.dataset.state = "leaving"
 
       await delay(140)
 
-      const nextEl = this.inflator.inflate(next) as HTMLElement
+      const nextEl = this.inflator.inflate<HTMLElement>(next)
       nextEl.dataset.state = "entering"
 
       await transit()
@@ -45,7 +47,7 @@ function App(this: Proton.Component) {
   return (
     <main className="app">
       <header>
-        <h1>Proton View Transitions</h1>
+        <h1>Tama View Transitions</h1>
         <button
           type="button"
           onClick={() => {
@@ -114,4 +116,4 @@ export default App
 }
 ```
 
-> Tip: You can mix and match multiple handlers. Proton keeps running them in sequence and only resolves `setAsync` when every handler finishes.
+> Tip: You can mix and match multiple handlers. Tama keeps running them in sequence and only resolves `setAsync` when every handler finishes.

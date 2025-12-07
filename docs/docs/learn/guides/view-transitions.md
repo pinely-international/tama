@@ -10,7 +10,7 @@ At runtime you can inspect:
 
 ```tsx title="Dashboard.tsx"
 import { State } from "@denshya/reactive"
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 const screens = [
   () => <section className="screen">Home</section>,
@@ -18,7 +18,7 @@ const screens = [
   () => <section className="screen">Settings</section>,
 ] satisfies Array<() => JSX.Element>
 
-function Dashboard(this: Proton.Component) {
+function Dashboard(this: Tama.Component) {
   const index = new State(0)
 
   this.view.transitions.clear()
@@ -62,8 +62,8 @@ export default Dashboard
 
 - When `this.view.set` is called with a different value, the transitions state moves to **pending**. You can read `this.view.transitions.state` or `snapshot` to inspect what is being swapped.
 - The queue enters the **running** state before the first transition handler executes.
-- The previous view remains active until every handler has either called `await transit()` or finished execution. Proton always calls the callback at the end of the handler to avoid deadlocks, so you can safely perform clean-ups without worrying about breaking the queue.
-- After the swap concludes, Proton resets the state back to **idle**.
+- The previous view remains active until every handler has either called `await transit()` or finished execution. Tama always calls the callback at the end of the handler to avoid deadlocks, so you can safely perform clean-ups without worrying about breaking the queue.
+- After the swap concludes, Tama resets the state back to **idle**.
 
 ## Working with the View Transition API
 
@@ -75,9 +75,9 @@ if ("startViewTransition" in document) {
 }
 ```
 
-> Proton invokes `document.startViewTransition` with `document` as the context, so you can pass the method reference without manually binding it.
+> Tama invokes `document.startViewTransition` with `document` as the context, so you can pass the method reference without manually binding it.
 
-The returned `ViewTransition` promises (`ready`, `finished`, `updateCallbackDone`, `committed` and `done`) are awaited before the queue settles. This allows the transition to finish fully before Proton exposes the next view.
+The returned `ViewTransition` promises (`ready`, `finished`, `updateCallbackDone`, `committed` and `done`) are awaited before the queue settles. This allows the transition to finish fully before Tama exposes the next view.
 
 ## Bulk updates
 
@@ -94,4 +94,4 @@ Calling `this.view.set(value)` keeps the previous behaviour but now runs transit
 
 ## Demo
 
-Start from the [Proton Elements template](https://stackblitz.com/edit/proton-elements-range) and add a `src/app/ViewTransitionsDemo.tsx` file that exports the `Dashboard` example above. Point the router to this component (e.g. render it inside `App.tsx`) to try the transition queue in the browser. The template already ships with the necessary styles and bundler configuration, so you only need to paste the component and hit the **Run** button.
+Start from the [Tama Elements template](https://stackblitz.com/edit/tama-elements-range) and add a `src/app/ViewTransitionsDemo.tsx` file that exports the `Dashboard` example above. Point the router to this component (e.g. render it inside `App.tsx`) to try the transition queue in the browser. The template already ships with the necessary styles and bundler configuration, so you only need to paste the component and hit the **Run** button.

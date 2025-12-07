@@ -31,14 +31,14 @@ Use `vite`
 > [!TIP]
 >Any bundler works (not just `vite`), no bundler plugins required.
 
-Enable Proton JSX
+Enable Tama JSX
 
 ```json title="tsconfig.json"
 {
   "compilerOptions": {
     // ...
     "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/proton/jsx/virtual",
+    "jsxImportSource": "@denshya/tama",
     // ...
   }
 }
