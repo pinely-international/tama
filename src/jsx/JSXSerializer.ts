@@ -15,17 +15,17 @@ class WebJSXSerializer {
 
   toString(value: unknown): string {
     if (value == null) return ""
-    if (value instanceof Array) return this.arrayLikeToString(value)
+    if (Array.isArray(value)) return this.iterableToString(value)
 
     if (value instanceof Element) return value.outerHTML
-    if (value instanceof DocumentFragment) return this.arrayLikeToString(value.childNodes)
+    if (value instanceof DocumentFragment) return this.iterableToString(value.childNodes)
     if (value instanceof Node) return value.textContent ?? ""
 
     if (isObservableGetter(value)) return String(value.get())
     if (isIterable(value)) return this.iterableToString(value)
 
     if (isJSX(value)) {
-      if (value.type instanceof Function) {
+      if (typeof value.type === "function") {
         return this.componentToString(value.type, value.props)
       }
       return this.jsxToString(value)
@@ -35,15 +35,6 @@ class WebJSXSerializer {
       throw new TypeError("JSX Child can't be object: " + value.constructor)
     }
     return String(value)
-  }
-
-  private arrayLikeToString(arrayLike: ArrayLike<unknown>) {
-    let children = "", i = 0
-    const l = arrayLike.length
-    for (; i < l; i++) {
-      children += this.toString(arrayLike[i])
-    }
-    return children
   }
 
   private iterableToString(iterable: Iterable<unknown>) {
@@ -120,9 +111,9 @@ class WebJSXSerializer {
 
   jsxToString(jsx: JSX.Element): string {
     if (jsx.props == null) {
-      const type = String(jsx.type)
+      const type = jsx.type
 
-      if (selfClosingTags.has(type)) {
+      if (selfClosingTags[type]) {
         return "<" + type + "/>"
       }
       return "<" + type + "></" + type + ">"
@@ -135,10 +126,10 @@ class WebJSXSerializer {
     const children = this.toString(jsx.props.children)
     if (jsx.type.constructor === Symbol) return children
 
-    const type = String(jsx.type)
+    const type = jsx.type
     const attributes = this.jsxAttributesToString(jsx.props)
 
-    if (selfClosingTags.has(type)) {
+    if (selfClosingTags[type]) {
       return "<" + type + attributes + "/>"
     }
     if (children.length === 0) {
@@ -151,11 +142,12 @@ class WebJSXSerializer {
     if (factory instanceof AsyncFunction.constructor) return ""
     if (factory instanceof AsyncGeneratorFunction.constructor) return ""
 
-    return this.toString(factory.call(undefined, props))
+    return this.toString(factory(props))
   }
 }
 
 export default WebJSXSerializer
 
-
-const selfClosingTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"])
+const selfClosingTags = {
+  "area": true, "base": true, "br": true, "col": true, "embed": true, "hr": true, "img": true, "input": true, "link": true, "meta": true, "param": true, "source": true, "track": true, "wbr": true
+}
