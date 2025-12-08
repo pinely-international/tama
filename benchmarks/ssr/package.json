@@ -1,0 +1,7 @@
+{
+  "name": "ssr",
+  "type": "module",
+  "dependencies": {
+    "happy-dom": "^20.0.11"
+  }
+}

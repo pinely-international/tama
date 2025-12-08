@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "types": [
+      "bun"
+    ],
+    "verbatimModuleSyntax": false,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "stripInternal": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "build",
+    /* Linting */
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmitOnError": false
+  },
+  "include": [
+    "./"
+  ]
+}

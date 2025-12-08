@@ -1,0 +1,7 @@
+{
+  "name": "bench-react",
+  "type": "module",
+  "dependencies": {
+    "@denshya/proton": "^0.7.4"
+  }
+}

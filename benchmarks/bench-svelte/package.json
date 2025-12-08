@@ -1,0 +1,7 @@
+{
+  "name": "bench-svelte",
+  "type": "module",
+  "scripts": {
+    "start": "bun run server.js"
+  }
+}

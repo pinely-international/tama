@@ -1,0 +1,22 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "bench-react",
+      "dependencies": {
+        "@denshya/proton": "^0.7.4",
+      },
+    },
+  },
+  "packages": {
+    "@denshya/proton": ["@denshya/proton@0.7.4", "", { "dependencies": { "node-group": "^0.1.4" }, "peerDependencies": { "@denshya/reactive": ">=0.5.2", "type-fest": ">=4.31.0" } }, "sha512-+9QfsKKERytWPy6DjHGfAG6tg+nDvTpc6v0KCM2uDhd/c5IFtnvw71f8kvFFTMngXeV+bQT8xQdNdDg3Efc8AQ=="],
+
+    "@denshya/reactive": ["@denshya/reactive@0.10.0", "", {}, "sha512-wMLKw7jgZ2xL6rl+KWw/8yw6D5lsRsasOUwgttjE+ML10WcmhLpG2b7tAPc29wU1KtWwGcBRJrd1Aukk77SA+g=="],
+
+    "node-group": ["node-group@0.1.4", "", {}, "sha512-VetSK83p90e5YppF23MEHQRyGf/I0pxBIegLIOqdD8mxWYwE01tVm6kSldTmCQo250cyIxhZoxcLydGwxZtPFg=="],
+
+    "tagged-tag": ["tagged-tag@1.0.0", "", {}, "sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng=="],
+
+    "type-fest": ["type-fest@5.3.1", "", { "dependencies": { "tagged-tag": "^1.0.0" } }, "sha512-VCn+LMHbd4t6sF3wfU/+HKT63C9OoyrSIf4b+vtWHpt2U7/4InZG467YDNMFMR70DdHjAdpPWmw2lzRdg0Xqqg=="],
+  }
+}

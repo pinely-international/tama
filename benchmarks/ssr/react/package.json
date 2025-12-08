@@ -1,0 +1,7 @@
+{
+  "name": "bench-react",
+  "type": "module",
+  "dependencies": {
+    "react": "^19.2.0"
+  }
+}
