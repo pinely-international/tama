@@ -43,9 +43,11 @@ for await (const route of routes) {
   window.dispatchEvent(new PopStateEvent('popstate'));
 
   const appString = await jsxSerializer.asyncComponentToString(component)
-  const html = templateHTML
+  let html = templateHTML
     .replace("<!--head-->", localScripts.join("\n") + "\n" + localStyles.join("\n"))
     .replace("<!--element-->", appString)
+
+  entries.essential.assets.forEach(x => html = html.replace(`<link rel="stylesheet" crossorigin href="/${x}">`, ""))
 
   await Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", (route.pattern.slice(1) || "index") + ".html")), html)
 }
