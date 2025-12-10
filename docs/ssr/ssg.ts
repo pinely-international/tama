@@ -9,7 +9,7 @@ if (globalThis.URLPattern == null) {
 injectDOMPolyfill(globalThis)
 
 
-const { entries } = await import("../build/bundle.json.map", { with: { type: "json" } })
+const { entries, modules } = await import("../build/bundle.json.map", { with: { type: "json" } })
 const { component, inflator } = await import("../build/" + entries.essential.fileName)
 
 const jsxSerializer = new WebJSXSerializerAsync
@@ -27,25 +27,19 @@ routes.forEach(route => {
 })
 
 for await (const route of routes) {
+  const localScripts = [
+    ...entries.index.imports,
+    ...modules[route.filePath].imports ?? []
+  ].map(importPath => `<link type="module" rel="preload" as="script" crossorigin href="/${importPath}">`)
+
+
   window.location.pathname = route.pattern
   window.dispatchEvent(new PopStateEvent('popstate'));
 
   const appString = await jsxSerializer.asyncComponentToString(component)
   const html = templateHTML
-    .replace("<!--head-->", document.head.innerHTML)
+    .replace("<!--head-->", document.head.innerHTML + localScripts.join("\n"))
     .replace("<!--element-->", appString)
 
-  await Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", route.pattern.slice(1) + ".html")), html)
+  await Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", (route.pattern.slice(1) || "index") + ".html")), html)
 }
-
-
-
-window.location.pathname = "/"
-window.dispatchEvent(new PopStateEvent('popstate'));
-
-const appString = await jsxSerializer.asyncComponentToString(component)
-const html = templateHTML
-  .replace("<!--head-->", document.head.innerHTML)
-  .replace("<!--element-->", appString)
-
-await Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", "index.html")), html)

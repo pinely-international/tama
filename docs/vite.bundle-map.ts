@@ -17,7 +17,7 @@ function generateBundleMap(): Plugin {
             imports: [...new Set([...output.imports, ...output.dynamicImports])],
           }
           if (output.isEntry === false) {
-            source.modules[output.name] = chunkMeta
+            source.modules[output.facadeModuleId?.replace(import.meta.dirname, "") ?? "other"] = chunkMeta
           } else {
             source.entries[output.name] = chunkMeta
           }

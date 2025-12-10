@@ -7,10 +7,10 @@ export function injectDOMPolyfill(context: typeof globalThis) {
 
     url: "ws://denshya.dev/",
     settings: {
-      disableComputedStyleRendering: false,
+      disableComputedStyleRendering: true,
       disableCSSFileLoading: true,
-      // disableJavaScriptEvaluation: true,
-      disableJavaScriptFileLoading: false,
+      disableJavaScriptEvaluation: true,
+      disableJavaScriptFileLoading: true,
       handleDisabledFileLoadingAsSuccess: true,
     }
   })
