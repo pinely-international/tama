@@ -35,7 +35,7 @@ for await (const route of routes) {
     .replace("<!--head-->", document.head.innerHTML)
     .replace("<!--element-->", appString)
 
-  Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", route.pattern.slice(1) + ".html")), html)
+  await Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", route.pattern.slice(1) + ".html")), html)
 }
 
 
@@ -48,4 +48,4 @@ const html = templateHTML
   .replace("<!--head-->", document.head.innerHTML)
   .replace("<!--element-->", appString)
 
-Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", "index.html")), html)
+await Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", "index.html")), html)

@@ -23,6 +23,7 @@ export default defineConfig({
 
     sourcemap: true,
     emptyOutDir: true,
+    modulePreload: false,
 
     emitAssets: true,
     assetsInlineLimit: 0,
