@@ -1,0 +1,42 @@
+{
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "jsx",
+    "tsx",
+  ],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "cSpell.words": [
+    "bemful",
+    "chronly",
+    "dirents",
+    "jsxfill",
+    "payloadcms",
+    "pinely",
+    "Upwork",
+    "urlpattern"
+  ],
+  "files.watcherExclude": {
+    "**/.git/objects/**": false,
+    "**/.git/subtree-cache/**": false,
+    "**/.hg/store/**": true,
+    "**/.eslintcache": true,
+    "**/.git/**": true,
+    "**/bootstrap/*/**": true,
+    "**/build/**/*": true,
+    "**/database/*/**": true,
+    "**/node_modules/**": true,
+    "**/node_modules/*/**": false,
+    "**/package-lock.json": true,
+    "**/vendor/*/**": true,
+    "**/.vscode/**": true
+  }
+}

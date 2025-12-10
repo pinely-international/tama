@@ -1,0 +1,17 @@
+@use "@/assets/scss/bundle" as *;
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+}
+
+.rating__value {
+  font-size: 0.875rem;
+}
+
+.rating__stars {
+  --icon-color: #E59090;
+
+  display: flex;
+}

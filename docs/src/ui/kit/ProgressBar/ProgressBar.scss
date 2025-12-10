@@ -1,0 +1,29 @@
+@use "@/assets/scss/bundle" as *;
+
+.progress-bar {
+  display: flex;
+  gap: 0.25em;
+
+  height: 4px;
+  border-radius: 1em;
+}
+
+.progress-bar__filled {
+  width: calc(100% * var(--progress));
+  height: inherit;
+
+  background: #1674E0;
+  border-radius: inherit;
+
+  &--red {
+    background: #EC7D92;
+  }
+}
+
+.progress-bar__unfilled {
+  flex: 1;
+  height: inherit;
+
+  background: #C9D2DC;
+  border-radius: inherit;
+}

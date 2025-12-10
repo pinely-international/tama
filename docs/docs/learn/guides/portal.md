@@ -8,7 +8,7 @@ To do that, you need to access component scoped `inflator` instance
 
 ```tsx
 function Component(this: Tama.Component) {
-  const context = this.context.require(MyContext)
+  const context = this.tree.context.require(MyContext)
   const element = this.inflator.inflate(<OtherComponent data={context.data} />)
 
   document.body.append(element)

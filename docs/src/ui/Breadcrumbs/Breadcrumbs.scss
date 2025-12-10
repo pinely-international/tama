@@ -1,0 +1,37 @@
+.breadcrumbs {
+	--icon-size: 0.625rem;
+
+	display: flex;
+	align-items: center;
+
+	&>ol {
+		all: unset;
+
+		display: flex;
+		align-items: center;
+	}
+
+	&>ol>li {
+		list-style: none;
+
+		display: flex;
+		align-items: center;
+		gap: 0.25em;
+
+
+		&:last-child>a {
+			background: rgba(black, 0.05);
+			border-bottom-color: rgba(black, 0.2);
+			border-radius: 0.375em;
+		}
+	}
+
+	a {
+		padding: 0.375em 0.75em;
+		text-decoration: none;
+		font-size: 0.875rem;
+		background: white;
+		border-bottom: 2px solid transparent;
+		transition: 250ms ease background-color, 250ms ease border-color;
+	}
+}

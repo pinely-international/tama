@@ -1,0 +1,55 @@
+@use "@/assets/scss/bundle" as *;
+
+.table-of-contents {
+	position: sticky;
+	top: 5em;
+
+	display: grid;
+	gap: 0.25em;
+
+	margin-top: 1.5em;
+}
+
+.table-of-contents__title {
+	padding: 0;
+	margin-bottom: 0.5em;
+
+	font-size: 0.875rem;
+	font-weight: 500;
+}
+
+.table-of-contents__item {
+	padding: 0.25em 0.5em;
+	border-radius: 0.375em;
+	color: #777;
+
+	transition: 250ms ease color, 250ms ease background-color;
+
+	&:hover {
+		color: #171717;
+		background: rgba(black, 0.05);
+	}
+}
+
+a.table-of-contents__link {
+	display: flex;
+
+	text-decoration: none;
+	font-size: 0.875rem;
+
+	&--active {
+		color: red;
+	}
+}
+
+.table-of-contents__placeholder {
+	padding: 1.5em 0.5em;
+	background: rgba(black, 0.05);
+	border: 1px solid rgba(black, 0.05);
+	border-radius: 0.25em;
+	text-align: center;
+
+	span {
+		font-size: 1.25rem;
+	}
+}

@@ -1,0 +1,60 @@
+$color: rgb(24, 28, 30);
+
+pre.shiki {
+	border: 1px solid rgba($color, 0.1);
+
+	.line {
+		white-space: pre;
+
+		&::before {
+			position: sticky;
+			left: 0;
+
+			content: counter(step);
+			counter-increment: step;
+
+			padding: 0 1em;
+			background: white;
+			width: 1rem;
+			display: inline-block;
+			text-align: right;
+			color: rgba(115, 138, 148, .4)
+		}
+	}
+
+	.line.highlighted {
+		background: rgba($color, 0.1);
+	}
+
+	.code-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+
+		padding: 0.75em 1em;
+		border-bottom: 1px solid rgba($color, 0.1);
+
+		font-family: "Inter Tight", Arial, sans-serif;
+
+		div.icon>svg {
+			--icon-size: 1.25rem;
+
+			padding: 0.125em;
+			border: 1px solid rgba($color, 0.1);
+			border-radius: 0.25em;
+		}
+
+		span {
+			font-size: 0.875rem;
+		}
+	}
+
+	code {
+		line-height: 1.4;
+
+		counter-reset: step;
+		counter-increment: step 0;
+
+		overflow: auto;
+	}
+}

@@ -4,38 +4,20 @@ import { AsyncGeneratorPrototype } from "./BuiltinObjects"
 import { Life } from "./Life"
 import TransitionAPI, { type ViewTransitionEntry } from "./TransitionAPI"
 
-import type { ProtonComponent } from "./Proton/ProtonComponent"
-
 
 class ViewAPI extends EventSignal<unknown> {
   readonly life = new Life
 
   declare default: unknown
 
-  private component?: ProtonComponent
   private readonly transitionsApi = new TransitionAPI
   private transitionQueue: Promise<void> = Promise.resolve()
-  private hasCommitted = false
 
   constructor() {
     super(null)
   }
 
-  get transitions(): TransitionAPI {
-    return this.transitionsApi
-  }
-  set transitions(entries: TransitionAPI | Iterable<ViewTransitionEntry> | null | undefined) {
-    if (entries instanceof TransitionAPI) {
-      this.transitionsApi.replaceWith(entries)
-      return
-    }
-
-    this.transitionsApi.replaceWith(entries)
-  }
-
-  attach(component: ProtonComponent) {
-    this.component = component
-  }
+  transitions?: Iterable<(callback: () => void) => void | Promise<void>>
 
   async setIterable(iterable: Iterator<unknown> | AsyncIterator<unknown>) {
     let yieldResult: IteratorResult<unknown> = { done: false, value: undefined }
@@ -69,46 +51,31 @@ class ViewAPI extends EventSignal<unknown> {
     await this.scheduleTransition(this.default)
   }
 
-  private commit(value: unknown) {
-    super.set(value)
-    this.hasCommitted = true
-  }
-
-  private scheduleTransition(next: unknown): Promise<void> {
-    if (this.hasCommitted === false) {
-      this.commit(next)
-      return Promise.resolve()
+  private async scheduleTransition(next: unknown): Promise<void> {
+    if (this.transitions == null) {
+      this.set(next)
+      return
     }
 
-    const previous = this.current
-    if (Object.is(previous, next)) return Promise.resolve()
+    let pipe = () => this.set(next)
 
-    this.transitionsApi.markPending(previous, next)
-
-    const job = async () => {
-      try {
-        await this.applyTransitions(previous, next)
-      } catch (error) {
-        console.error("View transition failed", error)
-        this.commit(next)
-      }
+    for (const transition of this.transitions) {
+      pipe = () => transition(pipe)
     }
 
-    const scheduled = this.transitionQueue.then(job, job)
-    this.transitionQueue = scheduled.catch(() => undefined)
-    return scheduled.then(() => undefined)
+    pipe()
   }
 
   private async applyTransitions(previous: unknown, next: unknown) {
     if (this.transitionsApi.size === 0) {
-      this.commit(next)
+      this.set(next)
       return
     }
 
     this.transitionsApi.markRunning(previous, next)
 
     const transitions = Array.from(this.transitionsApi)
-    let pipeline = async () => { this.commit(next) }
+    let pipeline = async () => this.set(next)
 
     for (let i = transitions.length - 1; i >= 0; i -= 1) {
       const nextStage = pipeline
@@ -140,9 +107,8 @@ class ViewAPI extends EventSignal<unknown> {
     }
 
     try {
-      const context = this.resolveTransitionContext(transition)
       const callable = transition as unknown as (this: unknown, transit: () => Promise<void>, previous: unknown, next: unknown) => unknown
-      const result = callable.call(context, transit, previous, next)
+      const result = callable(transit, previous, next)
       await this.awaitTransitionResult(result)
     } catch (error) {
       console.error("View transition handler failed", error)
@@ -166,14 +132,6 @@ class ViewAPI extends EventSignal<unknown> {
 
       if (awaiting.length > 0) await Promise.allSettled(awaiting)
     }
-  }
-
-  private resolveTransitionContext(transition: ViewTransitionEntry) {
-    if (typeof document !== "undefined" && document?.startViewTransition != null && transition === document.startViewTransition) {
-      return document
-    }
-
-    return this.component ?? this
   }
 }
 

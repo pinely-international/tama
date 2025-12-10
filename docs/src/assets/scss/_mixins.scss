@@ -1,0 +1,246 @@
+@use "vars" as *;
+@use "colors" as *;
+
+/* Helpers */
+
+@mixin Highlightable {
+	em {
+		font-style: normal;
+		text-decoration: underline;
+
+		background: rgba($color-violet-pale, 0.5);
+	}
+}
+
+@mixin Outline {
+	outline: 3px solid rgba(black, 0.25);
+}
+
+// Input, Select, Textarea label.
+@mixin InputLabel {
+	font-size: $font-size-h3;
+	font-weight: 500;
+
+	span.weak {
+		color: $color-gray;
+	}
+}
+
+@mixin InputAppearance($padding: 0.675em 1em) {
+	padding: $padding;
+
+	background: white;
+	border: 1px solid rgba(black, 0.1);
+	border-radius: 0.5em;
+
+	transition: 200ms ease background-color, 200ms ease border-color;
+
+	&:focus,
+	&--focused {
+		background: white;
+		border-color: $color-blue;
+		box-shadow: 0 0 0 4px rgba($color-blue, 0.25);
+	}
+
+	&:disabled,
+	&--disabled {
+		background: $color-gray;
+		cursor: not-allowed;
+	}
+}
+
+@mixin Badge($size: 1em, $float: true) {
+	@if $float==true {
+		position: absolute;
+		top: $size / -2;
+		right: $size / -2;
+	}
+
+	padding: $size / 2;
+	background: $color-red;
+	border-radius: 50%;
+}
+
+@mixin PanelHeader($heading-color: #2B093C, $heading-size: 1rem, $subheading-color: #967FA1, $subheading-size: 0.875rem) {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	padding: 0.125em 0.375em;
+
+	h4 {
+		color: $heading-color;
+		font-size: $heading-size;
+		font-weight: 700;
+	}
+
+	span {
+		color: $subheading-color;
+		font-size: $subheading-size;
+		font-weight: 600;
+	}
+}
+
+@mixin PanelAppearance {
+	padding: 0.5em;
+	background: white;
+	border-radius: 0.5em;
+	box-shadow: 0 4px 4px 0 rgba(black, 0.25);
+}
+
+@mixin PressPanelAppearance {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+
+	padding: 1em;
+	background: white;
+	border: 1px solid rgba($color-press-gray, 0.35);
+	border-radius: 1em;
+
+	a {
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	&>:last-child {
+		margin-top: auto;
+	}
+}
+
+/* Font */
+
+@mixin Typography($size: null, $weight: null) {
+	font-size: $size;
+	font-weight: $weight;
+
+	white-space: pre-line;
+	word-break: normal;
+	line-height: 1.25;
+
+	@include Mobile() {
+		white-space: normal;
+
+		br {
+			display: none;
+		}
+	}
+}
+
+/* Adaptive (Goes from `DesktopLowResolution` to `Mobile`) */
+
+@mixin DesktopLowResolution {
+	@media screen and (max-width: #{$width-desktop}) {
+		@content;
+	}
+}
+
+@mixin Tablet {
+	@media screen and (max-width: #{$width-desktop-low-resolution}) {
+		@content;
+	}
+}
+
+
+@mixin Mobile {
+	@media screen and (max-width: #{$width-tablet}) {
+		@content;
+	}
+}
+
+@mixin MobileLow {
+	@media screen and (max-width: #{$width-mobile}) {
+		@content;
+	}
+}
+
+
+/* Utils */
+
+@mixin line-clamp($lines) {
+	@supports (display: -webkit-box) {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: $lines;
+	}
+
+	@supports (display: box) {
+		display: box;
+		box-orient: vertical;
+		line-clamp: $lines;
+	}
+
+	@supports (not (display: -webkit-box)) and (not (display: box)) {
+		max-height: 1em * $lines;
+	}
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@mixin WidthLimit {
+	max-width: $width-desktop;
+
+	margin-left: auto;
+	margin-right: auto;
+
+	@include DesktopLowResolution {
+		margin-left: 4vw;
+		margin-right: 4vw;
+
+		@content;
+	}
+
+	@include MobileLow() {
+		margin: unset;
+	}
+}
+
+@mixin column-gap($gap) {
+	&>*:not(:first-child) {
+		margin-left: $gap;
+	}
+}
+
+@mixin row-gap($gap) {
+	&>*:not(:first-child) {
+		margin-top: $gap;
+	}
+}
+
+/* Scrollbar */
+
+@mixin Scrollbar($size: 0.325em, $thumbColor: rgba(#677783, 0.5), $trackColor: transparent) {
+
+	/* Chrome, Edge, and Safari */
+	&::-webkit-scrollbar {
+		height: $size;
+		width: $size;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: $trackColor;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: $thumbColor;
+		border-radius: 0.5em;
+		border: 3px solid $trackColor;
+	}
+}
+
+/*
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/text-size-adjust
+ * https://stackoverflow.com/questions/39550403/css-displayinline-block-changes-text-size-on-mobile
+*/
+@mixin DisabledTextSizeAdjust {
+	@supports (text-size-adjust: 80%) {
+		text-size-adjust: none
+	}
+
+	@supports not (text-size-adjust: 80%) {
+		height: 100%;
+	}
+}

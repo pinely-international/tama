@@ -1,0 +1,30 @@
+@use "@/assets/scss/bundle" as *;
+
+.card {
+  position: relative;
+
+  display: grid;
+  gap: 0.75em;
+
+  padding: 1.5em 2em;
+  background: white;
+  border: 1px solid rgba(rgb(0, 0, 0), 0.1);
+  border-radius: 0.75em;
+
+  transition: 200ms ease background-color;
+
+  &>span {
+    --icon-size: 1.5rem;
+
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+
+    font-weight: 500;
+    font-size: 1.25rem;
+  }
+
+  &:hover {
+    background: rgba(rgb(41, 5, 65), 0.1);
+  }
+}

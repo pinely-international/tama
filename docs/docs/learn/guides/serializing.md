@@ -9,6 +9,5 @@ const jsxSerializer = new WebJSXSerializer
 const jsxString = jsxSerializer.toString(<div>123</div>) => "<div>123</div>"
 ```
 
-:::tip
-See guide for [SSR](../how-to-use/ssr.md)
-:::
+> [!TIP]
+> See guide for [SSR](../how-to-use/ssr.md)

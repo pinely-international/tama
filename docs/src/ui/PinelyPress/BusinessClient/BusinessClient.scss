@@ -1,0 +1,57 @@
+@use "@/assets/scss/bundle" as *;
+
+.business-client {
+  @include PressPanelAppearance;
+}
+
+.business-client__face {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+
+  &>hgroup {
+    display: grid;
+    gap: 0.25em;
+
+    b {
+      font-weight: 600;
+    }
+
+    span {
+      font-size: $font-size-text-small;
+    }
+  }
+}
+
+.business-client__logo {
+  --icon-size: 1.25rem;
+  --icon-color: #1674E0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 2.5em;
+  height: 2.5em;
+
+  border-radius: 0.5em;
+  object-fit: contain;
+
+  padding: 0.5em;
+  border: 1px solid rgba(159, 189, 223, 0.5);
+  // background: hsl(125, 30%, 80%);
+}
+
+.business-client__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+
+  span {
+    padding: 0.125em 0.25em;
+    background: rgba($color-press-gray, 0.25);
+    border-left: 3px solid rgba($color-press-gray, 0.5);
+    border-radius: 0.375em;
+    // color: white;
+  }
+}

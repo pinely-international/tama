@@ -4,13 +4,12 @@ There are no limits on what can be defined or used in the top level (of a file).
 
 ```tsx title="MyView.jsx"
 import { State } from "@denshya/reactive"
-```
 
-```tsx
 const text = new State("Global Text")
 
 const helloWorldView = <div>Hello World! {text}</div>
 const replacedView = <div>I'm Replaced! {text}</div>
+
 // ^ These won't be inflated immediately, this just creates JSX objects,
 // which can be perceived as element references.
 ```
@@ -21,9 +20,7 @@ You can define states, JSX or even inflate it at top level.
 import { inflator } from "./inflator"
 
 const inflatedHelloWorld = inflator.inflate(helloWorldView)
-```
 
-```tsx
 function MyView() {
   this.view.set(helloWorldView)
 

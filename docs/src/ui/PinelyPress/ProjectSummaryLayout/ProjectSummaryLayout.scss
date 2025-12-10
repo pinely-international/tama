@@ -1,0 +1,16 @@
+@use "@/assets/scss/bundle" as *;
+
+.project-summary-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+
+  &>* {
+    flex: 1;
+
+    @include DesktopLowResolution {
+      flex: unset;
+      flex-grow: 1;
+    }
+  }
+}

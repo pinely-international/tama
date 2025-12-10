@@ -1,0 +1,58 @@
+@use "@/assets/scss/bundle" as *;
+
+.press-topbar {
+  background: white;
+  border-bottom: 1px solid rgba(black, 0.1);
+}
+
+.press-topbar__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 1em 0;
+  padding-left: 1.5em;
+  padding-right: 0.75em;
+
+  @include WidthLimit;
+
+  @include MobileLow {
+    display: grid;
+    gap: 1em;
+    justify-content: unset;
+  }
+}
+
+.press-topbar__logo {
+  display: flex;
+  gap: 0.125em;
+
+  font-size: 1.25rem;
+  font-weight: bold;
+
+
+  span {
+    color: #b6bcc6;
+  }
+
+  em {
+    font-style: normal;
+    color: #030712;
+  }
+}
+
+.press-topbar__secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+
+  @include MobileLow {
+    width: 100%;
+
+    &>* {
+      flex: 1;
+      text-align: center;
+      justify-content: center;
+    }
+  }
+}

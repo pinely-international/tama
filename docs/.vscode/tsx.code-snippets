@@ -1,0 +1,25 @@
+{
+  "tsx function component": {
+    "prefix": "tsrfc",
+    "body": [
+      "import \"./${1:${TM_FILENAME_BASE}}.scss\"",
+      "",
+      "",
+      "interface ${1:${TM_FILENAME_BASE}}Props { }",
+      "",
+      "function ${1:${TM_FILENAME_BASE}}(props: ${1:${TM_FILENAME_BASE}}Props) {",
+      "  return (",
+      "    <div className=\"${TM_FILENAME_BASE/^([A-Z]+)([a-z]+)([A-Z]+)|([A-Z]+)/${1:/downcase}$2-${3:/downcase}${4:/downcase}/g}\"></div>",
+      "  )",
+      "}",
+      "",
+      "export default ${1:${TM_FILENAME_BASE}}",
+      ""
+    ],
+    "description": "tsx function component"
+  },
+  "tpr": {
+    "prefix": "tpr",
+    "body": "this: Proton.Shell",
+  }
+}

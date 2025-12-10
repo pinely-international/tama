@@ -1,0 +1,42 @@
+@use "@/assets/scss/bundle" as *;
+
+.connector {
+  position: relative;
+  left: 50%;
+
+  display: grid;
+  justify-items: end;
+
+  width: 20em;
+
+  color: rgba(#9FBDDF, 0.5);
+
+  will-change: transform; // Mostly treats discrepancy (misposition) of one of the child curves by disabling optimizations.
+
+  @include Mobile {
+    width: 25vw;
+  }
+}
+
+.connector__1 {
+  width: 1em;
+  height: 5em;
+
+  border-right: 0.125em dashed;
+  border-bottom: 0.125em dashed;
+  border-bottom-right-radius: 1.25em;
+}
+
+.connector__2 {
+  position: relative;
+  margin-right: 1em;
+  margin-top: -0.125em;
+  margin-bottom: 0.125em;
+
+  width: calc(100% - 1em);
+  height: 4em;
+
+  border-top: 0.125em dashed;
+  border-left: 0.125em dashed;
+  border-top-left-radius: 1.25em;
+}

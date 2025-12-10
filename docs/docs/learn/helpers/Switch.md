@@ -19,11 +19,11 @@ function SwitchComponent(this: Tama.Component) {
 }
 ```
 
-In case of being part of JSX, you should connect `ProtonSwitchWebInflator`.
+In case of being part of JSX, you should connect `WebInflator.Switch`.
 
 ```tsx
 const inflator = new WebInflator
-inflator.adapters.add(ProtonSwitchWebInflator)
+inflator.adapters.add(SwitchWebInflator)
 ```
 
 ```tsx

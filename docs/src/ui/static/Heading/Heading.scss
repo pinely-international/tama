@@ -1,0 +1,26 @@
+@use "@/assets/scss/bundle" as *;
+
+.heading {
+  display: grid;
+  align-content: baseline;
+  gap: 0.75em;
+
+  margin: 0 auto;
+
+  text-align: center;
+
+  color: #4A274B;
+
+  span {
+    color: #624A63;
+    font-size: 1.25rem;
+  }
+
+  &--blue {
+    color: #174982;
+
+    span {
+      color: #C9D2DC;
+    }
+  }
+}

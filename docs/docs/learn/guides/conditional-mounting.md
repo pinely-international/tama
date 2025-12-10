@@ -9,16 +9,15 @@ function ColorApp() {
   const mounted$ = window.when("pointermove").map(event => !!event.x)
 
   return (
-    <div mounted={mounted$}>Visible</div>
+    <div mounted={mounted$}>Visible</div> // [!code highlight]
   )
 }
 
 <ColorApp mounted={new State(false)} />
 ```
 
-:::note
-Passing plain values to `mounted` is not allowed, it clearly indicates a mistake as it will never be changed.
-:::
+> [!NOTE: 123]
+> Passing plain values to `mounted` is not allowed, it clearly indicates a mistake as it will never be changed.
 
 ## Guard Pattern
 
@@ -57,11 +56,8 @@ const Component = () => (
 
 As you can see even the children can be guarded. The `guard` method can be implemented by your State library or you can create your own utility function do that to cover your special cases.
 
-:::tip
-
-If you dislike this approach, you can implement the way SolidJS does it or your unique way by [Extending Default Behavior](../custom/custom-jsx.md).
-
-:::
+> [!TIP]
+> If you dislike this approach, you can implement the way SolidJS does it or your unique way by [Extending Default Behavior](../custom/custom-jsx.md).
 
 ## Real-World Example
 
