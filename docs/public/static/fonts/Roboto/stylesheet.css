@@ -1,0 +1,17 @@
+@font-face {
+	font-family: "Roboto";
+	src: local("Roboto Variable Weight"), local("Roboto-Variable-Weight"),
+		url("Roboto-VariableFont_wght.woff2") format("woff2");
+	font-weight: 100 1000;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Roboto";
+	src: local("Roboto Italic VariableFont Weight"), local("Roboto-Italic-Variable-Weight"),
+		url("Roboto-Italic-VariableFont_wght.woff2") format("woff2");
+	font-weight: 100 1000;
+	font-style: italic;
+	font-display: swap;
+}
