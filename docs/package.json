@@ -14,7 +14,6 @@
   "dependencies": {
     "@denshya/navigation": "^0.2.2",
     "@denshya/proton": "^0.7.4",
-    "@denshya/tama": "../denshya-tama-0.8.2.tgz",
     "@denshya/reactive": "^0.10.0",
     "@denshya/router": "^0.1.0",
     "iterator-helpers-polyfill": "latest",
