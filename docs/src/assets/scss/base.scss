@@ -61,6 +61,11 @@ header>*,
 main>* {
 	animation: 500ms ease forwards fadeIn;
 	transition-behavior: allow-discrete;
+
+	@media (prefers-reduced-motion: reduce) {
+		animation: unset;
+		transition-behavior: unset;
+	}
 }
 
 article {
