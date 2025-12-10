@@ -33,9 +33,12 @@ for await (const route of routes) {
     ...modules[route.filePath].imports ?? []
   ].map(importPath => `<link rel="preload" as="script" crossorigin href="/${importPath}">`)
 
-  const localStyles = entries.essential.assets.map(cssPath => {
-    return `<link rel="preload" as="style" crossorigin href="/${cssPath}">`
-  })
+  const localStyles = await Promise.all(
+    entries.essential.assets.map(async cssPath => {
+      const { default: cssContent } = await import("../build/" + cssPath + "?raw")
+      return `<style>${cssContent}</style>`
+    })
+  )
 
   window.location.pathname = route.pattern
   window.dispatchEvent(new PopStateEvent('popstate'));
@@ -45,7 +48,7 @@ for await (const route of routes) {
     .replace("<!--head-->", localScripts.join("\n") + "\n" + localStyles.join("\n"))
     .replace("<!--element-->", appString)
 
-  // entries.essential.assets.forEach(x => html = html.replace(`<link rel="stylesheet" crossorigin href="/${x}">`, ""))
+  entries.essential.assets.forEach(x => html = html.replace(`<link rel="stylesheet" crossorigin href="/${x}">`, ""))
 
   await Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", (route.pattern.slice(1) || "index") + ".html")), html)
 }
