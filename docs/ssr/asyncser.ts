@@ -109,6 +109,14 @@ export class WebJSXSerializerAsync {
     if (props == null) return ""
     this.applyCustomJSXAttributes(props)
     let attributes = "", key, value
+
+    if (props.aria != null) {
+      Object.entries(props.aria).forEach(([key, value]) => {
+        props[kebabCase(key)] = value
+      })
+      delete props.aria
+    }
+
     for (key in props) {
       if (key === "on") continue
       if (key === "ns") continue
