@@ -34,6 +34,7 @@
     "@types/opentype.js": "^1.3.8",
     "@typescript-eslint/eslint-plugin": "^8.19.0",
     "@typescript-eslint/parser": "^8.19.0",
+    "ts-morph": "^27.0.2",
     "bun": "^1.2.21",
     "canvas": "^3.2.0",
     "compression": "^1.8.0",
