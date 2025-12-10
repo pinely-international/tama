@@ -17,16 +17,16 @@ function Footer() {
           <ScheduleButton color="blue" />
         </div>
         <div className="footer__sitemap">
-          <menu></menu>
+          <nav></nav>
         </div>
       </div>
       <div className="footer__bottom">
         <span>© 2020-{new Date().getFullYear()} <b>Pinely International</b>, All rights reserved.</span>
-        <menu>
+        <nav>
           <Link to="/privacy">Privacy Policy</Link>
           <Link to="/terms">Terms & Conditions</Link>
           <Link to="/cookies">Cookie Policy</Link>
-        </menu>
+        </nav>
       </div>
     </footer>
   )
