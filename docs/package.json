@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "bunx --bun vite",
     "build": "bunx --bun vite build",
+    "build:ssg": "bun --bun ./ssr/ssg.ts",
     "preview": "vite preview",
     "serve:ssr": "bun run server/ssr.ts"
   },

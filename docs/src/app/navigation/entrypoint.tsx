@@ -26,7 +26,7 @@ async function NavigationEntrypoint() {
     }
   }
 
-  const pageContents = StateArray.fromAsync(globalNavigation.match.to(pageHeadingsFromRoute))
+  // const pageContents = StateArray.fromAsync(globalNavigation.match.to(pageHeadingsFromRoute))
 
   return (
     <>
@@ -41,9 +41,9 @@ async function NavigationEntrypoint() {
           <Breadcrumbs path={globalNavigation.match.$.route.$.pattern} />
           <Default />
         </article>
-        <aside style={{ display: "grid", alignContent: "baseline", width: "15em" }}>
+        {/* <aside style={{ display: "grid", alignContent: "baseline", width: "15em" }}>
           <TableOfContents items={pageContents} />
-        </aside>
+        </aside> */}
       </main>
       <Footer />
     </>
@@ -53,33 +53,33 @@ async function NavigationEntrypoint() {
 export default NavigationEntrypoint
 
 
-async function pageHeadingsFromRoute(match: PathRouteMatch<PageModule> | null) {
-  if (match == null) return []
+// async function pageHeadingsFromRoute(match: PathRouteMatch<PageModule> | null) {
+//   if (match == null) return []
 
-  try {
-    const { default: textMD } = await import(match!.route.filePath + "?raw")
-    return getPageHeadings(textMD)
-  } catch (error) {
-    console.error(error)
-    return []
-  }
-}
-
-
+//   try {
+//     const { default: textMD } = await import(match!.route.filePath + "?raw")
+//     return getPageHeadings(textMD)
+//   } catch (error) {
+//     console.error(error)
+//     return []
+//   }
+// }
 
 
-function getPageHeadings(markdown: string) {
-  const headings = markdown.split("\n").map(line => {
-    const match = line.match(/^(#{2,6})\s+(.*)/)
-    if (!match) return null
 
-    const level = match[1].length
-    const text = match[2].trim()
-    return { level, text }
-  }).filter(x => !!x)
 
-  return headings
-}
+// function getPageHeadings(markdown: string) {
+//   const headings = markdown.split("\n").map(line => {
+//     const match = line.match(/^(#{2,6})\s+(.*)/)
+//     if (!match) return null
+
+//     const level = match[1].length
+//     const text = match[2].trim()
+//     return { level, text }
+//   }).filter(x => !!x)
+
+//   return headings
+// }
 
 
 function getPages(paths: string[]) {

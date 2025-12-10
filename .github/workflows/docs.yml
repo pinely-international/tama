@@ -62,8 +62,11 @@ jobs:
 
       - name: Build Docs
         working-directory: ./docs
-        run: |
-          bun run build
+        run: bun run build
+
+      - name: Build Docs - SSG
+        working-directory: ./docs
+        run: bun run build:ssg
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

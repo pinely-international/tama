@@ -10,7 +10,7 @@
   },
   "include": [
     "vite.config.ts",
-    "vite.mdx.ts",
-    "server"
+    "vite.*.ts",
+    "ssr"
   ]
 }
