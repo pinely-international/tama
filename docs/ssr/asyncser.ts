@@ -122,12 +122,13 @@ export class WebJSXSerializerAsync {
       if (key === "ns") continue
       if (key === "children") continue
       if (this.inflator?.jsxAttributes.has(key)) continue
+
       value = props[key]
-      if (value == null) continue
+      if (value == null || value === "" || value === false) continue
       if (key === "className") key = "class"
       if (key === "style") value = this.styleToString(value)
       value = this.observableToString(value)
-      if (value == null) continue
+      if (value == null || value === "" || value === false) continue
       attributes += " " + key + "=\"" + value + "\""
     }
     return attributes
