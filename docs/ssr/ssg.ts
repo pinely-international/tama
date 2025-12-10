@@ -30,7 +30,7 @@ for await (const route of routes) {
   const localScripts = [
     ...entries.index.imports,
     ...modules[route.filePath].imports ?? []
-  ].map(importPath => `<link type="module" rel="preload" as="script" crossorigin href="/${importPath}">`)
+  ].map(importPath => `<link rel="preload" as="script" crossorigin href="/${importPath}">`)
 
 
   window.location.pathname = route.pattern
