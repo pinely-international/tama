@@ -32,13 +32,19 @@ for await (const route of routes) {
     ...modules[route.filePath].imports ?? []
   ].map(importPath => `<link rel="preload" as="script" crossorigin href="/${importPath}">`)
 
+  const localStyles = await Promise.all(
+    entries.essential.assets.map(async cssPath => {
+      const { default: cssContent } = await import("../build/" + cssPath + "?raw")
+      return `<style>${cssContent}</style>`
+    })
+  )
 
   window.location.pathname = route.pattern
   window.dispatchEvent(new PopStateEvent('popstate'));
 
   const appString = await jsxSerializer.asyncComponentToString(component)
   const html = templateHTML
-    .replace("<!--head-->", document.head.innerHTML + localScripts.join("\n"))
+    .replace("<!--head-->", localScripts.join("\n") + "\n" + localStyles.join("\n"))
     .replace("<!--element-->", appString)
 
   await Bun.write(Bun.file(path.resolve(import.meta.dirname, "../build/", (route.pattern.slice(1) || "index") + ".html")), html)

@@ -14,19 +14,24 @@ function generateBundleMap(): Plugin {
         if (output.type === "chunk") {
           const chunkMeta = {
             fileName: output.fileName,
-            imports: [...new Set([...output.imports, ...output.dynamicImports])],
+            imports: output.imports,
+            dynamicImports: output.dynamicImports,
+            assets: [...output.viteMetadata.importedCss]
           }
           if (output.isEntry === false) {
-            source.modules[output.facadeModuleId?.replace(import.meta.dirname, "") ?? "other"] = chunkMeta
+            const moduleId = output.facadeModuleId?.replace(import.meta.dirname, "") ?? "other"
+            source.modules[moduleId] = chunkMeta
           } else {
             source.entries[output.name] = chunkMeta
           }
         }
 
-        if (output.type === "asset") {
-          if (output.originalFileNames.length > 0) {
-            source.assets[output.fileName] = output.originalFileNames
+        if (output.type === "asset" && !output.fileName.endsWith(".map")) {
+          const chunkMeta = {
+            fileName: output.fileName,
+            imports: output.names,
           }
+          source.assets[output.fileName] = chunkMeta
         }
       }
       this.emitFile({
