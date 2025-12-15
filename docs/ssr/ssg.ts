@@ -1,6 +1,8 @@
 import * as path from "path"
+
 import { injectDOMPolyfill } from "./dom"
-import { WebJSXSerializerAsync } from "./asyncser"
+
+import WebJSXSerializerAsync from "../../src/jsx/JSXSerializerAsync"
 
 if (globalThis.URLPattern == null) {
   await import("urlpattern-polyfill")
@@ -41,7 +43,7 @@ for await (const route of routes) {
   )
 
   window.location.pathname = route.pattern
-  window.dispatchEvent(new PopStateEvent('popstate'));
+  window.dispatchEvent(new PopStateEvent("popstate"))
 
   const appString = await jsxSerializer.asyncComponentToString(component)
   let html = templateHTML
