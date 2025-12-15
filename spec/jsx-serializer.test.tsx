@@ -1,7 +1,3 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from "../src/jsx/jsx-runtime"
-
 import "./dom"
 
 import { State } from "@denshya/reactive"
@@ -9,7 +5,8 @@ import { beforeAll, describe, expect, it } from "bun:test"
 
 import { injectDOMPolyfill } from "./dom"
 
-import { WebInflator, WebJSXSerializer } from "../build"
+import WebJSXSerializer from "../src/jsx/JSXSerializer"
+import WebInflator from "@/Inflator/web/WebInflator"
 
 
 describe("WebJSXSerializer", () => {
@@ -112,7 +109,7 @@ describe("WebJSXSerializer", () => {
     const element = <div data-nosnippet />
     expect(element).toEqual({ type: "div", props: { "data-nosnippet": true } })
     expect(element.props).toEqual({ "data-nosnippet": true })
-    
+
     const out = serializer.toString(element)
     expect(out).toBe("")
   })
