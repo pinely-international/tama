@@ -5,12 +5,12 @@ import { Subscriptable } from "@/Observable"
  * https://stackoverflow.com/questions/38304401/javascript-check-if-dictionary/71975382#71975382
  */
 export function isRecord(object: unknown): object is Record<keyof never, unknown> {
-  return object instanceof Object && object.constructor === Object
+  return object != null && object.constructor === Object
 }
 
 export function isObservableGetter<T>(value: unknown): value is Partial<Accessor<T> & Subscriptable<T>> {
   // @ts-expect-error ok to check this way.
-  if (value instanceof Object && value.subscribe instanceof Function) {
+  if (value != null && value.subscribe instanceof Function) {
     return true
   }
 
@@ -22,15 +22,8 @@ export function isIterable<T>(value: unknown): value is Iterable<T> {
   return value instanceof Object && value[Symbol.iterator]
 }
 
-export function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
-  // @ts-expect-error ok to check this way.
-  return value instanceof Object && value[Symbol.asyncIterator]
-}
-
 export function isJSX(value: unknown): value is JSX.Element {
-  if (isRecord(value) && value.type != null) return true
-
-  return false
+  return value != null && !Array.isArray(value) && value.type != null
 }
 
 export function isPrimitive(value: unknown) {
@@ -40,4 +33,13 @@ export function isPrimitive(value: unknown) {
 
     default: return true
   }
+}
+
+
+
+export function isPromiseLike(value: unknown) {
+  return value != null && typeof value.then === "function"
+}
+export function isAsyncIterable(value: unknown) {
+  return value != null && typeof value[Symbol.asyncIterator] === "function"
 }
