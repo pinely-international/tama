@@ -39,7 +39,7 @@ export default defineConfig({
       preserveEntrySignatures: "exports-only"
     },
 
-    minify: false
+    minify: true
   },
   esbuild: {
     keepNames: false,
