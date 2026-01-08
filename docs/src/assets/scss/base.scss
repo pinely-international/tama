@@ -37,34 +37,11 @@ b {
 	z-index: -1;
 }
 
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-		transform: translateY(max(calc(-0.5em - 2%), -2em));
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
 main {
 	@include WidthLimit;
 
 	&>section {
 		@include WidthLimit;
-	}
-}
-
-header>*,
-main>* {
-	animation: 500ms ease forwards fadeIn;
-	transition-behavior: allow-discrete;
-
-	@media (prefers-reduced-motion: reduce) {
-		animation: unset;
-		transition-behavior: unset;
 	}
 }
 
