@@ -46,6 +46,9 @@
   "references": [
     {
       "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./src/jsx/tsconfig.json"
     }
   ]
 }

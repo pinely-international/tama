@@ -84,8 +84,8 @@ declare global {
 
     type Children<T extends JSX.Element> = T | Iterable<T>
 
-    type HTMLElementEvents = {
-      [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
+    type HTMLElementEvents<T = unknown> = {
+      [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K] & { readonly currentTarget: T }) => void
     }
 
     interface IntrinsicAttributes {
@@ -122,9 +122,9 @@ declare global {
       mounted?: AccessorGet<any> | Observable<any>
     }
 
-    interface CustomAttributes {
+    interface CustomAttributes<T = unknown> {
       ns?: LiteralUnion<string, "http://www.w3.org/1999/xhtml" | "http://www.w3.org/2000/svg" | "http://www.w3.org/1998/Math/MathML">
-      on?: HTMLElementEvents | readonly HTMLElementEvents[]
+      on?: HTMLElementEvents<T> | readonly HTMLElementEvents<T>[]
       style?: Attribute<Record<string, Attribute<string | CSSStyleValue>> | { [K in keyof CSSStyleDeclaration]?: Attribute<CSSStyleDeclaration[K] | CSSStyleValue | null | undefined> } | string>
     }
 
@@ -133,7 +133,7 @@ declare global {
 
     type ElementAttributes<T> =
       & Partial<AttributesOf<AugmentedAria<T>>>
-      & CustomAttributes
+      & CustomAttributes<T>
       & IntrinsicAttributes
       & {
         /**
