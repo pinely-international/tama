@@ -8,6 +8,7 @@ It means you can return or put DOM elements directly into JSX, or **optionally**
 
 You get generally more control over Lifecycle and such since the components only invoked once,
 so it doesn't require deep thinking about the process, it's rather trivial, truelly declarative and explicit.
+In practice, this means easier debugging, but may require a few extra LoCs.
 
 Almost every part of the library can be replaced with your own, if you don't like how States or Lifecycles are defined, you can rearrange it in your own way.
 It's based on the principle that I came up with: a library should define borders where it takes control and where a developer is engaged.
