@@ -33,6 +33,34 @@ export namespace ProtonRef {
       return
     }
   }
+
+  /**
+   * Require `ref` value to be non-nullable.
+   *
+   * @throws `RefError` if value is nullable (`null` or `undefined`).
+   */
+  export function assert<T>(ref: ProtonRef<T>): asserts ref is ProtonRef<T & {}> {
+    if (ref.current == null) throw new ProtonRefError("Required Ref was not satisfied", ref)
+  }
+
+  /** Takes all refs and outputs one. */
+  export function rebase<T>(refs: Iterable<ProtonRef<T>>): ProtonRef<T> { }
+
+  export function from<T>(other: ProtonRef<T>): ProtonRef<T>
+  export function from<T>(other: ProtonRef<T> | T): ProtonRef<T>
+  export function from<T>(other: T): ProtonRef<T>
+  export function from(arg: unknown): any {
+    if (arg instanceof ProtonRef) return new ProtonRef(arg.current)
+
+    return new ProtonRef(arg)
+  }
+}
+
+class ProtonRefError extends TypeError {
+  constructor(message: string, ref: ProtonRef<any>) {
+    super(message)
+    console.error(ref)
+  }
 }
 
 export declare const ProtonRefOverload: {
