@@ -1,3 +1,5 @@
+import { ProtonRef } from "./Proton/ProtonRef"
+
 type EventListenerMap = Record<string, EventListener>;
 type BoundHandler = (ev: Event) => void;
 
@@ -11,10 +13,10 @@ export class EventDelegator {
   private eventDelegates = new WeakMap<Node, Set<string>>()
   private delegationHandlers = new WeakMap<Node, Map<string, BoundHandler>>()
 
-  root: Node | null = null
+  private root: ProtonRef<Node | null>
 
-  constructor(parent: Node | null = null) {
-    this.root = parent
+  constructor(parent: ProtonRef<Node | null> | (Node | null) = null) {
+    this.root = ProtonRef.from(parent)
   }
 
   /**
@@ -22,10 +24,11 @@ export class EventDelegator {
    * listeners are registered for delegation; otherwise a no-op unsubscribe is returned.
    * Returns an unsubscribe function that removes this registration.
    */
-  public delegate(listeners: EventListenerMap, element: Element): () => void {
+  public delegate(listeners: EventListenerMap, element: Element) {
     if (!this.root) {
       // No delegation parent configured — nothing to do. Return no-op unsubscribe.
-      return () => { }
+      // return () => { }
+      return
     }
 
     const parent = this.root
@@ -73,53 +76,53 @@ export class EventDelegator {
       parent.addEventListener(type, bound)
     }
 
-    // Return unsubscribe for this registration only
-    return () => {
-      const set = this.eventDelegations.get(parent)
-      if (!set) return
-      set.delete(registration)
+    // // Return unsubscribe for this registration only
+    // return () => {
+    //   const set = this.eventDelegations.get(parent)
+    //   if (!set) return
+    //   set.delete(registration)
 
-      if (set.size === 0) {
-        // No more registrations: remove all handlers and clear maps
-        const hm = this.delegationHandlers.get(parent)
-        if (hm) {
-          for (const [type, fn] of hm) {
-            parent.removeEventListener(type, fn)
-          }
-          hm.clear()
-        }
-        this.eventDelegations.delete(parent)
-        this.eventDelegates.delete(parent)
-        this.delegationHandlers.delete(parent)
-      } else {
-        // Some registrations still present: prune event types that are no longer used
-        const remainingTypes = new Set<string>()
-        for (const r of set) {
-          for (const k of Object.keys(r.listeners)) remainingTypes.add(k)
-        }
+    //   if (set.size === 0) {
+    //     // No more registrations: remove all handlers and clear maps
+    //     const hm = this.delegationHandlers.get(parent)
+    //     if (hm) {
+    //       for (const [type, fn] of hm) {
+    //         parent.removeEventListener(type, fn)
+    //       }
+    //       hm.clear()
+    //     }
+    //     this.eventDelegations.delete(parent)
+    //     this.eventDelegates.delete(parent)
+    //     this.delegationHandlers.delete(parent)
+    //   } else {
+    //     // Some registrations still present: prune event types that are no longer used
+    //     const remainingTypes = new Set<string>()
+    //     for (const r of set) {
+    //       for (const k of Object.keys(r.listeners)) remainingTypes.add(k)
+    //     }
 
-        const delegatedSet = this.eventDelegates.get(parent)
-        const mapHandlers = this.delegationHandlers.get(parent)
-        if (delegatedSet && mapHandlers) {
-          for (const eventType of Array.from(delegatedSet)) {
-            if (!remainingTypes.has(eventType)) {
-              const handlerFn = mapHandlers.get(eventType)
-              if (handlerFn) {
-                parent.removeEventListener(eventType, handlerFn)
-                mapHandlers.delete(eventType)
-              }
-              delegatedSet.delete(eventType)
-            }
-          }
-        }
-      }
-    }
+    //     const delegatedSet = this.eventDelegates.get(parent)
+    //     const mapHandlers = this.delegationHandlers.get(parent)
+    //     if (delegatedSet && mapHandlers) {
+    //       for (const eventType of Array.from(delegatedSet)) {
+    //         if (!remainingTypes.has(eventType)) {
+    //           const handlerFn = mapHandlers.get(eventType)
+    //           if (handlerFn) {
+    //             parent.removeEventListener(eventType, handlerFn)
+    //             mapHandlers.delete(eventType)
+    //           }
+    //           delegatedSet.delete(eventType)
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 
   /**
    * Remove all delegation handlers from the current eventDelegationParent.
    */
-  public clear(): void {
+  private clear(): void {
     if (!this.root) return
     const parent = this.root
 
