@@ -1,6 +1,5 @@
 import { State } from "@denshya/reactive"
 
-import { Subscriptable } from "@/Observable"
 
 type ConnectionSet = Set<(connected: boolean) => void> & { connected?: boolean }
 
@@ -16,7 +15,6 @@ class ElementConnection {
     window.requestAnimationFrame(() => {
       for (const entry of entries) {
         const subs = ElementConnection.subscriptions.get(entry.target)!
-
         if (!subs) continue
 
         const connected = entry.target.isConnected
@@ -47,19 +45,19 @@ class ElementConnection {
     subs.add(x => this.state.set(x))
   }
 
-  when(event: "connected" | "disconnected"): Subscriptable<void> {
-    return { subscribe: next => this.state.subscribe(connected => connected === (event === "connected") && next()) }
-  }
+  // when(event: "connected" | "disconnected"): Subscriptable<void> {
+  //   return { subscribe: next => this.state.subscribe(connected => connected === (event === "connected") && next()) }
+  // }
 
-  scope(connectedCallback: (disconnectedSignal: AbortSignal) => void) {
-    let abortController = new AbortController
-    return this.state.subscribe(connected => {
-      if (connected) {
-        abortController = new AbortController
-        connectedCallback(abortController.signal)
-      } else {
-        abortController.abort()
-      }
-    })
-  }
+  // scope(connectedCallback: (disconnectedSignal: AbortSignal) => void) {
+  //   let abortController = new AbortController
+  //   return this.state.subscribe(connected => {
+  //     if (connected) {
+  //       abortController = new AbortController
+  //       connectedCallback(abortController.signal)
+  //     } else {
+  //       abortController.abort()
+  //     }
+  //   })
+  // }
 }
