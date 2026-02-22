@@ -1,6 +1,19 @@
-<h1 align="center">🐈‍⬛ Tama - Reactive UI Rendering</h1>
-<h3 align="center">😱 5kb gzip, DOM-first, Rootless, Class-based internals, No build, Fully customizable</h3>
-<h4 align="center">Full TypeScript Support, Treeshakable, Based on the <a href="https://dev.to/framemuse/no-framework-principle-arised-2n39">No Framework Principle</a></h4>
+# Open UI Rendering
+
+This is an library for rendering your UI with familiar features such as JSX, Function Components and similar feeling to React,
+while being widely open to extension and modification. It has very tiny initial build, but it may get bigger with more features you use.
+
+The purpose of the library is to give a way to introduce something similar to React, but based on Granular Reactivity and with native DOM support.
+It means you can return or put DOM elements directly into JSX, or **optionally** run components independetly without creating a root.
+
+You get generally more control over Lifecycle and such since the components only invoked once,
+so it doesn't require deep thinking about the process, it's rather trivial, truelly declarative and explicit.
+In practice, this means easier debugging, but may require a few extra LoCs.
+
+Almost every part of the library can be replaced with your own, if you don't like how States or Lifecycles are defined, you can rearrange it in your own way.
+It's based on the principle that I came up with: a library should define borders where it takes control and where a developer is engaged.
+
+<h4 align="center">TypeScript Support, Treeshakable, Based on the <a href="https://dev.to/framemuse/no-framework-principle-arised-2n39">No Framework Principle</a></h4>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@denshya/proton">
@@ -19,11 +32,13 @@ bun i @denshya/proton
 
 ## What is "Rootless"?
 
-It means you don't have to hijack an element to render the App, it cancels the Root Component and Host element completely.
+It means you don't have to create a "root" like in React, or simply put, hijack an element to render the App.
+But we usually still do it because it's simpler, though in this library you don't need to create a special root instance, you just inflate a component and add it to the document.
 
 That is a novel wording, another good phrase is "Reversed Element Factory Ownership."
-These all stand for a component (or element) factory function producing/providing ownership to owned elements rather than being a side-effect function,
-which only modifies a given element.
+These ones stand for an element factory function providing ownership to internal elements rather than modifying external.
+
+### We go
 
 From querying the element and modifying it:
 
@@ -49,10 +64,12 @@ function createWidget() { // returns an element instead.
 }
 ```
 
-This forces you to find the exact place where the new element should go, which may be tricky.
-This is what Tama solves with JSX while still letting you choose the place to attach or reattach a Tama Component.
+This requires finding a place where the new element should go, which gives more control, but needs "more effort".
+This library solves it with JSX, but it still lets you choose the place to attach a Tama Component.
 
-This allows you to do this: (Somewhat of an alternative to Web Components)
+## This allows
+
+To do this:
 
 ```jsx
 function Widget() {
