@@ -1,7 +1,6 @@
 import { Messager } from "@denshya/reactive"
 
 import Inflator from "@/Inflator/Inflator"
-import { FSM } from "@/Lifecycle.types"
 import TreeContextAPI from "@/TreeContextAPI"
 
 import ViewAPI from "../ProtonViewAPI"
@@ -16,8 +15,6 @@ export class ProtonComponent {
     this.view = new ViewAPI
     this.tree = new TreeAPI(parent?.tree)
   }
-
-  hooks?: Iterable<FSM>
 }
 
 

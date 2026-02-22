@@ -1,7 +1,11 @@
-
-export interface FSM {
+export interface FMS {
   onEnter?(): void
   onExit?(): void
+}
+
+export interface MountFSM {
+  onMount?(): void
+  onUnmount?(): void
 }
 
 // export interface Suspensible {
@@ -16,3 +20,6 @@ export interface EffectCleanable {
 export interface EffectSignal {
   (signal: AbortSignal): void
 }
+
+
+export type Sink<T> = (value: T) => void
