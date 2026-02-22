@@ -24,7 +24,6 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "downlevelIteration": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -34,6 +33,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "build",
+    "rootDir": "./",
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,

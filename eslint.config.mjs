@@ -49,7 +49,7 @@ export default [...compat.extends(
     },
   },
 
-  files: ["src/**/*.ts"],
+  files: ["src/**/*.ts", "spec/**/*.ts"],
 
   rules: {
     "default-case": "error",
@@ -89,6 +89,19 @@ export default [...compat.extends(
     quotes: ["error", "double", {
       allowTemplateLiterals: true,
     }],
+
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
 
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-empty-interface": "off",
