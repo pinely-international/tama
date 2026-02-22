@@ -27,8 +27,9 @@ export class MountRoutine {
 
       // EffectCleanable
       this.fsm.onMount = () => {
+        const cleanup = (arg as EffectCleanable)()
         this.fsm.onUnmount = () => {
-          (arg as EffectCleanable)()
+          cleanup()
           this.fsm.onUnmount = undefined
         }
       }
