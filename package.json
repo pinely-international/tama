@@ -37,12 +37,12 @@
     "eslint": "9.38.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "happy-dom": "^20.0.11",
     "tsup": "^8.3.5",
     "typescript": "^5.9.2",
     "vite": "^7.1.11",
     "vite-bundle-visualizer": "^1.2.1",
-    "vite-plugin-externalize-deps": "^0.9.0",
-    "happy-dom": "^20.0.11"
+    "vite-plugin-externalize-deps": "^0.9.0"
   },
   "repository": {
     "type": "git",
