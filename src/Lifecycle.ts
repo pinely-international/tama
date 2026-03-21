@@ -1,24 +1,23 @@
-import { EffectCleanable, EffectSignal, MountFSM } from "./MountRoutine.types"
+import { EffectCleanable, EffectSignal, FSM } from "./Lifecycle.types"
 
-export class MountRoutine {
-  private readonly fsm: MountFSM = {}
-  // private adopted?: Set<MountFSM>
+export class Lifecycle {
+  private readonly fsm: FSM = {}
   private abortController: AbortController | null = null
 
-  constructor(fsm: MountFSM)
+  constructor(fsm: FSM)
   constructor(effectCleanable: EffectCleanable)
   constructor(effectSignal: EffectSignal)
-  constructor(arg: MountFSM | EffectCleanable | EffectSignal) {
+  constructor(arg: FSM | EffectCleanable | EffectSignal) {
     if (typeof arg === "function") {
       // EffectSignal
       if (arg.length === 1) {
-        this.fsm.onMount = () => {
+        this.fsm.onEnter = () => {
           this.abortController?.abort()
           this.abortController = new AbortController
 
           arg(this.abortController.signal) as EffectSignal
         }
-        this.fsm.onUnmount = () => {
+        this.fsm.onExit = () => {
           this.abortController?.abort()
           this.abortController = null
         }
@@ -26,11 +25,11 @@ export class MountRoutine {
       }
 
       // EffectCleanable
-      this.fsm.onMount = () => {
+      this.fsm.onEnter = () => {
         const cleanup = (arg as EffectCleanable)()
-        this.fsm.onUnmount = () => {
+        this.fsm.onExit = () => {
           cleanup()
-          this.fsm.onUnmount = undefined
+          this.fsm.onExit = undefined
         }
       }
 
@@ -42,18 +41,9 @@ export class MountRoutine {
   }
 
   enter() {
-    this.fsm.onMount?.()
-    // this.adopted?.forEach(x => x.onMount?.())
+    this.fsm.onEnter?.()
   }
   exit() {
-    this.fsm.onUnmount?.()
-    // this.adopted?.forEach(x => x.onUnmount?.())
+    this.fsm.onExit?.()
   }
-
-
-
-  // adopt(other: MountRoutine) {
-  //   this.adopted ??= new Set
-  //   this.adopted.add(other.fsm)
-  // }
 }

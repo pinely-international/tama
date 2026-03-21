@@ -1,4 +1,4 @@
-export const nonGuard = (value: unknown) => value
+export const truthyNonNull = (value: unknown) => typeof value === "boolean" ? value : value != null
 
 
 export function iterableOf(object: object): IteratorObject<any> {

@@ -1,4 +1,4 @@
-import { nonGuard, onDemandRef } from "./Inflator/web/helpers"
+import { onDemandRef, truthyNonNull } from "./Inflator/web/helpers"
 
 /** @internal */
 export class MountGuard {
@@ -22,14 +22,12 @@ export class MountGuard {
     if (property == null) return
     if (typeof property !== "object") return
 
-    if (key === "mounted" && property.valid == null) property.valid = nonGuard
+    if (key === "mounted" && property.valid == null) property.valid = truthyNonNull
 
     if (typeof property.valid !== "function") return
     if (!property.subscribe && !property.get) return
 
     property.subscribe((value: any) => {
-      value = property.valueOf() ?? value
-
       const valid = property.valid(value)
       this.guards.current.set(key, valid)
 

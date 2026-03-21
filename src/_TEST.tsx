@@ -1,7 +1,7 @@
 import { State } from "@denshya/reactive";
 import { Tama } from ".";
 import { MountObserver } from "./MountObserver";
-import { MountRoutine } from "./MountRoutine";
+import { Lifecycle } from "./Lifecycle";
 import { ProtonComponent } from "./Proton/ProtonComponent";
 import { ProtonRef as Ref } from "./Proton/ProtonRef";
 import { EventDelegator } from "./EventDelegator";
@@ -28,7 +28,7 @@ async function Navbar(this: ProtonComponent & { disposal: DisposableStack & { si
   const loading = new State(false)
 
   const navRef = new Ref<HTMLElement | null>(null);
-  const navLifecycle = new MountRoutine(() => {
+  const navLifecycle = new Lifecycle(() => {
     Ref.assert(navRef)
     snapToTop(navRef.current)
 
@@ -43,7 +43,7 @@ async function Navbar(this: ProtonComponent & { disposal: DisposableStack & { si
   // new MountObserver(navLifecycle).observe(new Text)
 
   this.view.subscribe(node => { })
-  this.view.life = new MountRoutine(() => { })
+  this.view.life = new Lifecycle(() => { })
 
   State
     .collect([loading, price])
@@ -80,7 +80,7 @@ async function Navbar(this: ProtonComponent & { disposal: DisposableStack & { si
 
 function Navbar() {
   const navRef = new Ref<HTMLElement | null>(null);
-  const navMountRoutine = new MountRoutine(() => {
+  const navMountRoutine = new Lifecycle(() => {
     Ref.assert(navRef)
     snapToTop(navRef.current)
 
@@ -117,9 +117,6 @@ function UserView(props: { name: string }) {
     <div>{props.name}</div>
   ))
 
-  return (
-    <div>{props.name}</div>
-  )
 }
 
 function UserContainer() {
