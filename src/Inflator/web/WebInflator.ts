@@ -4,6 +4,7 @@ import { Primitive } from "type-fest"
 
 import { AccessorGet } from "@/Accessor"
 import { AsyncFunction, AsyncGeneratorFunction } from "@/BuiltinObjects"
+import { Disposal } from "@/Disposal"
 import { InsertionGroup } from "@/InsertionGroup"
 import { CustomAttributesMap, JSXAttributeSetup } from "@/jsx/JSXCustomizationAPI"
 import { MountGuard } from "@/MountGuard"
@@ -212,6 +213,10 @@ class WebInflator extends Inflator {
     return inflated
   }
 
+  static final = new FinalizationRegistry<Disposal>(disposal => {
+    disposal.controller.current.abort()
+  })
+
   public inflateComponent(factory: Function, props?: any) {
     if (this.flags.skipAsync) {
       if (factory instanceof AsyncFunction.constructor) return null
@@ -224,6 +229,9 @@ class WebInflator extends Inflator {
 
     const component = new ProtonComponent(this, this.component)
     const componentGroup = new InsertionGroup
+
+    WebInflator.final.register(componentGroup, component.disposal)
+
 
     try {
       component.view.initWith(factory.call(component, props))
