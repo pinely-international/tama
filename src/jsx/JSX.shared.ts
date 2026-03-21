@@ -27,7 +27,7 @@ type AriaBooleanKeys =
 type AriaUnprefixed<K extends keyof ARIAMixin> = K extends "role" ? "role" : StringSlice<Lowercase<K>, 4>
 
 type AugmentedAria<T> = Omit<T, keyof ARIAMixin> & {
-  aria?: { [K in keyof ARIAMixin]: JSX.Attribute<K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K]> }
+  aria?: { [K in keyof ARIAMixin]?: JSX.Attribute<K extends AriaBooleanKeys ? (BooleanLike | OtherString | null) : ARIAMixin[K]> }
 }
 
 
