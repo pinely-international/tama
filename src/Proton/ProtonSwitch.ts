@@ -3,7 +3,7 @@ import { Notifier } from "@denshya/reactive"
 import { AccessorSet } from "@/Accessor"
 import { InflatorAdapter } from "@/Inflator/InflatorAdapter"
 
-import { Unsubscribe } from "../Observable"
+import { Subscription } from "../Observable"
 
 /**
  * It can be used both for Component View swapping and as a part of any JSX element.
@@ -60,9 +60,9 @@ export class ProtonSwitch<T extends Record<keyof never | "default", unknown> = a
     this.notifier.dispatch()
   }
 
-  sets<U>(other: AccessorSet<T[keyof T] | U>): Unsubscribe
-  sets(callback: (value: T[keyof T]) => void): Unsubscribe
-  sets<U>(arg: AccessorSet<T[keyof T] | U> | ((value: T[keyof T]) => void)): Unsubscribe {
+  sets<U>(other: AccessorSet<T[keyof T] | U>): Subscription
+  sets(callback: (value: T[keyof T]) => void): Subscription
+  sets<U>(arg: AccessorSet<T[keyof T] | U> | ((value: T[keyof T]) => void)): Subscription {
     return this.notifier.subscribe(() => {
       if (arg instanceof Function) {
         arg(this.current.value)

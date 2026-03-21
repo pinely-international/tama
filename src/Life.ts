@@ -1,4 +1,4 @@
-import { Subscriptable, Unsubscribe } from "@/Observable"
+import { Subscriptable, Subscription } from "@/Observable"
 
 export class Life {
   public alive = false
@@ -66,7 +66,7 @@ export class Life {
       : this.onExitSubscribers
 
     return {
-      subscribe: (callback: () => void): Unsubscribe => {
+      subscribe: (callback: () => void): Subscription => {
         subscribers.add(callback)
         return {
           unsubscribe: () => {
