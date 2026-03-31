@@ -125,7 +125,7 @@ It's 100% compatible with React JSX, but it has a flavor. *If you have interest 
 
 #### Observable in JSX
 
-[Playground](https://stackblitz.com/edit/vitejs-vite-uepaaxp1?file=src%2FApp.tsx)
+[Playground](https://stackblitz.com/edit/wicg-observable?file=src%2FApp.tsx)
 
 ```tsx
 function ColorApp() {
