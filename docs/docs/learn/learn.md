@@ -140,6 +140,7 @@ Tama supports React-style JSX while still allowing custom attributes and direct 
 
 [Playground](https://stackblitz.com/edit/tama-elements-range?file=src%2FApp.tsx)
 
+
 ```tsx
 function ColorApp() {
   const pointerMoveX$ = window.when("pointermove").map(event => event.x)
