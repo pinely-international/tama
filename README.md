@@ -96,7 +96,7 @@ function Widget() {
 
 ## Observables Allowed in JSX
 
-The turning point is that JSX element attributes and children can consume [WICG Observables](https://github.com/WICG/observable),
+The turning point is that JSX element attributes and children can consume observable-like values with a `subscribe(...)` method,
 meaning practically any library can be used as a State Manager.
 
 ```jsx
@@ -157,9 +157,9 @@ It is very similar to React, it tries to simplify development as we know it in R
 |Feature|Description|
 |-------|-----------|
 |Extended Customization|Custom Attributes, Children Adapters, Element Transformation, Class extension|
-|Transition queue|`this.view.transitions` exposes an awaitable FSM so you can stage view swaps and integrate with `document.startViewTransition`|
+|View transitions|Browser View Transitions can be integrated around your own state or view updates; built-in transition queue work is still settling in this checkout|
 |No built-in State Manager|Any State Manager that supports a Signal-like interface **will just** work in Tama, while there is no enforcement of one|
-|Signals/Observables Support|Native support for [WICG Observables](https://github.com/WICG/observable) and Signal-like structures|
+|Signals/Observables Support|Support for observable-like values and signal-style state objects that expose subscribe/get semantics|
 |No root elements|Any component can be **inflated** and attached anywhere|
 |Components can be Async 😱 (Client side)|Await your values and delay/schedule the views with fallbacks and an initial view.|
 |Top-level allowed|You can do anything in any scope, Tama doesn't put any constraints on where or from what something is initialized - enjoy!|
@@ -189,6 +189,8 @@ Tama isn't perfect, it's being developed.
 ## Getting Started
 
 ```tsx
+import { WebInflator } from "@denshya/proton"
+
 function App() {
   return <div>Hello World!</div>
 }
