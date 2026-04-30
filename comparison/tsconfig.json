@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "paths": {
+      "@denshya/reactive": [
+        "../../flow/build/index.d.ts"
+      ],
+      "@denshya/reactive/*": [
+        "../../flow/build/*"
+      ],
+      "@denshya/tama": [
+        "../src/index.ts"
+      ],
+      "@denshya/tama/*": [
+        "../*"
+      ]
+    }
+  },
+  "include": [
+    "*.tsx",
+    "globals.d.ts"
+  ]
+}
