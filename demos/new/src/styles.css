@@ -1,0 +1,85 @@
+:root {
+  font-family: "Iosevka Aile", "Segoe UI", sans-serif;
+  color: #111827;
+  background:
+    radial-gradient(circle at top, rgba(249, 115, 22, 0.22), transparent 36%),
+    linear-gradient(180deg, #fffaf5 0%, #f1f5f9 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+}
+
+.app-card {
+  width: min(100%, 34rem);
+  padding: 2rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+.app-card__eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c2410c;
+}
+
+.app-card h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.app-card__copy {
+  margin: 0.75rem 0 1.5rem;
+  color: #475569;
+}
+
+.app-field {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.app-field span {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.app-field input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.app-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.9rem 1.2rem;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: white;
+  cursor: pointer;
+}
