@@ -1,7 +1,7 @@
 import "./ProductPage.scss"
 
 import { State } from "@denshya/reactive"
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 import Icon from "@/app/ui/Icon/Icon"
 import LoaderCover from "@/app/ui/Loader/LoaderCover"
@@ -23,7 +23,7 @@ const requireRouteParam = (id?: string | null) => {
   return id
 }
 
-async function* ProductPage(this: Proton.Component) {
+async function* ProductPage(this: Tama.Component) {
   yield <LoaderCover />
   await new Promise(r => setTimeout(r, 1_000))
 

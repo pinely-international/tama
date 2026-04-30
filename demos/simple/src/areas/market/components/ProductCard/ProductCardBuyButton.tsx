@@ -1,7 +1,7 @@
 import "./ProductCardBuyButton.scss"
 
 import { State } from "@denshya/reactive"
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 import Icon from "@/app/ui/Icon/Icon"
 
@@ -11,7 +11,7 @@ interface ProductCardBuyProps {
   onClick?(): void
 }
 
-function ProductCardBuy(this: Proton.Component, props: ProductCardBuyProps) {
+function ProductCardBuy(this: Tama.Component, props: ProductCardBuyProps) {
   props.amount.subscribe(amount => {
     if (amount === 0) this.view.set(this.view.default)
     if (amount > 0) this.view.set(LAYOUT_AMOUNT)

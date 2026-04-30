@@ -1,7 +1,7 @@
 import "./MiniProfile.scss"
 
 import { State } from "@denshya/reactive"
-import { Mount, Proton } from "@denshya/proton"
+import { Mount, Tama } from "@denshya/tama"
 
 import UserContext from "@/UserContext"
 
@@ -10,7 +10,7 @@ import ColoredLetter from "../ColoredLetter/ColoredLetter"
 
 interface MiniProfileProps { }
 
-function MiniProfile(this: Proton.Component, props: MiniProfileProps) {
+function MiniProfile(this: Tama.Component, props: MiniProfileProps) {
   const userContext = this.tree.context.require(UserContext)
 
   const user = userContext.user

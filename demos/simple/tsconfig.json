@@ -4,10 +4,8 @@
     "useDefineForClassFields": false,
     "lib": [
       "DOM",
-      "DOM.Iterable",
       "ESNext"
     ],
-    "module": "ESNext",
     "skipLibCheck": true,
     // App
     "paths": {
@@ -22,7 +20,6 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "downlevelIteration": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
     "noEmit": true,
@@ -30,9 +27,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/proton/jsx/virtual",
+    "jsxImportSource": "@denshya/tama/jsx/virtual",
     /* Linting */
-    "strict": true,
     "noFallthroughCasesInSwitch": true
   },
   "include": [

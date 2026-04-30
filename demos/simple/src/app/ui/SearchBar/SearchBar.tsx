@@ -1,7 +1,7 @@
 import "./SearchBar.scss"
 
 import { State } from "@denshya/reactive"
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 import Icon from "../Icon/Icon"
 
@@ -10,7 +10,7 @@ interface SearchBarProps {
   value: State<string>
 }
 
-function SearchBar(this: Proton.Component, props: SearchBarProps) {
+function SearchBar(this: Tama.Component, props: SearchBarProps) {
   const value = State.from(props.value)
   const valueIsEmpty = value.is("")
 

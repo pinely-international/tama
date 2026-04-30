@@ -1,6 +1,6 @@
 import "./MarketFilters.scss"
 
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 import Icon from "@/app/ui/Icon/Icon"
 import MarketModel from "../../models/MarketModel"
@@ -10,7 +10,7 @@ import Button from "@/app/ui/Button/Button"
 
 interface MarketFiltersProps { }
 
-function MarketFilters(this: Proton.Component, props: MarketFiltersProps) {
+function MarketFilters(this: Tama.Component, props: MarketFiltersProps) {
   const market = this.tree.context.require(MarketModel)
 
   const expanded = new State(false)

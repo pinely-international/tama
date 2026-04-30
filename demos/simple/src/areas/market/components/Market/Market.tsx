@@ -1,6 +1,6 @@
 import "./Market.scss"
 
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 import Button from "@/app/ui/Button/Button"
 import Icon from "@/app/ui/Icon/Icon"
@@ -14,7 +14,7 @@ import ProductCard from "../ProductCard/ProductCard"
 
 
 
-function Market(this: Proton.Component) {
+function Market(this: Tama.Component) {
   const market = this.tree.context.provide(new MarketModel)
 
   const points = (

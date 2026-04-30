@@ -1,6 +1,6 @@
 import "./Cart.scss"
 
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 import Price from "@/utils/price"
 
 import MarketModel from "../../models/MarketModel"
@@ -13,7 +13,7 @@ import Icon from "@/app/ui/Icon/Icon"
 
 interface CartProps { }
 
-function Cart(this: Proton.Component, props: CartProps) {
+function Cart(this: Tama.Component, props: CartProps) {
   const market = this.tree.context.require(MarketModel)
 
   const size = market.cart.to(cart => cart.values().reduce((result, next) => result + next, 0))

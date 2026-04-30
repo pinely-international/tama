@@ -1,6 +1,6 @@
 import "./EditableAvatar.scss"
 
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 import Icon from "../Icon/Icon"
 import { State } from "@denshya/reactive"
@@ -13,7 +13,7 @@ interface EditableAvatarProps {
   onChange?(file: File): void | Promise<unknown>
 }
 
-function EditableAvatar(this: Proton.Component, props: EditableAvatarProps) {
+function EditableAvatar(this: Tama.Component, props: EditableAvatarProps) {
   const image = new State(props.image)
   const pending = new State(false)
 
