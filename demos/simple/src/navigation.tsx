@@ -1,5 +1,5 @@
 import { State, StateOrPlain } from "@denshya/reactive"
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 
 
@@ -75,7 +75,7 @@ export class WebNavigation extends Navigation {
 const navigation = new WebNavigation
 
 
-export function NavRoute(this: Proton.Component, props: { path?: string; children: unknown }) {
+export function NavRoute(this: Tama.Component, props: { path?: string; children: unknown }) {
   let view: unknown
   let context: RouteContext | null = null
 

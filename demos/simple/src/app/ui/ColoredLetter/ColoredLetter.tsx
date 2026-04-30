@@ -2,7 +2,7 @@ import "./ColoredLetter.scss"
 
 import { State } from "@denshya/reactive"
 
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 
 interface ColoredLetterProps {
@@ -10,7 +10,7 @@ interface ColoredLetterProps {
   baseHSL?: State<[number, number, number]>
 }
 
-function ColoredLetter(this: Proton.Component, props: ColoredLetterProps) {
+function ColoredLetter(this: Tama.Component, props: ColoredLetterProps) {
   // const backgroundColor = Act.compute((letter, baseHSL) => {
   //   const [h, s, l] = baseHSL ?? [255, 50, 50]
 

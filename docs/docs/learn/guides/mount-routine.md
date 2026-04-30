@@ -1,124 +1,60 @@
-# Hooking to Lifecycle via `MountRoutine`
+# Lifecycle
 
-## Starting with `MountRoutine`
-
-By default the library doesn't include lifecycle to save bundle, but hooking to element lifecycle is trivial anyway.
-
-To do so, you need to import `MountRoutine`
+## Basic Usage (Universal)
 
 ```tsx
-import { MountRoutine } from "@denshya/tama"
-```
+import { Lifecycle } from "@denshya/proton"
 
-It will define logic/operations that happen on **mount** and **unmount**.
-In other words, when something is currently used or not.
-
-```tsx
-// Define logic e.g. when an element appears on screen.
-new MountRoutine(() => {
-  console.log("mounted!") // You can subscribe to something.
-  return () => console.log("unmounted!") // You should unsubscribe to make sure CPU doesn't waste time and avoid memory leaks.
+new Lifecycle(() => {
+  console.log("mounted")
+  return () => console.log("unmounted")
 })
 ```
 
-> [!NOTE]
-> It doesn't mean that it will never be used anymore once it's unmounted. The routine may happen repeatedly: e.g. user may change visibility of a section back and forth.
+## Signal-Based Cleanup
 
-`MountRoutine` should be hooked to `MountObserver`, so that it can track an element connection (mount) state.
+For DOM listeners, the signal overload is usually the most ergonomic.
 
 ```tsx
-import { MountRoutine, MountObserver } from "@denshya/tama"
+import { Lifecycle } from "@denshya/proton"
 
-// Define logic e.g. when an element appears on screen.
-const testMountRoutine = new MountRoutine(() => {
-  console.log("mounted!") // You can subscribe to something.
-  return () => console.log("unmounted!") // You should unsubscribe to make sure CPU doesn't waste time and avoid memory leaks.
+const pointerLifecycle = new Lifecycle(signal => {
+  window.addEventListener("pointerdown", event => {
+    console.log(event.clientX)
+  }, { signal })
 })
 ```
 
-But `MountObserver` should be given an element to observe - this can be done with `ref` attribute that calls back when an element is created (but it may not be mounted yet).
+## Attaching It To An Element
 
-To make a good use of the mounting routine, it's common to combine it with `Ref` object that captures element reference:
+Use `MountObserver.with(...)` together with `ref` when the side effect depends on a specific element.
 
-```tsx title="Example.tsx"
-import { Ref, MountRoutine, MountObserver } from "@denshya/tama"
+```tsx title="Navbar.tsx"
+import { Lifecycle, MountObserver, Ref } from "@denshya/proton"
 
 function Navbar() {
-  const navRef = new Ref<HTMLElement>
-  const navMountRoutine = new MountRoutine(() => {
+  const navRef = new Ref<HTMLElement | null>(null)
+  const navLifecycle = new Lifecycle(() => {
     Ref.assert(navRef)
-    snapToTop(navRef.current) // Imaginary side-effect function.
+    navRef.current.scrollIntoView({ block: "start" })
 
-    console.log("Nav mounted!")
-    return () => console.log("Nav unmounted!")
+    return () => console.log("navbar unmounted")
   })
 
   return (
-    <nav ref={[navRef, MountObserver.with(navMountRoutine)]}>Menu</nav>
+    <nav ref={[navRef, MountObserver.with(navLifecycle)]}>
+      Menu
+    </nav>
   )
 }
 ```
 
-In contrast to React, this is very much explicit hook, which is intentionally so - to make it as clear as possible.
+It should read as: "Ref mount observer with nav lifecycle". The lifecycle runs when the element is mounted, and the cleanup runs when it is unmounted.
 
-```tsx title="ReactExample.tsx"
-function Navbar() {
-  const navRef = useRef<HTMLElement>()
-  useEffect(() => {
-    if (navRef.current == null) return // <== Pitfall, you might be confused why code didn't run.
-    snapToTop(navRef.current)
+## Why It Is Explicit
 
-    console.log("Nav mounted!")
-    return () => console.log("Nav unmounted!")
-  }, [])
+In React, mount work often gets grouped under `useEffect(..., [])`.
+In Tama, mount-aware logic stays directly attached to the element that owns it.
+That keeps the scope of the side effect obvious.
 
-  return (
-    <nav ref={navRef}>Menu</nav>
-  )
-}
-```
-
-## Alternative Definitions
-
-`MountRoutine` has two more overloads to try to be a bit more helpful:
-
-### 1. Signal-based routine
-
-This is useful to define subscriptions to listeners since it's a headache to unsubscribe via "cleanup" callback.
-
-```tsx
-new MountRoutine(signal => {
-  window.addEventListener("pointerdown", event => {...}, { signal })
-  window.addEventListener("pointerdup", event => {...}, { signal })
-  window.addEventListener("pointermove", event => {...}, { signal })
-})
-```
-
-### 2. Object-based routine
-
-If you need only teardown logic to define, you can simply use `onUnmount`.
-
-```tsx
-new MountRoutine({
-  onUnmount: () => console.log("Unmounted")
-})
-```
-
-## Usage on DOM Elements
-
-If you have already defined `MountRoutine`, you can be safe about reusing it on plain DOM elements.
-To do that you'd need `MountObserver` to be used like that:
-
-```tsx title="DOMExample.tsx"
-const someElement = document.createElement("div")
-
-const someMountRoutine = new MountRoutine(signal => {
-  window.addEventListener("pointerdown", event => {...}, { signal })
-  window.addEventListener("pointerdup", event => {...}, { signal })
-  window.addEventListener("pointermove", event => {...}, { signal })
-})
-
-const mountObserver = new MountObserver
-mountObserver.routines.add(someMountRoutine)
-mountObserver.observe(someElement)
-```
+And the lifecycle API is flexible enough to support non-DOM side effects and signal-based cleanup without forcing a DOM element or a specific hook convention, making it easily reusable/transferrable in different contexts.

@@ -1,34 +1,36 @@
-# Error catching
+# Error Handling
 
-Just like React, Tama provides an interface to catch errors thrown in children components.
+Tama's philosophy around errors is to isolate failures and provide a channel for observing them.
 
-```tsx
-function Child() { throw new Error("Test") }
+## Low-Level Tree Error Channel
 
-function Parent(this: Tama.Component) {
-  this.catch(thrown => { /* Do something */ })
-
-  return <div><Child /></div>
-}
-```
-
-The parent can catch its own errors that happens after `catch` declaration.
-
-```tsx
-function Parent(this: Tama.Component) {
-  this.catch(thrown => { /* Do something */ })
-
-  throw new Error("parent error")
-}
-```
-
-Event handlers are also caught, though they don't break the component view if they error.
+If you need to observe errors thrown on the current component tree, subscribe through `this.tree.catch(...)`.
 
 ```tsx
 function Child(this: Tama.Component) {
-  // This will catch a event handler error.
-  this.catch(thrown => { /* Do something */ })
+  this.tree.catch(thrown => {
+    console.error("component tree error", thrown)
 
-  return <button on={{ click: () => { throw new Error("Test") } }} />
+    // Optionally set a fallback view via `this.view.set(...)`.
+  })
+
+  throw new Error("Child error")
+}
+
+function Parent() {
+  this.tree.catch(thrown => {
+    // Track errors at the parent level for monitoring or analytics.
+  })
+
+  return (
+    <div>
+      <Child />
+      <span>Sibling content survives child component failure</span>
+    </div>
+  )
 }
 ```
+
+---
+
+Continue with [Async Views](./async-views.md) and [Changing Views](./changing-views.md) for the currently documented fallback pattern.

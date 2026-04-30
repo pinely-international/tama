@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "useDefineForClassFields": false,
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
+    "skipLibCheck": true,
+    "paths": {
+      "@denshya/reactive": [
+        "../../../flow/build/index.d.ts"
+      ],
+      "@denshya/reactive/*": [
+        "../../../flow/build/*"
+      ],
+      "@denshya/tama": [
+        "../../src/index.ts"
+      ],
+      "@denshya/tama/*": [
+        "../../*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "types": [
+      "vite/client"
+    ],
+    "verbatimModuleSyntax": false,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@denshya/tama/jsx/virtual",
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

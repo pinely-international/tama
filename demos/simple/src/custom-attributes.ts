@@ -1,5 +1,5 @@
 import { StateOrPlain } from "@denshya/reactive"
-import { WebInflator } from "@denshya/proton"
+import { WebInflator } from "@denshya/tama"
 
 import { bemFlow } from "./utils/bem"
 import { castArray } from "./utils/common"

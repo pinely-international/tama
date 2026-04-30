@@ -1,11 +1,9 @@
 # Fault Tolerance
 
-Tama is designed with a tolerance to any kind of errors in mind.
+Tama is designed so that a failed component does not automatically imply that the whole parent render tree must fail with it.
 
-Tama gracefully shutdowns failed part
+## What Is Confirmed In This Checkout
 
-- If error happens in a Component factory function
-- If error happens in an event callback
-- If error happens in a observable
-
-Errors are never propagated to parent components, so if a part of your app fails, it just won't be rendered.
+- if a component factory throws during inflation, Tama isolates that failure to the failing component slot
+- parent views can continue rendering around that missing subtree
+- a low-level tree error channel exists as `this.tree.catch(...)`

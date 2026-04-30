@@ -85,7 +85,7 @@ function MiniProfile(props: MiniProfileProps) {
         <button className="mini-profile__letter" mounted={user.$.avatar.is(null)}>
          <ColoredLetter letter={user.$.firstName.$[0]} />
         </button>
-        <img className="mini-profile__avatar" src={Mount.require(user.$.avatar)} alt="avatar" />
+        <img className="mini-profile__avatar" src={Mount.If(user.$.avatar)} alt="avatar" />
         <input value={inputValue} mounted={inputMounted} />
         <div className="mini-profile__info">
           <div className="mini-profile__name">{user.$.firstName} {user.$.lastName.$[0]}.</div>

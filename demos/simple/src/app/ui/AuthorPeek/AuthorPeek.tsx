@@ -1,6 +1,6 @@
 import "./AuthorPeek.scss"
 
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 import ColoredLetter from "../ColoredLetter/ColoredLetter"
 import { Author } from "@/app/user/User"
@@ -11,7 +11,7 @@ interface AuthorPeekProps {
   author: StateOrPlain<Author>
 }
 
-function AuthorPeek(this: Proton.Component, props: AuthorPeekProps) {
+function AuthorPeek(this: Tama.Component, props: AuthorPeekProps) {
   const author = State.from(props.author)
 
   return (

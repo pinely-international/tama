@@ -1,0 +1,23 @@
+{
+  "type": "module",
+  "name": "@denshya/tama-demo-new",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@denshya/reactive": "../../../flow/denshya-reactive-0.11.0v1.tgz",
+    "@denshya/tama": "../../denshya-tama-0.8.08.tgz"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "10.0.2",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

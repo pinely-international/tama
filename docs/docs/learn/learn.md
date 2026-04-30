@@ -7,8 +7,8 @@ sidebar_position: 1
 ## Install
 
 ```bash
-bun i -D vite
-bun i @denshya/proton
+bun i @denshya/proton @denshya/reactive
+bun i -D vite typescript
 ```
 
 ## Setup
@@ -38,7 +38,7 @@ Enable Tama JSX
   "compilerOptions": {
     // ...
     "jsx": "react-jsx",
-    "jsxImportSource": "@denshya/tama",
+    "jsxImportSource": "@denshya/proton/jsx/virtual",
     // ...
   }
 }
@@ -52,22 +52,25 @@ Enable Tama JSX
 ### Code
 
 ```tsx title="/src/main.tsx"
+import { State } from "@denshya/reactive"
 import { WebInflator } from "@denshya/proton"
 
 function RangeApp() {
+  const progress = new State(50)
+
   return (
     <div>
-      <input type="range" min="0" max="100" step="1" value={0} />
-      <progress value={0} max="100">{0} %</progress>
-      <button>Reset</button>
+      <input type="range" min="0" max="100" step="1" value={progress} />
+      <progress value={progress} max="100">{progress} %</progress>
+      <button type="button" on={{ click: () => progress.set(50) }}>Reset</button>
     </div>
   )
 }
 
 const inflator = new WebInflator
-const AppView = inflator.inflate(<App />)
+const appView = inflator.inflate(<RangeApp />)
 
-document.getElementById("root").replaceChildren(AppView)
+document.getElementById("root")!.replaceChildren(appView)
 ```
 
 ### Start
@@ -76,12 +79,19 @@ document.getElementById("root").replaceChildren(AppView)
 bun dev
 ```
 
-## Understanding
+## React Developers: The Short Version
 
-### Inflation
+- Component functions run once.
+- Signals and observables update the DOM directly.
+- `return` defines the default view.
+- `this.view.set(...)` swaps the current view later.
+- `this.tree.context` replaces `useContext`.
+- Async components and async generators are first-class.
 
-Inflation is creating in-memory nodes from semi-serialized version (JSX).
-Inflating any structure will always output at least `Node`.
+## What Gets Inflated
+
+Inflation turns JSX into DOM nodes.
+Any inflate call outputs either a DOM node or a component-managed node group.
 
 ```js
 inflator.inflate(123) // => Text
@@ -93,14 +103,14 @@ inflator.inflate(new Comment) // => Comment
 
 Learn more about [`ComponentGroup`](./unwinding/component-group.md).
 
-### Component
+## What A Component Means In Tama
 
-Is pretty different from React:
+Compared with React:
 
 - no hooks
-- no rendering life cycle (function runs only once, i.e.)
-- no type constrains (supports async, async generator functions)
-- no return constrains
+- no rerender loop
+- async and async generator components are allowed
+- return values are not limited to JSX elements
 
 ```tsx
 function Component() {
@@ -108,9 +118,9 @@ function Component() {
 }
 ```
 
-### JSX
+## JSX
 
-It's 100% compatible with React JSX, but it has a flavor. *If you have interest in using different flavors create/support discussions in GitHub Repository.*
+Tama supports React-style JSX while still allowing custom attributes and direct DOM values.
 
 ```tsx
 <div
@@ -121,11 +131,15 @@ It's 100% compatible with React JSX, but it has a flavor. *If you have interest 
 ></div>
 ```
 
-`onClick` and `ariaLabel` supported but not typed to remain compatibility while giving a flavor.
+## Next Steps
 
-#### Observable in JSX
+- Start with [Building Apps](./how-to-use/building-apps.md) for the React-to-Tama workflow.
+- Use [Routing](./how-to-use/router.md) when you need app navigation.
+- Read [Reactivity](./unwinding/reactivity.md) for observable patterns.
+- Use [Changing Views](./guides/changing-views.md) and [Async Views](./guides/async-views.md) for loaders and screen swaps.
 
-[Playground](https://stackblitz.com/edit/wicg-observable?file=src%2FApp.tsx)
+[Playground](https://stackblitz.com/edit/tama-elements-range?file=src%2FApp.tsx)
+
 
 ```tsx
 function ColorApp() {

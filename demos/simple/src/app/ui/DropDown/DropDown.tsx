@@ -1,7 +1,7 @@
 import "./DropDown.scss"
 
-import { State, StateArray } from "@denshya/reactive"
-import { Proton } from "@denshya/proton"
+import { State, StateArray, StateBoolean } from "@denshya/reactive"
+import { MountRoutine, Ref, Tama } from "@denshya/tama"
 import { castArray } from "@/utils/common"
 
 
@@ -14,7 +14,7 @@ interface DropDownProps<T> {
   children: JSX.Children<DropDownOption<T>>
 }
 
-function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
+function DropDown<T>(this: Tama.Component, props: DropDownProps<T>) {
   const optionsList = new StateArray(castArray(props.children))
 
   function onSelect(option: DropDownOption<T>) {
@@ -22,36 +22,34 @@ function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
     props.expanded.set(false)
   }
 
-  function isSelect(option: DropDownOption<T>) {
+  function whenSelected(option: DropDownOption<T>) {
     return props.selected.to(it => it === option || it?.props.value === option?.props.value)
   }
 
+  const ref = new Ref<HTMLDivElement>
+  const arrowInputLifecycle = new MountRoutine(signal => {
+    window.addEventListener("keydown", event => {
 
-  function contain(view: HTMLElement) {
-    containByWidth(view)
-    containByHeight(view, document.body)
-  }
-
-  const mutation = new MutationObserver(() => contain(this.view.current as HTMLElement))
-
-  this.view.subscribe(view => {
-    if (view instanceof HTMLElement === false) return
-
-    const expandedSubscription = props.expanded.subscribe(it => !it && contain(view))
-    mutation.observe(view, { subtree: true, childList: true, characterData: true })
-
-    return () => {
-      mutation.disconnect()
-      expandedSubscription.unsubscribe()
-    }
+    }, { signal })
   })
 
+  props.expanded.subscribe(() => contain(ref.current!))
+  props.expanded.subscribe(expanded => {
+    if (!expanded) return
+    scrollIntoView(ref.current!, props.selected.current?.props.value)
+  })
+  props.expanded.subscribe(expanded => {
+    if (expanded === true) arrowInputLifecycle.enter()
+    if (expanded === false) arrowInputLifecycle.exit()
+  })
+
+
   return (
-    <div className="drop-down" classMods={{ expanded: props.expanded }} aria={{ role: "listbox", ariaExpanded: props.expanded }}>
+    <div className="drop-down" classMods={{ expanded: props.expanded }} ref={ref} aria={{ role: "listbox", ariaExpanded: props.expanded }}>
       {optionsList.map(option => (
         <button
           className="drop-down__option"
-          classMods={{ selected: isSelect(option) }}
+          classMods={{ selected: whenSelected(option) }}
 
           on={{ click: () => onSelect(option) }}
           aria={{ role: "option" }}
@@ -67,6 +65,11 @@ function DropDown<T>(this: Proton.Component, props: DropDownProps<T>) {
 }
 
 export default DropDown
+
+function contain(view: HTMLElement) {
+  containByWidth(view)
+  containByHeight(view, document.body)
+}
 
 function containByWidth(element: HTMLElement) {
   const rect = element.getBoundingClientRect()
@@ -119,4 +122,34 @@ function containByHeight(element: HTMLElement, scrollingElement: HTMLElement) {
 
   // Caps height to bottom of the viewport.
   element.style.setProperty("max-height", `calc(${scrollingRect.bottom - parentRect.bottom}px - 1em)`)
+}
+
+/**
+ * https://jsfiddle.net/cxe73c22/
+ */
+function scrollIntoView(container: HTMLElement, value: unknown) {
+  const containerRect = container.getBoundingClientRect()
+
+  const choiceElement = container.children.namedItem(String(value))
+  const choiceElementRect = choiceElement?.getBoundingClientRect()
+  if (choiceElementRect == null) return
+
+  const offsetTop = choiceElementRect.top - containerRect.top
+  const middle = offsetTop - (containerRect.height / 2) + (choiceElementRect.height / 2)
+
+  container.scrollBy(0, middle)
+}
+
+function loop(number: number, max: number): number {
+  if (number > max) return 0
+  if (number < 0) return max
+
+  return number
+}
+
+function focusOption(container: HTMLElement, optionIndex: number) {
+  const choiceElement = container.children.item(optionIndex)
+  if (!(choiceElement instanceof HTMLElement)) return
+
+  choiceElement.focus()
 }

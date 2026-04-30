@@ -1,7 +1,7 @@
 import "./ProductCard.scss"
 
 import { State, StateOrPlain } from "@denshya/reactive"
-import { Proton } from "@denshya/proton"
+import { Tama } from "@denshya/tama"
 
 import Icon from "@/app/ui/Icon/Icon"
 import { NavLink } from "@/navigation"
@@ -15,7 +15,7 @@ import { MarketProduct } from "../../types"
 
 interface ProductCardProps extends MarketProduct { }
 
-function ProductCard(this: Proton.Component, props: ProductCardProps) {
+function ProductCard(this: Tama.Component, props: ProductCardProps) {
   const market = this.tree.context.require(MarketModel)
 
   const amount = market.cart.$.get(props.id).to(it => it ?? -1)

@@ -14,20 +14,21 @@
     "stats:network": "vite-bundle-visualizer -o ./stats/network.html -t network"
   },
   "dependencies": {
-    "@denshya/reactive": "^0.9.0",
-    "@denshya/proton": "^0.7.4",
-    "urlpattern-polyfill": "^10.0.0"
+    "@denshya/reactive": "../../../flow/denshya-reactive-0.11.0v1.tgz",
+    "@denshya/tama": "../../denshya-tama-0.8.08.tgz",
+    "iterator-helpers-polyfill": "^3.0.1",
+    "urlpattern-polyfill": "^10.1.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.16.0",
-    "@typescript-eslint/parser": "^8.16.0",
-    "eslint": "9.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "10.0.2",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-unused-imports": "^4.1.4",
-    "sass": "^1.82.0",
-    "type-fest": "^4.30.0",
-    "typescript": "^5.7.2",
-    "vite": "^6.0.7",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "sass": "^1.97.3",
+    "type-fest": "^5.4.4",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
     "vite-bundle-visualizer": "^1.2.1"
   },
   "engines": {

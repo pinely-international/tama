@@ -1,7 +1,7 @@
 import "./polyfills"
 import "./error-overlay"
 
-import { WebInflator } from "@denshya/proton"
+import { WebInflator } from "@denshya/tama"
 
 import App from "./App"
 import applyCustomAttributes from "./custom-attributes"
