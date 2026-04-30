@@ -4,9 +4,8 @@ sidebar_position: 3
 
 # Reactivity
 
-[WICG Observable (Web Standard)](https://github.com/WICG/observable)
-
-Tama adopts observable as another primitive. Any object that has `Symbol.subscribe` considered to be an observable.
+Tama adopts observable values as another primitive.
+In the current inflator implementation, the practical runtime requirement is a plain `subscribe(...)` method.
 
 Beyond that, it treats any object that has either `get` or `set` to be an accessor. Which can be combined with observable, getting an **Observable Accessor**.
 
@@ -21,8 +20,10 @@ const regularText = "Static Value"
 const observableText = {
   i: 0,
   get: () => "Initial",
-  [Symbol.subscribe](next) {
+  subscribe(next) {
     setInterval(() => next("Next: " + this.i++))
+
+    return { unsubscribe() {} }
   }
 }
 ```
@@ -48,7 +49,7 @@ class State<T> {
     this.callbacks.forEach(callback => callback(value))
   }
 
-  [Symbol.subscribe](next: (value: T) => void) {
+  subscribe(next: (value: T) => void) {
     this.callbacks.add(next)
     return { unsubscribe: () => void this.callbacks.delete(next) }
   }
@@ -77,13 +78,7 @@ function ProductCard() {
 To get started faster with this, try [`Reactive`](https://github.com/denshya/reactive) state library.
 
 > [!NOTE]
-> Observables are now implemented in Browsers. They can be used as it without any updates.
->
-> ```tsx
-> <div style={{ left: window.when("scroll").map(event => event.y + "px") }} />
-> ```
->
-> [Example Playground](https://stackblitz.com/edit/vitejs-vite-uepaaxp1?file=src%2FApp.tsx)
+> If your environment or library already exposes subscribe-compatible event or state sources, Tama can bind them directly.
 
 ### Dual binding
 
@@ -131,5 +126,21 @@ function App() {
       ))}
     </div>
   )
+}
+```
+
+## [WICG Observable (Web Standard)](https://github.com/WICG/observable)
+
+Tama also supports the WICG Observable proposal as a first-class citizen, so you can use it directly if your environment supports it.
+
+```tsx
+
+function App() {
+  const time = new Observable(subscriber => {
+    const interval = setInterval(() => subscriber.next(new Date()), 1000)
+    return () => clearInterval(interval)
+  })
+
+  return <div>{time}</div>
 }
 ```

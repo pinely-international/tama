@@ -43,6 +43,6 @@ export default applyCustomAttributes
 
 ## Custom Children
 
-Customization of children can be done using [Inflator Adapters](./custom-inflate.md)
+Customization of children can be done using [Inflator Adapters](./inflate.md)
 
 ## Custom Provider

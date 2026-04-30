@@ -1,22 +1,38 @@
 # Suspense
 
+Initially, Suspense was planned to be a built-in feature of Tama, but it was removed since it was tightly coupled to the core and couldn't be extended at all.
+
+In replacement, a new approach was taken, which is to support required APIs to build Suspense-like patterns in userland, without any special support from the core.
+
+## Tree Error Catching
+
+To support Suspense-like patterns, Tama provides a way to catch errors thrown from any descendant component in the tree, which can be Promises just like in React Suspense.
+
+Something like this can be implemented in userland:
+
 ```tsx
-function MyView(this: Tama.Component) {
-  this.view.set(<Loader />)
+function Suspense(this: Tama.Component, props: { children: unknown, fallback: unknown }) {
+  const loading = new State(false)
+  loading.subscribe(x => {
+    if (x) {
+      this.view.set(props.fallback)
+    } else {
+      this.view.set(props.children)
+    }
+  })
 
-  throw new Promise(resolve => setTimeout(resolve, 1_000))
+  this.tree.catch(error => {
+    if (error instanceof Promise === false) return
 
-  return <div>I'm loaded!</div>
+    loading.set(true)
+    error.then(() => loading.set(false))
+  })
+
+  return props.children
 }
 ```
 
-Make sure a parent catches it by using `suspense` and `unsuspense`. This is an experimental API, so don't rely on it too much.
+## Async Views
 
-```tsx
-function Parent(this: Tama.Component) {
-  this.suspense(() => this.view.set(<Loader />))
-  this.unsuspense(() => this.view.set(this.view.default))
-
-  return <div><MyView /></div>
-}
-```
+Use async components, async generators and explicit loading views.
+Read more in [Async Views](./async-views.md).

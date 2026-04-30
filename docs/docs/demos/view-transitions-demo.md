@@ -3,62 +3,40 @@ title: View Transition Playground
 sidebar_position: 5
 ---
 
-Use the [Tama Elements StackBlitz template](https://stackblitz.com/edit/proton-elements-range?file=src%2FApp.tsx&view=editor) to try the transition queue without cloning the repository.
+Use the [Tama Elements StackBlitz template](https://stackblitz.com/edit/tama-elements-range) to try browser View Transitions with the current public Tama surface.
+
+This demo intentionally avoids the experimental `this.view.transitions` queue described in older docs.
 
 1. Open the linked template and replace the contents of `src/App.tsx` with the snippet below.
-2. Save the file. StackBlitz will hot-reload and run the transition handlers in the browser.
-3. Tweak the animation timings or add more handlers to see how TamaJs keeps the previous view alive until all of them resolve.
+2. Save the file.
+3. Click through the screens and adjust the CSS transition styling.
 
 ```tsx title="src/App.tsx"
 import "./style.css"
 
-import { Tama } from "@denshya/tama"
-
+import { State } from "@denshya/reactive"
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-function App(this: Tama.Component) {
-  this.view.transitions = [
-    async (transit, previous, next) => {
-      const previousEl = this.inflator.inflate<HTMLElement>(previous)
-      previousEl.dataset.state = "leaving"
-
-      await delay(140)
-
-      const nextEl = this.inflator.inflate<HTMLElement>(next)
-      nextEl.dataset.state = "entering"
-
-      await transit()
-
-      requestAnimationFrame(() => {
-        nextEl.dataset.state = "active"
-      })
-    },
-    document.startViewTransition?.bind(document) as any,
-  ]
-
+function App() {
   const screens = ["Dashboard", "Billing", "Settings"]
-  let index = 0
+  const index = new State(0)
 
-  if (this.view.current == null) {
-    this.view.set(<section className="screen">{screens[index]}</section>)
+  function nextScreen() {
+    const update = () => index.set(value => (value + 1) % screens.length)
+
+    document.startViewTransition?.(update) ?? update()
   }
 
   return (
     <main className="app">
       <header>
         <h1>Tama View Transitions</h1>
-        <button
-          type="button"
-          onClick={() => {
-            index = (index + 1) % screens.length
-            this.view.setAsync(<section className="screen">{screens[index]}</section>)
-          }}
-        >
-          Next screen
-        </button>
+        <button type="button" on={{ click: nextScreen }}>Next screen</button>
       </header>
-      <div className="stage">{this.view.current}</div>
+      <div className="stage">
+        <section className="screen">{index.to(i => screens[i])}</section>
+      </div>
     </main>
   )
 }
@@ -89,8 +67,6 @@ export default App
 }
 
 .screen {
-  position: absolute;
-  inset: 0;
   display: grid;
   place-items: center;
   font-size: 2.5rem;
@@ -100,20 +76,6 @@ export default App
   transition: transform 160ms ease, opacity 160ms ease;
 }
 
-.screen[data-state="active"] {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.screen[data-state="leaving"] {
-  opacity: 0;
-  transform: translateX(-12%);
-}
-
-.screen[data-state="entering"] {
-  opacity: 0;
-  transform: translateX(12%);
-}
 ```
 
-> Tip: You can mix and match multiple handlers. Tama keeps running them in sequence and only resolves `setAsync` when every handler finishes.
+> Tip: For current Tama apps, prefer explicit state changes plus `document.startViewTransition(...)` when you want browser-native page animations.
