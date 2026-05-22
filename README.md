@@ -4,10 +4,10 @@ This is an library for rendering your UI with familiar features such as JSX, Fun
 while being widely open to extension and modification. It has very tiny initial build, but it may get bigger with more features you use.
 
 The purpose of the library is to give a way to introduce something similar to React, but based on Granular Reactivity and with native DOM support.
-It means you can return or put DOM elements directly into JSX, or **optionally** run components independetly without creating a root.
+It means you can return or put DOM elements directly into JSX, or **optionally** run components independently without creating a root.
 
 You get generally more control over Lifecycle and such since the components only invoked once,
-so it doesn't require deep thinking about the process, it's rather trivial, truelly declarative and explicit.
+so it doesn't require deep thinking about the process, it's rather trivial, truly declarative and explicit.
 In practice, this means easier debugging, but may require a few extra LoCs.
 
 Almost every part of the library can be replaced with your own, if you don't like how States or Lifecycles are defined, you can rearrange it in your own way.
@@ -28,6 +28,9 @@ It's based on the principle that I came up with: a library should define borders
 
 ```bash
 bun i @denshya/proton
+npm i @denshya/proton
+pnpm i @denshya/proton
+yarn add @denshya/proton
 ```
 
 ## What is "Rootless"?
@@ -167,7 +170,7 @@ It is very similar to React, it tries to simplify development as we know it in R
 |Return any value|Components can be returned with **any** value, no seriously, even DOM Nodes/Elements will work.|
 |Class-based|Enables **tree-shaking**, **extensibility**, and **open internals**|
 
-**React Inherited Features**
+### React Inherited Features
 
 |Feature|Description|
 |-------|-----------|
@@ -216,19 +219,4 @@ Tama supports JSX. It maps directly to [Document](https://developer.mozilla.org/
 </div>
 ```
 
-Learn more about [Inflator](#inflator) to provide custom handlers.
-
-## TypeScript
-
-Report if there is anything uncovered for TypeScript.
-
-## FAQ
-
-<details>
-  <summary>Do React hooks work in Tama?</summary>
-  No, but it's very extensible, so some enthusiasts might implement it. BTW, even though libraries from other "frameworks" won't work in Tama, libraries for Tama are supposed to work in other frameworks too.
-</details>
-<!-- <details>
-  <summary>question?</summary>
-  answer
-</details> -->
+Learn more about how to provide [custom handlers](https://tama.denshya.dev/learn/custom/inflate).

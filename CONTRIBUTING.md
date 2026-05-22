@@ -5,12 +5,12 @@ This is a practical guidance for contributions to this repository. Give the repo
 ## Mindset
 
 When you start a conversation, you don't have to be **welcoming** (e.g. Hello), or mention authors (e.g. @FrameMuse) every time.
-We all understand our assignement here and don't get upset if we don't get "hello".
+We all understand our assignment here and don't get upset if we don't get "hello".
 
 When people reply you with _neutral_ sounding text, it may sound rude - while **it's not**, please, don't take it personal.
 
-Be proffesional, tactical and straighforward. If you want to relax and get chills with authors and some other contributors,
-you can visit our [Dicord Server](https://discord.gg/sHp2pxrSws).
+Be professional, tactical and straightforward. If you want to relax and get chills with authors and some other contributors,
+you can visit our [Discord Server](https://discord.gg/sHp2pxrSws).
 
 **AI (Assisted Insecurity)**
 Don't use Language Models, Copilots, Generated content or any Coding Assistance tools, they usually get everything wrong.
@@ -22,7 +22,7 @@ In simple words, if you wait for ideas from AI - don't create a PR, if you put *
 
 1. Choose what you think you're confident in
 2. Make you sure you understand the scope of the work, you can do it via a single comment, letting maintainers know what you're willing to change and how you approach it
-3. Get approval and Assigement to the issue
+3. Get approval and Assignment to the issue
 4. Make a fork (and branch optionally)
 5. Start working
 6. Open a Pull Request
