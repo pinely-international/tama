@@ -20,6 +20,7 @@
     "lodash-es": "^4.17.21",
     "markdown-lexer": "^0.1.4",
     "prism-themes": "^1.9.0",
+    "remark-frontmatter": "^5.0.0",
     "type-fest": "^4.31.0",
     "urlpattern-polyfill": "latest"
   },

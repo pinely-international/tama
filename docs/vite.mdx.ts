@@ -7,11 +7,19 @@ import rehypeSlug from "rehype-slug"
 import remarkGfm from "remark-gfm"
 import githubAdmonitions from "remark-github-beta-blockquote-admonitions"
 import { Plugin } from "vite"
+import remarkFrontmatter from "remark-frontmatter"
 
 function articleMdx(): Plugin {
   return mdx({
     jsxImportSource: "@denshya/proton/jsx/virtual",
-    remarkPlugins: [remarkGfm, githubAdmonitions, remarkGithubAdmonitions],
+    remarkPlugins: [
+      remarkGfm,
+      githubAdmonitions,
+      remarkGithubAdmonitions,
+
+      remarkFrontmatter,
+      remarkStripFrontmatter
+    ],
     rehypePlugins: [rehypeSlug, [rehypeHighlight, shikiConfig]],
   })
 }
@@ -132,4 +140,13 @@ function visit(node, type, fn) {
   }
   if (node.type === type) fn(node)
   if (node.children) visit(node.children, type, fn)
+}
+
+
+
+
+function remarkStripFrontmatter() {
+  return tree => {
+    tree.children = tree.children.filter(node => node.type !== "yaml" && node.type !== "toml")
+  }
 }
