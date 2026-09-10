@@ -60,7 +60,7 @@
     "remark-github": "^12.0.0",
     "remark-github-beta-blockquote-admonitions": "^3.1.1",
     "sass-embedded": "^1.83.4",
-    "sharp": "^0.34.3",
+    "sharp": "^0.35.4",
     "simple-icons": "^15.18.0",
     "sirv": "^3.0.1",
     "svg-path-bbox": "^2.1.0",
